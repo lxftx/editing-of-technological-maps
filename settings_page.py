@@ -272,6 +272,9 @@ class SettingsPage(QWidget):
         self.cancel_button_safety.setObjectName("cancel_button_safety")
         self.cancel_button_safety.clicked.connect(self.cancel)
 
+        if not os.path.exists('config'):
+            os.makedirs('config')
+
         if not self.is_folder_hidden('config'):
             self.hide_folder(b'config')
         self.read_file()

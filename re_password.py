@@ -23,7 +23,7 @@ class ResetPassword(QWidget):
         self.timer.timeout.connect(self.update_timer)
         self.remaining_time = 0
         self.numbers = [x for x in range(100000, 1000000)]
-        # XnEu7wLxA4S7hv92ZR9k
+
         self.db = db
         self.auth = auth
         self.dec_email = email
