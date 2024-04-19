@@ -452,7 +452,6 @@ class ResetPassword(QWidget):
         try:
             self.db.cursor.execute("""SELECT * FROM users WHERE email = %s""", (self.email_edit.text(),))
             select = self.db.cursor.fetchone()
-            print(select[8])
             if str(select[8]) == self.code_edit.text():
                 self.new_password.setVisible(True)
                 self.new_password_edit.setVisible(True)

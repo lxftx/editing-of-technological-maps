@@ -1,3 +1,5 @@
+import os
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QAbstractItemView
@@ -70,7 +72,13 @@ class UsersPage(QWidget, AlertMessage):
             list_ifo = self.search_widget.text().split()
             for i, value in enumerate(list_ifo):
                 ifo[i] = value+"%"
-            self.db.cursor.execute("""SELECT first_name, last_name, patronymic, post, email FROM users WHERE email<>%s AND (last_name LIKE %s OR first_name LIKE %s OR patronymic LIKE %s)""", (self.main.user.email, *ifo))
+            if os.path.exists('config/db_config.bin'):
+                self.db.cursor.execute(
+                    """SELECT first_name, last_name, patronymic, post, email FROM users WHERE email<>%s AND (last_name LIKE %s OR first_name LIKE %s OR patronymic LIKE %s)""", (self.main.user.email, *ifo))
+            else:
+                self.db.cursor.execute(
+                    """SELECT first_name, last_name, patronymic, post, email FROM users WHERE email<>? AND (last_name LIKE ? OR first_name LIKE ? OR patronymic LIKE ?)""",
+                    (self.main.user.email, *ifo))
             data = self.db.cursor.fetchall()
             self.table_users.setRowCount(len(data))
 
@@ -89,7 +97,13 @@ class UsersPage(QWidget, AlertMessage):
             self.populate_table()
 
     def populate_table(self):
-        self.db.cursor.execute("""SELECT first_name, last_name, patronymic, post, email FROM users WHERE email <> %s""", (self.main.user.email,))
+        if os.path.exists('config/db_config.bin'):
+            self.db.cursor.execute(
+                """SELECT first_name, last_name, patronymic, post, email FROM users WHERE email <> %s""", (self.main.user.email,))
+        else:
+            self.db.cursor.execute(
+                """SELECT first_name, last_name, patronymic, post, email FROM users WHERE email <> ?""",
+                (self.main.user.email,))
         data = self.db.cursor.fetchall()
         self.table_users.setRowCount(len(data))
 
@@ -116,7 +130,11 @@ class UsersPage(QWidget, AlertMessage):
         print(rows_to_delete)
         for row in reversed(rows_to_delete):
             self.table_users.removeRow(row[0])
-            self.db.cursor.execute("""DELETE FROM users WHERE email = %s""",
+            if os.path.exists('config/db_config.bin'):
+                self.db.cursor.execute("""DELETE FROM users WHERE email = %s""",
+                                   (row[1],))
+            else:
+                self.db.cursor.execute("""DELETE FROM users WHERE email = ?""",
                                    (row[1],))
             self.db.connection.commit()
 

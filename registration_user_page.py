@@ -1,3 +1,5 @@
+import os
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
 from alert import AlertMessage
@@ -180,7 +182,10 @@ class RegistrationUserPage(QWidget, AlertMessage):
                                       "font-size: 15px;\n"
                                       "")
         self.posts_edit.setObjectName("posts_registration_edit")
-        self.db.cursor.execute("""SELECT unnest(enum_range(NULL::posts)) AS post_value""")
+        if os.path.exists('config/db_config.bin'):
+            self.db.cursor.execute("""SELECT unnest(enum_range(NULL::posts)) AS post_value""")
+        else:
+            self.db.cursor.execute("""SELECT name FROM posts""")
         select = [x[0] for x in self.db.cursor.fetchall()]
         self.posts_edit.addItems(select)
         self.posts_edit.currentTextChanged.connect(self.reset_posts)
@@ -335,14 +340,22 @@ class RegistrationUserPage(QWidget, AlertMessage):
             self.email_edit.setStyleSheet(red_style)
         else:
             if self.posts_edit.currentText() == 'Волочильщик':
-                postgres_insert_query = """INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email) 
-                                        VALUES (%s, %s, %s, %s, %s, %s)"""
-                record_to_insert = (
-                    self.name_edit.text(), self.surname_edit.text(),
-                    self.patronic_edit.text(),
-                    self.posts_edit.currentText(),
-                    self.birthday_edit.text(), self.email_edit.text())
-                self.db.cursor.execute(postgres_insert_query, record_to_insert)
+                if os.path.exists('config/db_config.bin'):
+                    self.db.cursor.execute("""INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email) 
+                                            VALUES (%s, %s, %s, %s, %s, %s)""",(
+                                        self.name_edit.text(), self.surname_edit.text(),
+                                        self.patronic_edit.text(),
+                                        self.posts_edit.currentText(),
+                                        self.birthday_edit.text(), self.email_edit.text()))
+                else:
+                    date_from_edit = self.birthday_edit.date()
+                    date_str = date_from_edit.toString("dd.MM.yyyy")
+                    self.db.cursor.execute("""INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email) 
+                                            VALUES (?, ?, ?, ?, ?, ?)""",(
+                                        self.name_edit.text(), self.surname_edit.text(),
+                                        self.patronic_edit.text(),
+                                        self.posts_edit.currentText(),
+                                        date_str, self.email_edit.text()))
                 self.db.connection.commit()
                 self.alert_text.setText('Сохранено')
                 self.show_alert()
@@ -358,14 +371,24 @@ class RegistrationUserPage(QWidget, AlertMessage):
                     self.confirm_password_edit.setStyleSheet(red_style)
                     self.show_alert()
                 else:
-                    postgres_insert_query = """INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email, passwd) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-                    record_to_insert = (self.name_edit.text(), self.surname_edit.text(),
-                                        self.patronic_edit.text(),
-                                        self.posts_edit.currentText(),
-                                        self.birthday_edit.text(), self.email_edit.text(),
-                                        hash_passwd.hash_password(self.password_edit.text()))
-                    self.db.cursor.execute(postgres_insert_query, record_to_insert)
+                    if os.path.exists('config/db_config.bin'):
+                        postgres_insert_query = """INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email, passwd) 
+                                VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+                        record_to_insert = (self.name_edit.text(), self.surname_edit.text(),
+                                            self.patronic_edit.text(),
+                                            self.posts_edit.currentText(),
+                                            self.birthday_edit.text(), self.email_edit.text(),
+                                            hash_passwd.hash_password(self.password_edit.text()))
+                        self.db.cursor.execute(postgres_insert_query, record_to_insert)
+                    else:
+                        date_from_edit = self.birthday_edit.date()
+                        date_str = date_from_edit.toString("dd.MM.yyyy")
+                        self.db.cursor.execute("""INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email, passwd) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?)""",(self.name_edit.text(), self.surname_edit.text(),
+                                            self.patronic_edit.text(),
+                                            self.posts_edit.currentText(),
+                                            date_str, self.email_edit.text(),
+                                            hash_passwd.hash_password(self.password_edit.text())))
                     self.db.connection.commit()
                     self.alert_text.setText('Сохранено')
                     self.show_alert()
@@ -383,7 +406,7 @@ class RegistrationUserPage(QWidget, AlertMessage):
             self.password_edit.setEnabled(False)
             self.confirm_password_edit.setEnabled(False)
             self.open_passwd.setEnabled(False)
-#olegtirex@mail.ru   Podvoh15061977
+
     def view_passwd(self, selected):
         if selected:
             self.password_edit.setEchoMode(QtWidgets.QLineEdit.EchoMode.Normal)
