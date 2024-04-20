@@ -78,7 +78,7 @@ class CalculationPage(QWidget, AlertMessage):
         self.button_load_word.setGeometry(QtCore.QRect(712, 110, 111, 31))
         self.button_load_word.setStyleSheet("border-radius: 10px;")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("images/icon/file-word_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "file-word_out.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_load_word.setIcon(icon1)
         self.button_load_word.setIconSize(QtCore.QSize(24, 24))
         self.button_load_word.setObjectName("button_load_word")
@@ -88,7 +88,7 @@ class CalculationPage(QWidget, AlertMessage):
         self.button_load_excel.setGeometry(QtCore.QRect(880, 110, 111, 31))
         self.button_load_excel.setStyleSheet("border-radius: 10px;")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("images/icon/file-excel_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "file-excel_out.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_load_excel.setIcon(icon2)
         self.button_load_excel.setIconSize(QtCore.QSize(24, 24))
         self.button_load_excel.setObjectName("button_load_excel")
@@ -173,7 +173,7 @@ class CalculationPage(QWidget, AlertMessage):
                                         "    border-radius: 10px;\n"
                                         "}")
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap("images/icon/reset_in.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "reset_in.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.resert_items.setIcon(icon3)
         self.resert_items.setObjectName("resert_items")
         self.resert_items.clicked.connect(self.cleanItems)
@@ -347,6 +347,9 @@ class CalculationPage(QWidget, AlertMessage):
             self.timer.timeout.connect(self.hide_alert)
             self.timer.start(5000)
 
+    def get_path(self, dir, name):
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), dir, name)
+
     def perform(self):
         if self.coef_deform_edit.text():
             if self.width_edit.text():
@@ -393,27 +396,27 @@ class CalculationPage(QWidget, AlertMessage):
     def eventFilter(self, watched, event):
         icon = QtGui.QIcon()
         if (event.type() == QtCore.QEvent.Enter) and (watched == self.button_load_word):
-            icon.addPixmap(QtGui.QPixmap("images/icon/file-word_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "file-word_in.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.button_load_word.setIcon(icon)
 
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.button_load_word):
-            icon.addPixmap(QtGui.QPixmap("images/icon/file-word_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "file-word_out.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.button_load_word.setIcon(icon)
 
         elif (event.type() == QtCore.QEvent.Enter) and (watched == self.button_load_excel):
-            icon.addPixmap(QtGui.QPixmap("images/icon/file-excel_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "file-excel_in.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.button_load_excel.setIcon(icon)
 
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.button_load_excel):
-            icon.addPixmap(QtGui.QPixmap("images/icon/file-excel_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "file-excel_out.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.button_load_excel.setIcon(icon)
 
         elif (event.type() == QtCore.QEvent.Enter) and (watched == self.resert_items):
-            icon.addPixmap(QtGui.QPixmap("images/icon/reset_in.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "reset_in.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.resert_items.setIcon(icon)
 
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.resert_items):
-            icon.addPixmap(QtGui.QPixmap("images/icon/reset_out.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "reset_out.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.resert_items.setIcon(icon)
 
         return super().eventFilter(watched, event)

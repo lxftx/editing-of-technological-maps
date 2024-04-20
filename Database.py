@@ -11,7 +11,7 @@ class Database:
         self.cursor = None
 
     def connect_database(self, *args,**kwargs):
-        if os.path.exists('config/db_config.bin'):
+        if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin')):
             try:
                 # Подключение к существующей базе данных
                 self.connection = psycopg2.connect(**kwargs)
@@ -31,7 +31,7 @@ class Database:
                 self.cursor = self.connection.cursor()
                 return [True, f"Вы подключены к - SQLite"]
             except (Exception, Error) as error:
-                return [False, f"Ошибка при работе с PostgreSQL - {error}"]
+                return [False, f"Ошибка при работе с SQLite - {error}"]
 
     def disconnection_database(self):
         if self.connection:

@@ -127,7 +127,7 @@ class Authenticate(QWidget):
                                   "}"
                                   )
         self.button.setObjectName("button")
-        self.button.clicked.connect(self.authenticate if os.path.exists('config/db_config.bin') else self.auth_sqlite)
+        self.button.clicked.connect(self.authenticate if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin')) else self.auth_sqlite)
         self.view_password = QtWidgets.QRadioButton(self.centralwidget)
         self.view_password.setGeometry(QtCore.QRect(60, 400, 511, 21))
         font = QtGui.QFont()
@@ -167,7 +167,7 @@ class Authenticate(QWidget):
         self.button.installEventFilter(self)
         self.reset_password.installEventFilter(self)
 
-        if not os.path.exists('sql/example.db') and not os.path.exists('config/path_sqlite.bin'):
+        if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db')) and not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin')):
             self.create_table_sqlite()
 
         self.retranslateUi()
@@ -185,7 +185,7 @@ class Authenticate(QWidget):
         self.reset_password.setText("Забыли пароль?")
 
     def read_file(self):
-        with open('config/db_config.bin', 'rb') as file:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin'), 'rb') as file:
             lines = file.readlines()
             key = lines[0].strip()
             enc_name_user_db = lines[1].strip()
@@ -201,8 +201,9 @@ class Authenticate(QWidget):
                 fernet.decrypt(enc_name_db).decode()]
 
     def read_path_sqlite(self):
-        if os.path.exists('config/path_sqlite.bin'):
-            with open('config/path_sqlite.bin', 'rb') as file:
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin')
+        if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin')):
+            with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin'), 'rb') as file:
                 lines = file.readlines()
                 key = lines[0].strip()
                 enc_path_sqllite = lines[1]
@@ -219,8 +220,12 @@ class Authenticate(QWidget):
             self.password_edit.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
 
     def create_table_sqlite(self):
-        self.db.connect_database('sql/example.db')
-        with open('sql/SQLite.sql', 'r') as sql_file:
+        self.db.connect_database(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Путь к файлу SQLite.sql
+        sql_file_path = os.path.join(current_dir, 'sql', 'SQLite.sql')
+        # Теперь можно использовать sql_file_path для открытия файла
+        with open(sql_file_path, 'r', encoding='utf-8') as sql_file:
             sql_commands = sql_file.read().split(';')
             for command in sql_commands:
                 if command.strip():
@@ -231,7 +236,7 @@ class Authenticate(QWidget):
         try:
             if not self.password_edit.text():
                 path = self.read_path_sqlite()
-                answer = self.db.connect_database(path) if path else self.db.connect_database('sql/example.db')
+                answer = self.db.connect_database(path) if path else self.db.connect_database(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
                 if answer[0]:
                     self.db.cursor.execute("""SELECT * FROM users WHERE email = ?""",
                                            (self.email_edit.text(),))
@@ -255,7 +260,7 @@ class Authenticate(QWidget):
                     self.feedback.setText(answer[1])
             else:
                 path = self.read_path_sqlite()
-                answer = self.db.connect_database(path) if path else self.db.connect_database('sql/example.db')
+                answer = self.db.connect_database(path) if path else self.db.connect_database(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
                 if answer[0]:
                     self.db.cursor.execute("""SELECT COUNT(*) FROM users""")
                     select = self.db.cursor.fetchone()[0]
@@ -375,8 +380,8 @@ class Authenticate(QWidget):
         return super().eventFilter(watched, event)
 
     def window_reset_pswd(self):
-        if os.path.exists('config/email.bin'):
-            with open('config/email.bin', 'rb') as file:
+        if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'email.bin')):
+            with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'email.bin'), 'rb') as file:
                 lines = file.readlines()
                 key = lines[0].strip()
                 encEmail = lines[1].strip()

@@ -187,6 +187,7 @@ class RegistrationUserPage(QWidget, AlertMessage):
         else:
             self.db.cursor.execute("""SELECT post_value FROM posts""")
         select = [x[0] for x in self.db.cursor.fetchall()]
+        print(select)
         self.posts_edit.addItems(select)
         self.posts_edit.currentTextChanged.connect(self.reset_posts)
 
@@ -340,7 +341,7 @@ class RegistrationUserPage(QWidget, AlertMessage):
             self.email_edit.setStyleSheet(red_style)
         else:
             if self.posts_edit.currentText() == 'Волочильщик':
-                if os.path.exists('config/db_config.bin'):
+                if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin')):
                     self.db.cursor.execute("""INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email) 
                                             VALUES (%s, %s, %s, %s, %s, %s)""",(
                                         self.name_edit.text(), self.surname_edit.text(),
@@ -371,7 +372,7 @@ class RegistrationUserPage(QWidget, AlertMessage):
                     self.confirm_password_edit.setStyleSheet(red_style)
                     self.show_alert()
                 else:
-                    if os.path.exists('config/db_config.bin'):
+                    if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin')):
                         postgres_insert_query = """INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email, passwd) 
                                 VALUES (%s, %s, %s, %s, %s, %s, %s)"""
                         record_to_insert = (self.name_edit.text(), self.surname_edit.text(),

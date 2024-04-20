@@ -283,6 +283,9 @@ class UserInfoPage(QWidget, AlertMessage):
         if self.main.burger_button.isChecked():
             self.open_sidebar()
 
+    def get_path(self, dir, name):
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), dir, name)
+
     def on_clicked(self):
         if not self.name_edit.text():
             self.name_edit.setStyleSheet(
@@ -303,7 +306,7 @@ class UserInfoPage(QWidget, AlertMessage):
                     self.alert_text.setText(f'Кол-во символов в пароле должно быть 8 или больше')
                     self.show_alert()
                 else:
-                    if os.path.exists('config/db_config.bin'):
+                    if os.path.exists(self.get_path(r'config', "db_config.bin")):
                         self.db.cursor.execute("""UPDATE users SET first_name=%s, last_name=%s, patronymic=%s, birthdate=%s, 
                                 email=%s, passwd=%s WHERE user_id=%s""",(
                                 self.name_edit.text(), self.surname_edit.text(), self.patronic_edit.text(),
@@ -324,7 +327,7 @@ class UserInfoPage(QWidget, AlertMessage):
                 self.show_alert()
             else:
                 try:
-                    if os.path.exists('config/db_config.bin'):
+                    if os.path.exists(self.get_path(r'config', "db_config.bin")):
                         self.db.cursor.execute("""UPDATE users SET first_name=%s, last_name=%s, patronymic=%s, birthdate=%s, 
                                     email=%s WHERE user_id=%s""",(
                         self.name_edit.text(), self.surname_edit.text(), self.patronic_edit.text(),

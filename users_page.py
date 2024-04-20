@@ -65,6 +65,9 @@ class UsersPage(QWidget, AlertMessage):
         self.main.db.disconnection_database()
         event.accept()
 
+    def get_path(self, dir, name):
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), dir, name)
+
     def search_users(self):
         if self.search_widget.text():
             ifo = [' ' for _ in range(3)]
@@ -72,7 +75,7 @@ class UsersPage(QWidget, AlertMessage):
             list_ifo = self.search_widget.text().split()
             for i, value in enumerate(list_ifo):
                 ifo[i] = value+"%"
-            if os.path.exists('config/db_config.bin'):
+            if os.path.exists(self.get_path(r'config', "db_config.bin")):
                 self.db.cursor.execute(
                     """SELECT first_name, last_name, patronymic, post, email FROM users WHERE email<>%s AND (last_name LIKE %s OR first_name LIKE %s OR patronymic LIKE %s)""", (self.main.user.email, *ifo))
             else:
@@ -97,7 +100,7 @@ class UsersPage(QWidget, AlertMessage):
             self.populate_table()
 
     def populate_table(self):
-        if os.path.exists('config/db_config.bin'):
+        if os.path.exists(self.get_path(r'config', "db_config.bin")):
             self.db.cursor.execute(
                 """SELECT first_name, last_name, patronymic, post, email FROM users WHERE email <> %s""", (self.main.user.email,))
         else:
@@ -130,7 +133,7 @@ class UsersPage(QWidget, AlertMessage):
         print(rows_to_delete)
         for row in reversed(rows_to_delete):
             self.table_users.removeRow(row[0])
-            if os.path.exists('config/db_config.bin'):
+            if os.path.exists(self.get_path(r'config', "db_config.bin")):
                 self.db.cursor.execute("""DELETE FROM users WHERE email = %s""",
                                    (row[1],))
             else:

@@ -89,7 +89,7 @@ class HomePage(QWidget, AlertMessage):
                                          "    background-color: green;\n"
                                          "}")
         icon9 = QtGui.QIcon()
-        icon9.addPixmap(QtGui.QPixmap("images/icon/yes.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon9.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "yes.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_create.setIcon(icon9)
         self.button_create.setObjectName("button_create")
         self.button_create.setVisible(False)
@@ -112,7 +112,7 @@ class HomePage(QWidget, AlertMessage):
                                          "    background-color: red;\n"
                                          "}")
         icon10 = QtGui.QIcon()
-        icon10.addPixmap(QtGui.QPixmap("images/icon/cancel.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon10.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "cancel.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_cancel.setIcon(icon10)
         self.button_cancel.setIconSize(QtCore.QSize(16, 16))
         self.button_cancel.setObjectName("button_cancel")
@@ -136,7 +136,7 @@ class HomePage(QWidget, AlertMessage):
                                         "    background-color: green;\n"
                                         "}")
         icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap("images/icon/add_document.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon7.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "add_document.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.add_document.setIcon(icon7)
         self.add_document.setObjectName("add_document")
         self.add_document.clicked.connect(self.add_file)
@@ -158,7 +158,7 @@ class HomePage(QWidget, AlertMessage):
                                            "    background-color: red;\n"
                                            "}")
         icon8 = QtGui.QIcon()
-        icon8.addPixmap(QtGui.QPixmap("images/icon/delete.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon8.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "delete.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.delete_document.setIcon(icon8)
         self.delete_document.setObjectName("delete_document")
         self.delete_document.clicked.connect(self.del_document)
@@ -224,6 +224,10 @@ class HomePage(QWidget, AlertMessage):
         if self.main.burger_button.isChecked():
             self.open_sidebar()
 
+    def get_path(self, dir, name):
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), dir, name)
+
+
     def closeEvent(self, event):
         self.main.db.disconnection_database()
         event.accept()
@@ -249,9 +253,10 @@ class HomePage(QWidget, AlertMessage):
     def search_users(self):
         self.table_docx.setRowCount(0)
         table_lst = []
-        directory = "docx/"
+        directory = self.dir
         text = self.search_widget.text().strip().title()
-        file_list = glob.glob(directory + "*.docx")
+        files = os.listdir(directory)
+        file_list = [directory + file for file in files if file.endswith('.docx')]
         for i, name in enumerate(file_list):
             if re.compile(text).search(name):
                 # Получаем информацию о файле
@@ -279,7 +284,7 @@ class HomePage(QWidget, AlertMessage):
         if name:
             if name not in [self.table_docx.item(i, 0).text() for i in range(self.table_docx.rowCount())]:
                 # Создаем новый документ
-                doc = Document('template_docx/1.docx')
+                doc = Document(self.get_path(r'template_docx', "1.docx"))
 
                 # Добавляем таблицу с двумя строками и двенадцатью столбцами
                 table = doc.add_table(rows=3, cols=12)
@@ -331,10 +336,11 @@ class HomePage(QWidget, AlertMessage):
                         cell.paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
                 # Сохраняем документ
-                doc.save(f"docx/{name}.docx")
+
+                doc.save(self.dir+f"{name}.docx")
                 self.enable_widget(True)
                 file_name = name
-                file_path = os.path.join("docx", file_name + ".docx")
+                file_path = self.dir + file_name + ".docx"
                 self.doc_page = DocPage(self.main, file_path)
                 self.doc_page.setObjectName("doc_page")
                 self.main.stackedWidget.addWidget(self.doc_page)
@@ -355,7 +361,7 @@ class HomePage(QWidget, AlertMessage):
 
     def del_document(self):
         if self.row:
-            file_path = f'docx/{self.row}.docx'
+            file_path = self.dir+f'{self.row}.docx'
             try:
                 os.remove(file_path)
                 self.row = None
@@ -462,7 +468,7 @@ class HomePage(QWidget, AlertMessage):
                 file_name_item = self.table_docx.item(row, 0)
                 if file_name_item is not None:
                     file_name = file_name_item.text()
-                    file_path = os.path.join("docx", file_name + ".docx")
+                    file_path = os.path.join(self.dir, file_name + ".docx")
                     self.doc_page = DocPage(self.main, file_path)
                     self.doc_page.setObjectName("doc_page")
                     self.main.stackedWidget.addWidget(self.doc_page)

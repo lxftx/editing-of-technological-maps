@@ -73,7 +73,7 @@ class SettingsPage(QWidget, AlertMessage):
         self.path_button.setFont(font)
         self.path_button.setStyleSheet("QPushButton#path_button {border-radius: 10px; background-color: white;} QPushButton#path_button:hover {background-color: rgb(184, 184, 184);}")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("images/icon/path_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "path_in.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.path_button.setIcon(icon1)
         self.path_button.setIconSize(QtCore.QSize(24, 24))
         self.path_button.setObjectName("path_button")
@@ -178,7 +178,7 @@ class SettingsPage(QWidget, AlertMessage):
         self.hint_button.setGeometry(QtCore.QRect(920, 210, 101, 41))
         self.hint_button.setStyleSheet("border-radius: 10px;")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("images/icon/bulb_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "bulb_out.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.hint_button.setIcon(icon2)
         self.hint_button.setIconSize(QtCore.QSize(24, 24))
         self.hint_button.setObjectName("hint_button")
@@ -681,11 +681,12 @@ class SettingsPage(QWidget, AlertMessage):
         self.alert_text.setObjectName("alert_info_text")
         self.alert_text.setVisible(False)
 
-        if not os.path.exists('config'):
-            os.makedirs('config')
+        if not os.path.exists(self.get_path('config', '')):
+            os.makedirs(self.get_path('', '',)+'config')
 
-        if not self.is_folder_hidden('config'):
-            self.hide_folder(b'config')
+        if not self.is_folder_hidden(self.get_path('config', '')):
+            name = (self.get_path('', '') + 'config').encode()
+            self.hide_folder(name)
         self.read_file()
         self.read_file_email()
         self.read_file_db()
@@ -706,56 +707,56 @@ class SettingsPage(QWidget, AlertMessage):
     def eventFilter(self, watched, event):
         icon = QtGui.QIcon()
         if (event.type() == QtCore.QEvent.Enter) and (watched == self.hint_button):
-            icon.addPixmap(QtGui.QPixmap("images/icon/bulb_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "bulb_in.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.hint_button.setIcon(icon)
             self.hint_window.setVisible(True)
             self.hint_title.setVisible(True)
             self.hint_text.setVisible(True)
 
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.hint_button):
-            icon.addPixmap(QtGui.QPixmap("images/icon/bulb_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "bulb_out.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.hint_button.setIcon(icon)
             self.hint_window.setVisible(False)
             self.hint_title.setVisible(False)
             self.hint_text.setVisible(False)
 
         elif (event.type() == QtCore.QEvent.Enter) and (watched == self.hint_button_2):
-            icon.addPixmap(QtGui.QPixmap("images/icon/bulb_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "bulb_in.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.hint_button_2.setIcon(icon)
             self.hint_window_2.setVisible(True)
             self.hint_title_2.setVisible(True)
             self.hint_text_2.setVisible(True)
 
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.hint_button_2):
-            icon.addPixmap(QtGui.QPixmap("images/icon/bulb_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "bulb_out.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.hint_button_2.setIcon(icon)
             self.hint_window_2.setVisible(False)
             self.hint_title_2.setVisible(False)
             self.hint_text_2.setVisible(False)
 
         elif (event.type() == QtCore.QEvent.Enter) and (watched == self.hint_button_3):
-            icon.addPixmap(QtGui.QPixmap("images/icon/bulb_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "bulb_in.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.hint_button_3.setIcon(icon)
             self.hint_window_3.setVisible(True)
             self.hint_title_3.setVisible(True)
             self.hint_text_3.setVisible(True)
 
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.hint_button_3):
-            icon.addPixmap(QtGui.QPixmap("images/icon/bulb_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "bulb_out.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.hint_button_3.setIcon(icon)
             self.hint_window_3.setVisible(False)
             self.hint_title_3.setVisible(False)
             self.hint_text_3.setVisible(False)
 
         elif (event.type() == QtCore.QEvent.Enter) and (watched == self.hint_button_4):
-            icon.addPixmap(QtGui.QPixmap("images/icon/bulb_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "bulb_in.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.hint_button_4.setIcon(icon)
             self.hint_window_4.setVisible(True)
             self.hint_title_4.setVisible(True)
             self.hint_text_4.setVisible(True)
 
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.hint_button_4):
-            icon.addPixmap(QtGui.QPixmap("images/icon/bulb_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "bulb_out.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.hint_button_4.setIcon(icon)
             self.hint_window_4.setVisible(False)
             self.hint_title_4.setVisible(False)
@@ -763,9 +764,12 @@ class SettingsPage(QWidget, AlertMessage):
 
         return super().eventFilter(watched, event)
 
+    def get_path(self, dir, name):
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), dir, name)
+
     def read_path_sqlite(self):
-        if os.path.exists('config/path_sqlite.bin'):
-            with open('config/path_sqlite.bin', 'rb') as file:
+        if os.path.exists(self.get_path(r'config', "path_sqlite.bin")):
+            with open(self.get_path(r'config', "path_sqlite.bin"), 'rb') as file:
                 lines = file.readlines()
                 key = lines[0].strip()
                 enc_path_sqllite = lines[1]
@@ -782,7 +786,7 @@ class SettingsPage(QWidget, AlertMessage):
             key = Fernet.generate_key()
             fernet = Fernet(key)
             enc_path_sql_db = fernet.encrypt(file_path.strip().encode())
-            with open('config/path_sqlite.bin', 'wb') as file:
+            with open(self.get_path(r'config', "path_sqlite.bin"), 'wb') as file:
                 file.write(key + b'\n')
                 file.write(enc_path_sql_db)
             self.main.auth.show()
@@ -823,8 +827,8 @@ class SettingsPage(QWidget, AlertMessage):
             print(ex)
 
     def read_file_db_table(self):
-        if os.path.exists('config/name_table.bin'):
-            with open('config/name_table.bin', 'rb') as file:
+        if os.path.exists(self.get_path(r'config', "name_table.bin")):
+            with open(self.get_path(r'config', "name_table.bin"), 'rb') as file:
                 lines = file.readlines()
                 key = lines[0].strip()
                 enc_name_table_db = lines[1]
@@ -838,14 +842,14 @@ class SettingsPage(QWidget, AlertMessage):
         if self.connect_database()[0]:
             name = self.name_table_edit.text().strip()
             if name:
-                with open('sql/SQL.sql', 'r') as sql_file:
+                with open(self.get_path(r'sql', "SQL.sql"), 'r') as sql_file:
                     sql_script = sql_file.read()
                 new_content = sql_script.replace('users', self.name_table_edit.text().strip())
                 self.main.db.cursor.execute(new_content)
                 self.main.db.connection.commit()
             else:
                 placeholder_text = self.name_table_edit.placeholderText().split(':')[1].strip()
-                with open('sql/SQL.sql', 'r') as sql_file:
+                with open(self.get_path(r'sql', "SQL.sql"), 'r') as sql_file:
                     sql_script = sql_file.read()
                 new_content = sql_script.replace('users', placeholder_text)
                 self.main.db.cursor.execute(new_content)
@@ -853,7 +857,7 @@ class SettingsPage(QWidget, AlertMessage):
             key = Fernet.generate_key()
             fernet = Fernet(key)
             enc_name_table_db = fernet.encrypt(self.name_table_edit.text().strip().encode())
-            with open('config/name_table.bin', 'wb') as file:
+            with open(self.get_path(r'config', "name_table.bin"), 'wb') as file:
                 file.write(key + b'\n')
                 file.write(enc_name_table_db)
             self.show_alert()
@@ -867,8 +871,8 @@ class SettingsPage(QWidget, AlertMessage):
 
 
     def read_file_db(self):
-        if os.path.exists('config/db_config.bin'):
-            with open('config/db_config.bin', 'rb') as file:
+        if os.path.exists(self.get_path(r'config', "db_config.bin")):
+            with open(self.get_path(r'config', "db_config.bin"), 'rb') as file:
                 lines = file.readlines()
                 key = lines[0].strip()
                 enc_name_user_db = lines[1].strip()
@@ -903,7 +907,7 @@ class SettingsPage(QWidget, AlertMessage):
             enc_host_db = fernet.encrypt(self.host_db_edit.text().strip().encode())
             enc_port_db = fernet.encrypt(self.port_db_edit.text().strip().encode())
             enc_name_db = fernet.encrypt(self.name_db_edit.text().strip().encode())
-            with open('config/db_config.bin', 'wb') as file:
+            with open(self.get_path(r'config', "db_config.bin"), 'wb') as file:
                 file.write(key + b'\n')
                 file.write(enc_name_user_db + b'\n')
                 file.write(enc_passwd_db + b'\n')
@@ -1009,8 +1013,8 @@ class SettingsPage(QWidget, AlertMessage):
         self.cancel_button_safety.setVisible(bool)
 
     def save_password(self):
-        if os.path.exists('config/auth.bin'):
-            with open('config/auth.bin', 'rb') as file:
+        if os.path.exists(self.get_path(r'config', "auth.bin")):
+            with open(self.get_path(r'config', "auth.bin"), 'rb') as file:
                 key = file.readline().strip()
                 enc_message = file.read()
                 fernet = Fernet(key)
@@ -1022,7 +1026,7 @@ class SettingsPage(QWidget, AlertMessage):
                     fernet = Fernet(key)
                     encEmail = fernet.encrypt(self.email_edit.text().encode())
                     encpaswd = fernet.encrypt(self.password_edit.text().encode())
-                    with open('config/email.bin', 'wb') as file:
+                    with open(self.get_path(r'config', "email.bin"), 'wb') as file:
                         file.write(key)
                         file.write(b'\n')
                         file.write(encEmail)
@@ -1040,14 +1044,14 @@ class SettingsPage(QWidget, AlertMessage):
             key = Fernet.generate_key()
             fernet = Fernet(key)
             encMessage = fernet.encrypt(self.safety_password_edit.text().encode())
-            with open('config/auth.bin', 'wb') as file:
+            with open(self.get_path(r'config', "auth.bin"), 'wb') as file:
                 file.write(key)
                 file.write(b'\n')
                 file.write(encMessage)
             self.widget_safyte_visible(False)
 
     def save_email(self):
-        if not os.path.exists('config/auth.bin'):
+        if not os.path.exists(self.get_path(r'config', "auth.bin")):
             self.safety_title.setText("Придумайте пароль для безопасности:")
             self.save_button_safety.setText("Сохранить пароль")
             self.safety_password_edit.clear()
@@ -1073,8 +1077,8 @@ class SettingsPage(QWidget, AlertMessage):
         ctypes.windll.kernel32.SetFileAttributesW(path, 0x02)
 
     def read_file_email(self):
-        if os.path.exists('config/email.bin'):
-            with open('config/email.bin', 'rb') as file:
+        if os.path.exists(self.get_path(r'config', "email.bin")):
+            with open(self.get_path(r'config', "email.bin"), 'rb') as file:
                 lines = file.readlines()
                 key = lines[0].strip()
                 encEmail = lines[1].strip()
@@ -1090,8 +1094,8 @@ class SettingsPage(QWidget, AlertMessage):
 
     def read_file(self):
         lst = []
-        if os.path.exists('config/url.bin'):
-            with open('config/url.bin', 'rb') as file:
+        if os.path.exists(self.get_path(r'config', "url.bin")):
+            with open(self.get_path(r'config', "url.bin"), 'rb') as file:
                 key = file.readline().strip()
                 enc_message = file.read()
             fernet = Fernet(key)
@@ -1107,6 +1111,7 @@ class SettingsPage(QWidget, AlertMessage):
             self.path_to_dir_edit.setText('')
     def open_dialog(self):
         folder_path = QFileDialog.getExistingDirectory(self, "Выбрать папку", self.path_to_dir_edit.text() if self.path_to_dir_edit.text().strip() else "/")
+        print(folder_path)
         if folder_path:
             self.path_to_dir_edit.setText(folder_path)
             docx_count = 0
@@ -1117,7 +1122,7 @@ class SettingsPage(QWidget, AlertMessage):
             key = Fernet.generate_key()
             fernet = Fernet(key)
             encMessage = fernet.encrypt(folder_path.encode())
-            with open('config/url.bin', 'wb') as file:
+            with open(self.get_path(r'config', "url.bin"), 'wb') as file:
                 file.write(key)
                 file.write(b'\n')
                 file.write(encMessage)

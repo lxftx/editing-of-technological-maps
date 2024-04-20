@@ -71,7 +71,7 @@ class DocPage(QWidget, AlertMessage):
                                         "    background-color: green;\n"
                                         "}")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("images/icon/open_table_in.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "open_table_in.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.open_list_table.setIcon(icon)
         self.open_list_table.setObjectName("open_list_table")
         self.open_list_table.clicked.connect(self.load_table_item)
@@ -92,7 +92,7 @@ class DocPage(QWidget, AlertMessage):
                                        "    background-color: green;\n"
                                        "}")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("images/icon/strelka_left.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "strelka_left.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.open_scroll.setIcon(icon1)
         self.open_scroll.setObjectName("open_scroll")
         self.open_scroll.setCheckable(True)
@@ -110,7 +110,7 @@ class DocPage(QWidget, AlertMessage):
                                         "    background-color: green;\n"
                                         "}")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("images/icon/reset_in.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "reset_in.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.reset_button.setIcon(icon2)
         self.reset_button.setObjectName("reset_button")
 
@@ -403,7 +403,7 @@ class DocPage(QWidget, AlertMessage):
         self.button_column.setFont(font)
         self.button_column.setStyleSheet(self.css_green)
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap("images/icon/add_meger_column.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "add_meger_column.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_column.setIcon(icon3)
         self.button_column.setObjectName("button_column")
 
@@ -415,7 +415,7 @@ class DocPage(QWidget, AlertMessage):
         self.button_save_column.setFont(font)
         self.button_save_column.setStyleSheet(self.css_green)
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap("images/icon/save_column.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon4.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "save_column.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_save_column.setIcon(icon4)
         self.button_save_column.setObjectName("button_save_column")
 
@@ -427,7 +427,7 @@ class DocPage(QWidget, AlertMessage):
         self.button_add_column.setFont(font)
         self.button_add_column.setStyleSheet(self.css_green)
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap("images/icon/add_column.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon5.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "add_column.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_add_column.setIcon(icon5)
         self.button_add_column.setObjectName("button_add_column")
 
@@ -439,7 +439,7 @@ class DocPage(QWidget, AlertMessage):
         self.button_del_column.setFont(font)
         self.button_del_column.setStyleSheet(self.css_red)
         icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap("images/icon/delete.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon6.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "delete.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_del_column.setIcon(icon6)
         self.button_del_column.setObjectName("button_del_column")
 
@@ -451,7 +451,7 @@ class DocPage(QWidget, AlertMessage):
         self.save_file.setFont(font)
         self.save_file.setStyleSheet(self.css_green)
         icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap("images/icon/save_file.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon7.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "save_file.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.save_file.setIcon(icon7)
         self.save_file.setObjectName("save_file")
 
@@ -463,7 +463,7 @@ class DocPage(QWidget, AlertMessage):
         self.open_file.setFont(font)
         self.open_file.setStyleSheet(self.css_green)
         icon8 = QtGui.QIcon()
-        icon8.addPixmap(QtGui.QPixmap("images/icon/open_file.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon8.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "open_file.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.open_file.setIcon(icon8)
         self.open_file.setObjectName("open_file")
 
@@ -676,7 +676,7 @@ class DocPage(QWidget, AlertMessage):
         self.button_info_window.setFont(font)
         self.button_info_window.setStyleSheet(self.css_green)
         icon9 = QtGui.QIcon()
-        icon9.addPixmap(QtGui.QPixmap("images/icon/info_window.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon9.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "info_window.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_info_window.setIcon(icon9)
         self.button_info_window.setIconSize(QtCore.QSize(25, 25))
         self.button_info_window.setObjectName("button_info_window")
@@ -782,6 +782,9 @@ class DocPage(QWidget, AlertMessage):
         self.reset_button.installEventFilter(self)
         self.open_list_table.installEventFilter(self)
 
+    def get_path(self, dir, name):
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), dir, name)
+
     def mousePressEvent(self, event):
         if not self.info_window.geometry().contains(event.pos()):
             self.info_window.setVisible(False)
@@ -809,16 +812,16 @@ class DocPage(QWidget, AlertMessage):
     def eventFilter(self, watched, event):
         icon = QtGui.QIcon()
         if (event.type() == QtCore.QEvent.Enter) and (watched == self.reset_button):
-            icon.addPixmap(QtGui.QPixmap("images/icon/reset_in.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "reset_in.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.reset_button.setIcon(icon)
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.reset_button):
-            icon.addPixmap(QtGui.QPixmap("images/icon/reset_out.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "reset_out.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.reset_button.setIcon(icon)
         if (event.type() == QtCore.QEvent.Enter) and (watched == self.open_list_table):
-            icon.addPixmap(QtGui.QPixmap("images/icon/open_table_in.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "open_table_in.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.open_list_table.setIcon(icon)
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.open_list_table):
-            icon.addPixmap(QtGui.QPixmap("images/icon/open_table_out.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "open_table_out.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.open_list_table.setIcon(icon)
         return super().eventFilter(watched, event)
 
@@ -837,6 +840,7 @@ class DocPage(QWidget, AlertMessage):
         except Exception as e:
             self.show_alert()
             self.alert_text.setText(f"Системная Ошибка! Произошла ошибка при изменении имени пользователя: {e}")
+            print(e)
             self.timer.setSingleShot(True)
             self.timer.timeout.connect(self.hide_alert)
             self.timer.start(5000)
@@ -1604,6 +1608,7 @@ class DocPage(QWidget, AlertMessage):
             # Если текущая строка уникальна, добавляем ее в список уникальных строк
             if row_data not in unique_rows or row_data == '-':
                 unique_rows.append(row_data)
+        print(unique_rows)
         if len(unique_rows) == 1:
                 self.lineEdit.setText(unique_rows[0])
         elif len(unique_rows) == 6:
@@ -1656,10 +1661,11 @@ class DocPage(QWidget, AlertMessage):
             self.table.clearContents()
             self.fill_table()
             old_filename = self.doc
-            new_filename = fr"{old_filename.rsplit("\\", 1)[0]}\{self.number_card_edit.text()}.docx"
+            directory = os.path.dirname(old_filename)
+            new_filename = f"{directory}/{self.number_card_edit.text()}.docx"
             self.doc = new_filename
-            self.set_last_modified_by()
             os.rename(old_filename, new_filename)
+            self.set_last_modified_by()
         except PermissionError:
             self.show_alert()
             self.alert_text.setText(f"Файл был открыт, зайкроте его и снова выполните сохранение тех.карты!")

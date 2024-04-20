@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 
 # Form implementation generated from reading ui file 'main.ui'
 #
@@ -52,7 +53,7 @@ class Main(QMainWindow):
         self.user_info_button.setStyleSheet("border: 0px;")
         self.user_info_button.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("images/icon/user_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'user_out.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.user_info_button.setIcon(icon)
         self.user_info_button.setIconSize(QtCore.QSize(46, 25))
         self.user_info_button.setObjectName("user_info_button")
@@ -85,7 +86,7 @@ class Main(QMainWindow):
         self.search_button.setStyleSheet("border: 0px;")
         self.search_button.setText("")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("images/icon/search.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'search.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.search_button.setIcon(icon1)
         self.search_button.setCheckable(False)
         self.search_button.setAutoRepeat(False)
@@ -115,7 +116,7 @@ class Main(QMainWindow):
         self.logo.setStyleSheet("background-color:rgb(37, 39, 72); border:0px;")
         self.logo.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("images/icon/logo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'logo.png')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.logo.setIcon(icon2)
         self.logo.setIconSize(QtCore.QSize(75, 75))
         self.logo.setObjectName("logo")
@@ -143,7 +144,8 @@ class Main(QMainWindow):
                                        "")
         self.home_button.setText("")
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap("images/icon/home_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+
+        icon3.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'home_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.home_button.setIcon(icon3)
         self.home_button.setIconSize(QtCore.QSize(25, 25))
         self.home_button.setCheckable(True)
@@ -162,7 +164,7 @@ class Main(QMainWindow):
         self.calculation_button.setFont(font)
         self.calculation_button.setStyleSheet("background-color:rgb(37, 39, 72); border: 0px; color: rgb(104, 116, 124);")
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap("images/icon/pencil_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon4.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'pencil_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.calculation_button.setIcon(icon4)
         self.calculation_button.setIconSize(QtCore.QSize(25, 25))
         self.calculation_button.setAutoRepeatDelay(300)
@@ -183,7 +185,7 @@ class Main(QMainWindow):
         self.users_button.setStyleSheet("background-color:rgb(37, 39, 72); border: 0px;")
         self.users_button.setText("")
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap("images/icon/users_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon5.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'users_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.users_button.setIcon(icon5)
         self.users_button.setIconSize(QtCore.QSize(25, 25))
         self.users_button.setAutoRepeatDelay(300)
@@ -203,7 +205,7 @@ class Main(QMainWindow):
             "background-color:rgb(37, 39, 72); border: 0px;  color: rgb(104, 116, 124); padding-left: 0px;")
         self.settings_button.setText("")
         icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap("images/icon/setting_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon6.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'setting_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.settings_button.setIcon(icon6)
         self.settings_button.setIconSize(QtCore.QSize(25, 25))
         self.settings_button.setObjectName("settings_button")
@@ -221,7 +223,7 @@ class Main(QMainWindow):
                                            "")
         self.add_user_button.setText("")
         icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap("images/icon/add_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon7.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'add_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.add_user_button.setIcon(icon7)
         self.add_user_button.setIconSize(QtCore.QSize(25, 25))
         self.add_user_button.setObjectName("add_user_button")
@@ -236,7 +238,7 @@ class Main(QMainWindow):
         self.burger_button.setStyleSheet("border: 0px;")
         self.burger_button.setText("")
         icon8 = QtGui.QIcon()
-        icon8.addPixmap(QtGui.QPixmap("images/icon/burger.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon8.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'burger.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.burger_button.setIcon(icon8)
         self.burger_button.setIconSize(QtCore.QSize(25, 55))
         self.burger_button.setObjectName("burger_button")
@@ -255,7 +257,7 @@ class Main(QMainWindow):
         self.exit_user_button.setStyleSheet(
             "background-color:rgb(37, 39, 72); border: 0px;  color: rgb(104, 116, 124); padding-left: 1px")
         icon9 = QtGui.QIcon()
-        icon9.addPixmap(QtGui.QPixmap("images/icon/exit_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon9.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'exit_out.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.exit_user_button.setIcon(icon9)
         self.exit_user_button.setIconSize(QtCore.QSize(25, 25))
         self.exit_user_button.setObjectName("exit_user_button")
@@ -363,7 +365,7 @@ class Main(QMainWindow):
     def eventFilter(self, watched, event):
         icon = QtGui.QIcon()
         if (event.type() == QtCore.QEvent.Enter) and (watched == self.home_button):
-            icon.addPixmap(QtGui.QPixmap("images/icon/home_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'home_out.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.home_button.setIcon(icon)
             if self.burger_button.isChecked():
                 self.home_button.setStyleSheet(
@@ -372,7 +374,7 @@ class Main(QMainWindow):
                 self.home_button.setStyleSheet(
                     "background-color:rgb(75, 80, 147); border: 0px; color:rgb(246, 246, 247);")
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.home_button):
-            icon.addPixmap(QtGui.QPixmap("images/icon/home_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(            os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'home_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.home_button.setIcon(icon)
             if self.burger_button.isChecked():
                 self.home_button.setStyleSheet(
@@ -382,7 +384,8 @@ class Main(QMainWindow):
                     "background-color:rgb(37, 39, 72); border: 0px; color:rgb(104, 116, 124);")
 
         elif (event.type() == QtCore.QEvent.Enter) and (watched == self.calculation_button):
-            icon.addPixmap(QtGui.QPixmap("images/icon/pencil_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'pencil_in.svg')
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'pencil_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.calculation_button.setIcon(icon)
             if self.burger_button.isChecked():
                 self.calculation_button.setStyleSheet(
@@ -391,7 +394,7 @@ class Main(QMainWindow):
                 self.calculation_button.setStyleSheet(
                     "background-color:rgb(75, 80, 147); border: 0px; color: rgb(104, 116, 124);")
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.calculation_button):
-            icon.addPixmap(QtGui.QPixmap("images/icon/pencil_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'pencil_out.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.calculation_button.setIcon(icon)
             if self.burger_button.isChecked():
                 self.calculation_button.setStyleSheet(
@@ -401,15 +404,15 @@ class Main(QMainWindow):
                     "background-color:rgb(37, 39, 72); border: 0px; color: rgb(104, 116, 124);")
 
         elif (event.type() == QtCore.QEvent.Enter) and (watched == self.user_info_button):
-            icon.addPixmap(QtGui.QPixmap("images/icon/user_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'user_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.user_info_button.setIcon(icon)
 
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.user_info_button):
-            icon.addPixmap(QtGui.QPixmap("images/icon/user_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'user_out.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.user_info_button.setIcon(icon)
 
         elif (event.type() == QtCore.QEvent.Enter) and (watched == self.exit_user_button):
-            icon.addPixmap(QtGui.QPixmap("images/icon/exit_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'exit_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.exit_user_button.setIcon(icon)
             if self.burger_button.isChecked():
                 self.exit_user_button.setStyleSheet(
@@ -419,7 +422,7 @@ class Main(QMainWindow):
                     "background-color:rgb(75, 80, 147); border: 0px;  color: rgb(104, 116, 124); padding-left: 1px")
 
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.exit_user_button):
-            icon.addPixmap(QtGui.QPixmap("images/icon/exit_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'exit_out.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.exit_user_button.setIcon(icon)
             if self.burger_button.isChecked():
                 self.exit_user_button.setStyleSheet(
@@ -430,7 +433,7 @@ class Main(QMainWindow):
 
         elif self.user.posts == 'Технолог':
             if (event.type() == QtCore.QEvent.Enter) and (watched == self.users_button):
-                icon.addPixmap(QtGui.QPixmap("images/icon/users_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'users_out.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 self.users_button.setIcon(icon)
                 if self.burger_button.isChecked():
                     self.users_button.setStyleSheet(
@@ -440,7 +443,7 @@ class Main(QMainWindow):
                         "background-color:rgb(75, 80, 147); border: 0px; color: rgb(246, 246, 247);")
 
             elif (event.type() == QtCore.QEvent.Leave) and (watched == self.users_button):
-                icon.addPixmap(QtGui.QPixmap("images/icon/users_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'users_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 self.users_button.setIcon(icon)
                 if self.burger_button.isChecked():
                     self.users_button.setStyleSheet(
@@ -450,7 +453,7 @@ class Main(QMainWindow):
                         "background-color:rgb(37, 39, 72); border: 0px; color: rgb(104, 116, 124);")
 
             elif (event.type() == QtCore.QEvent.Enter) and (watched == self.add_user_button):
-                icon.addPixmap(QtGui.QPixmap("images/icon/add_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'add_out.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 self.add_user_button.setIcon(icon)
                 if self.burger_button.isChecked():
                     self.add_user_button.setStyleSheet(
@@ -460,7 +463,7 @@ class Main(QMainWindow):
                         "background-color:rgb(75, 80, 147); border: 0px; padding-left: 6px; color:rgb(246, 246, 247)")
 
             elif (event.type() == QtCore.QEvent.Leave) and (watched == self.add_user_button):
-                icon.addPixmap(QtGui.QPixmap("images/icon/add_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'add_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 self.add_user_button.setIcon(icon)
                 if self.burger_button.isChecked():
                     self.add_user_button.setStyleSheet(
@@ -470,7 +473,7 @@ class Main(QMainWindow):
                         "background-color:rgb(37, 39, 72); border: 0px; padding-left: 6px;\n")
 
             elif (event.type() == QtCore.QEvent.Enter) and (watched == self.settings_button):
-                icon.addPixmap(QtGui.QPixmap("images/icon/setting_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'setting_out.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 self.settings_button.setIcon(icon)
                 if self.burger_button.isChecked():
                     self.settings_button.setStyleSheet(
@@ -480,7 +483,7 @@ class Main(QMainWindow):
                         "background-color:rgb(75, 80, 147); border: 0px;  color: rgb(104, 116, 124); padding-left: 0px;")
 
             elif (event.type() == QtCore.QEvent.Leave) and (watched == self.settings_button):
-                icon.addPixmap(QtGui.QPixmap("images/icon/setting_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'setting_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 self.settings_button.setIcon(icon)
                 if self.burger_button.isChecked():
                     self.settings_button.setStyleSheet(
@@ -503,7 +506,7 @@ class Main(QMainWindow):
             self.navigate.setGeometry(QtCore.QRect(220, 0, 906, 51))
 
             self.burger_button.setGeometry(QtCore.QRect(221, 2, 51, 48))
-            icon.addPixmap(QtGui.QPixmap("images/icon/burger.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'burger.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.burger_button.setIcon(icon)
             self.burger_button.setIconSize(QtCore.QSize(25, 55))
 
@@ -521,7 +524,7 @@ class Main(QMainWindow):
             self.logo.setFont(font)
             self.logo.setStyleSheet("background-color:rgb(37, 39, 72); border:0px; padding-right: 50px; color: #fff;")
             self.logo.setText("TechMap")
-            icon.addPixmap(QtGui.QPixmap("images/icon/logo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'logo.png')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.logo.setIcon(icon)
             self.logo.setIconSize(QtCore.QSize(75, 75))
 
@@ -541,7 +544,7 @@ class Main(QMainWindow):
             self.home_button.setStyleSheet(
                 "background-color:rgb(37, 39, 72); border: 0px; padding-right: 22px; color:rgb(104, 116, 124);\n"
                 "")
-            icon.addPixmap(QtGui.QPixmap("images/icon/home_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'home_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.home_button.setIcon(icon)
             self.home_button.setIconSize(QtCore.QSize(25, 25))
 
@@ -556,7 +559,7 @@ class Main(QMainWindow):
             self.calculation_button.setStyleSheet(
                 "background-color:rgb(37, 39, 72); border: 0px; padding-right: 10px; color: rgb(104, 116, 124);")
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap("images/icon/pencil_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'pencil_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.calculation_button.setIcon(icon)
             self.calculation_button.setIconSize(QtCore.QSize(25, 25))
             self.calculation_button.setAutoRepeatDelay(300)
@@ -574,7 +577,7 @@ class Main(QMainWindow):
             self.users_button.setFont(font)
             self.users_button.setStyleSheet(
                 "background-color:rgb(37, 39, 72); border: 0px; padding-right: 44px; color: rgb(104, 116, 124);")
-            icon.addPixmap(QtGui.QPixmap("images/icon/users_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'users_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.users_button.setIcon(icon)
             self.users_button.setIconSize(QtCore.QSize(25, 25))
 
@@ -588,7 +591,8 @@ class Main(QMainWindow):
             self.add_user_button.setFont(font)
             self.add_user_button.setStyleSheet(
                 "background-color:rgb(37, 39, 72); border: 0px; padding-right: -14px; color: rgb(104, 116, 124);")
-            icon.addPixmap(QtGui.QPixmap("images/icon/add_in.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'add_in.svg')
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'add_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.add_user_button.setIcon(icon)
             self.add_user_button.setIconSize(QtCore.QSize(25, 25))
 
@@ -603,7 +607,7 @@ class Main(QMainWindow):
             self.exit_user_button.setStyleSheet(
                 "background-color:rgb(37, 39, 72); border: 0px; padding-right: 85px; color: rgb(104, 116, 124);")
             icon7 = QtGui.QIcon()
-            icon7.addPixmap(QtGui.QPixmap("images/icon/exit_out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon7.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'exit_out.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.exit_user_button.setIcon(icon7)
             self.exit_user_button.setIconSize(QtCore.QSize(25, 25))
             self.exit_user_button.setObjectName("exit_user_button")
