@@ -3740,7 +3740,7 @@ QPushButton:hover {
  padding-left: 5px;</string>
       </property>
       <property name="text">
-       <string>Имя пользователя:</string>
+       <string>Имя пользователя PostgreSQL:</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="name_user_db_edit">
@@ -3935,7 +3935,7 @@ font-size: 15px;
  padding-left: 5px;</string>
       </property>
       <property name="text">
-       <string>Пароль:</string>
+       <string>Пароль от PostgreSQL:</string>
       </property>
      </widget>
      <widget class="QLabel" name="hint_text_3">
@@ -4152,7 +4152,7 @@ font-size: 15px;
  padding-left: 5px;</string>
       </property>
       <property name="text">
-       <string>Имя базы данных:</string>
+       <string>Имя базы данных PostgreSQL:</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="name_db_edit">
@@ -4300,7 +4300,7 @@ font-size: 15px;
  padding-left: 5px;</string>
       </property>
       <property name="text">
-       <string>Имя таблицы:</string>
+       <string>Имя таблицы PostgreSQL:</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="name_table_edit">
@@ -4385,7 +4385,7 @@ QPushButton:hover {
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>740</y>
+        <y>720</y>
         <width>981</width>
         <height>31</height>
        </rect>
@@ -4410,7 +4410,7 @@ QPushButton:hover {
       <property name="geometry">
        <rect>
         <x>28</x>
-        <y>780</y>
+        <y>760</y>
         <width>881</width>
         <height>41</height>
        </rect>
@@ -4433,7 +4433,7 @@ font-size: 15px;
       <property name="geometry">
        <rect>
         <x>920</x>
-        <y>780</y>
+        <y>760</y>
         <width>101</width>
         <height>41</height>
        </rect>
@@ -4459,6 +4459,103 @@ font-size: 15px;
         <width>24</width>
         <height>24</height>
        </size>
+      </property>
+     </widget>
+     <widget class="QLabel" name="line_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>710</y>
+        <width>1021</width>
+        <height>5</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: black;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="create_table_button_2">
+      <property name="geometry">
+       <rect>
+        <x>580</x>
+        <y>820</y>
+        <width>171</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei UI</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: black;
+	color: white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Создать таблицу</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="create_db_button_2">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>820</y>
+        <width>251</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei UI</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: black;
+	color: white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Создать БД (по расположению)</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="name_table_edit_2">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>815</y>
+        <width>251</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #fff;
+border-radius: 10px; 
+padding-left: 5px;
+font-size: 15px;
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>Имя таблицы</string>
       </property>
      </widget>
     </widget>

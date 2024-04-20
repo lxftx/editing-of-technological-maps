@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS users;
-
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'posts') THEN

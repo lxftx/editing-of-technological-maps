@@ -1,5 +1,6 @@
 import os
 import ctypes
+import re
 
 from PyQt5.QtCore import QTimer
 from cryptography.fernet import Fernet
@@ -8,6 +9,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget, QAbstractItemView, QFileDialog
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
+from Database import Database
 from alert import AlertMessage
 
 
@@ -40,6 +42,12 @@ class SettingsPage(QWidget, AlertMessage):
         self.line_2.setGeometry(QtCore.QRect(10, 410, 1021, 5))
         self.line_2.setStyleSheet("background-color: black;")
         self.line_2.setObjectName("line_2")
+
+        self.line_3 = QtWidgets.QLabel(self.settings_page)
+        self.line_3.setGeometry(QtCore.QRect(10, 710, 1021, 5))
+        self.line_3.setStyleSheet("background-color: black;")
+        self.line_3.setText("")
+        self.line_3.setObjectName("line_3")
 
         self.path = QtWidgets.QLabel(self.settings_page)
         self.path.setGeometry(QtCore.QRect(20, 40, 991, 31))
@@ -372,6 +380,7 @@ class SettingsPage(QWidget, AlertMessage):
                                            "")
         self.name_table_edit.setPlaceholderText('По умолчанию:users')
         self.name_table_edit.setObjectName("name_table_edit")
+        self.name_table_edit.textChanged.connect(self.saf_paswd_style)
 
         self.save_info_db_connect_button = QtWidgets.QPushButton(self.settings_page)
         self.save_info_db_connect_button.setGeometry(QtCore.QRect(30, 620, 241, 31))
@@ -407,7 +416,7 @@ class SettingsPage(QWidget, AlertMessage):
                                                 "}")
         self.check_connect_button.setText("Проверить подключение к БД")
         self.check_connect_button.setObjectName("check_connect_button")
-        self.check_connect_button.clicked.connect(self.connect_database)
+        self.check_connect_button.clicked.connect(lambda: self.connect_database(False if self.name_db_edit.text().strip() else True))
 
         self.create_db_button = QtWidgets.QPushButton(self.settings_page)
         self.create_db_button.setGeometry(QtCore.QRect(550, 620, 171, 31))
@@ -446,7 +455,7 @@ class SettingsPage(QWidget, AlertMessage):
         self.create_table_button.clicked.connect(self.create_table)
 
         self.path_sqliite_label = QtWidgets.QLabel(self.settings_page)
-        self.path_sqliite_label.setGeometry(QtCore.QRect(20, 740, 981, 31))
+        self.path_sqliite_label.setGeometry(QtCore.QRect(20, 720, 981, 31))
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei UI")
         font.setPointSize(11)
@@ -459,7 +468,7 @@ class SettingsPage(QWidget, AlertMessage):
         self.path_sqliite_label.setText("Расположение базы данных SQLite")
 
         self.path_to_sqllite_edit = QtWidgets.QLineEdit(self.settings_page)
-        self.path_to_sqllite_edit.setGeometry(QtCore.QRect(28, 780, 881, 41))
+        self.path_to_sqllite_edit.setGeometry(QtCore.QRect(28, 760, 881, 41))
         self.path_to_sqllite_edit.setStyleSheet("background-color: #fff;\n"
                                                 "border-radius: 10px; \n"
                                                 "padding-left: 5px;\n"
@@ -469,17 +478,61 @@ class SettingsPage(QWidget, AlertMessage):
         self.path_to_sqllite_edit.setObjectName("path_to_sqllite_edit")
 
         self.path_sqllite_button = QtWidgets.QPushButton(self.settings_page)
-        self.path_sqllite_button.setGeometry(QtCore.QRect(920, 780, 101, 41))
+        self.path_sqllite_button.setGeometry(QtCore.QRect(920, 760, 101, 41))
         font = QtGui.QFont()
         font.setFamily("Times New Roman")
         font.setPointSize(13)
         self.path_sqllite_button.setFont(font)
         self.path_sqllite_button.setStyleSheet("border-radius: 10px;")
         self.path_sqllite_button.setText("")
-        self.path_sqllite_button.setIcon(icon2)
+        self.path_sqllite_button.setIcon(icon1)
         self.path_sqllite_button.setIconSize(QtCore.QSize(24, 24))
         self.path_sqllite_button.setObjectName("path_sqllite_button")
         self.path_sqllite_button.clicked.connect(self.path_sqllite)
+
+        self.create_sqlite_db_button = QtWidgets.QPushButton(self.settings_page)
+        self.create_sqlite_db_button.setGeometry(QtCore.QRect(30, 820, 251, 31))
+        font = QtGui.QFont()
+        font.setFamily("Microsoft YaHei UI")
+        font.setPointSize(11)
+        self.create_sqlite_db_button.setFont(font)
+        self.create_sqlite_db_button.setStyleSheet("QPushButton{\n"
+                                              "    border-radius: 10px;\n"
+                                              "}\n"
+                                              "\n"
+                                              "QPushButton:hover {\n"
+                                              "    background-color: black;\n"
+                                              "    color: white;\n"
+                                              "}")
+        self.create_sqlite_db_button.setText("Создать БД (по расположению)")
+        self.create_sqlite_db_button.setObjectName("create_sqlite_db_button")
+
+        self.name_table_sqlite_edit = QtWidgets.QLineEdit(self.settings_page)
+        self.name_table_sqlite_edit.setGeometry(QtCore.QRect(310, 815, 251, 41))
+        self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
+                                             "border-radius: 10px; \n"
+                                             "padding-left: 5px;\n"
+                                             "font-size: 15px;\n"
+                                             "")
+        self.name_table_sqlite_edit.setPlaceholderText('Имя таблицы')
+        self.name_table_sqlite_edit.setObjectName("name_table_sqlite_edit")
+
+        self.create_table_sqlite_button = QtWidgets.QPushButton(self.settings_page)
+        self.create_table_sqlite_button.setGeometry(QtCore.QRect(580, 820, 171, 31))
+        font = QtGui.QFont()
+        font.setFamily("Microsoft YaHei UI")
+        font.setPointSize(11)
+        self.create_table_sqlite_button.setFont(font)
+        self.create_table_sqlite_button.setStyleSheet("QPushButton{\n"
+                                                 "    border-radius: 10px;\n"
+                                                 "}\n"
+                                                 "\n"
+                                                 "QPushButton:hover {\n"
+                                                 "    background-color: black;\n"
+                                                 "    color: white;\n"
+                                                 "}")
+        self.create_table_sqlite_button.setText("Создать таблицу")
+        self.create_table_sqlite_button.setObjectName("create_table_sqlite_button")
 
         self.hint_window_2 = QtWidgets.QLabel(self.settings_page)
         self.hint_window_2.setGeometry(QtCore.QRect(80, 510, 331, 91))
@@ -690,7 +743,6 @@ class SettingsPage(QWidget, AlertMessage):
         self.read_file()
         self.read_file_email()
         self.read_file_db()
-        self.read_file_db_table()
         self.read_path_sqlite()
         if self.main.burger_button.isChecked():
             self.open_sidebar()
@@ -773,100 +825,122 @@ class SettingsPage(QWidget, AlertMessage):
                 lines = file.readlines()
                 key = lines[0].strip()
                 enc_path_sqllite = lines[1]
+                enc_name_table = lines[2]
             fernet = Fernet(key)
             dec_path_sqllite = fernet.decrypt(enc_path_sqllite).decode()
+            dec_name_table = fernet.decrypt(enc_name_table).decode()
             self.path_to_sqllite_edit.setText(dec_path_sqllite)
+            self.name_table_sqlite_edit.setText(dec_name_table)
         else:
             self.path_to_sqllite_edit.setText("")
+            self.name_table_sqlite_edit.setText("")
 
     def path_sqllite(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Выбрать файл", "", "Файлы SQLite (*.db)")
         if file_path:
+            db = Database()
+            db.connect_database('sqlite', file_path)
+            db.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' and name='users';")
             self.path_to_sqllite_edit.setText(file_path)
-            key = Fernet.generate_key()
-            fernet = Fernet(key)
-            enc_path_sql_db = fernet.encrypt(file_path.strip().encode())
-            with open(self.get_path(r'config', "path_sqlite.bin"), 'wb') as file:
-                file.write(key + b'\n')
-                file.write(enc_path_sql_db)
-            self.main.auth.show()
-            self.main.close()
-
+            table = [x[0] for x in db.cursor.fetchall()][0]
+            if table:
+                self.name_table_sqlite_edit.setText(table)
+                key = Fernet.generate_key()
+                fernet = Fernet(key)
+                enc_path_sql_db = fernet.encrypt(file_path.strip().encode())
+                enc_name_table = fernet.encrypt(table.strip().encode())
+                with open(self.get_path(r'config', "path_sqlite.bin"), 'wb') as file:
+                    file.write(key + b'\n')
+                    file.write(enc_path_sql_db + b'\n')
+                    file.write(enc_name_table)
+                self.main.auth.show()
+                self.main.close()
+            else:
+                self.show_alert()
+                self.alert_text.setText(f'Таблицы Users не найден!')
+                self.timer.setSingleShot(True)
+                self.timer.timeout.connect(self.hide_alert)
+                self.timer.start(3000)
 
     def create_db(self):
-        try:
-            if self.red_style_edit([self.name_user_db_edit.text().strip(), self.password_db_edit.text().strip(), self.host_db_edit.text().strip(),
-                   self.port_db_edit.text().strip()]):
-                answer = self.main.db.connect_database(user=self.name_user_db_edit.text().strip(),
-                                                       password=self.password_db_edit.text().strip(),
-                                                       host=self.host_db_edit.text().strip(),
-                                                       port=self.port_db_edit.text().strip(),)
-                if answer:
-                    name = self.name_db_edit.text().strip()
-                    self.main.db.connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-                    if name:
-                        self.main.db.cursor.execute(f"CREATE DATABASE {name}")
-                        self.main.db.connection.commit()
-                    else:
-                        placeholder_text = self.name_db_edit.placeholderText().split(':')[1].strip()
-                        self.main.db.cursor.execute(f"CREATE DATABASE {placeholder_text}")
-                        self.main.db.connection.commit()
+        if self.name_db_edit.text().strip() and not re.compile(r'[^a-zA-Z]').search(self.name_db_edit.text().strip()):
+            connect = self.connect_database(True)
+            bool_connect = connect[0][0] if isinstance(connect, list) else connect
+            if bool_connect:
+                name = self.name_db_edit.text().strip()
+                db = connect[1]
+                db.cursor.execute(f"SELECT datname FROM pg_database WHERE datname = '{name}';")
+                database_names = [row[0] for row in db.cursor.fetchall()]
+                if not len(database_names):
+                    db.connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+                    db.cursor.execute(f"CREATE DATABASE {name}")
+                    db.connection.commit()
                     self.show_alert()
                     self.alert_text.setText(
-                        f"База данных  с именем {self.name_db_edit.text().strip() if self.name_db_edit.text().strip() else self.name_db_edit.placeholderText().split(':')[1].strip()} была создана")
+                        f"База данных с именем {name} была создана")
                     self.timer.setSingleShot(True)
                     self.timer.timeout.connect(self.hide_alert)
                     self.timer.start(3000)
                 else:
                     self.show_alert()
-                    self.alert_text.setText(answer[1])
+                    self.alert_text.setText(f'База данных с именем {name} уже существует. Создайте другую!')
                     self.timer.setSingleShot(True)
                     self.timer.timeout.connect(self.hide_alert)
                     self.timer.start(3000)
-        except Exception as ex:
-            print(ex)
-
-    def read_file_db_table(self):
-        if os.path.exists(self.get_path(r'config', "name_table.bin")):
-            with open(self.get_path(r'config', "name_table.bin"), 'rb') as file:
-                lines = file.readlines()
-                key = lines[0].strip()
-                enc_name_table_db = lines[1]
-            fernet = Fernet(key)
-            dec_name_table_db = fernet.decrypt(enc_name_table_db).decode()
-            self.name_table_edit.setText(dec_name_table_db)
+                db.disconnection_database()
+            else:
+                if isinstance(connect, list):
+                    self.show_alert()
+                    self.alert_text.setText(connect[0][1])
+                    self.timer.setSingleShot(True)
+                    self.timer.timeout.connect(self.hide_alert)
+                    self.timer.start(3000)
         else:
-            self.name_table_edit.setText("")
+            self.name_db_edit.setStyleSheet("background-color: #fff;\n"
+                         "border-radius: 10px; \n"
+                         "padding-left: 5px;\n"
+                         "font-size: 15px;\n"
+                         "border:1px solid red;\n"
+                         "")
+
 
     def create_table(self):
-        if self.connect_database()[0]:
-            name = self.name_table_edit.text().strip()
-            if name:
+        if self.name_table_edit.text().strip() and not re.compile(r'[^a-zA-Z]').search(self.name_table_edit.text().strip()):
+            connect = self.connect_database(False)
+            bool_connect = connect[0][0] if isinstance(connect, list) else connect
+            if bool_connect:
+                name = self.name_table_edit.text().strip()
                 with open(self.get_path(r'sql', "SQL.sql"), 'r') as sql_file:
                     sql_script = sql_file.read()
-                new_content = sql_script.replace('users', self.name_table_edit.text().strip())
-                self.main.db.cursor.execute(new_content)
-                self.main.db.connection.commit()
+                new_content = sql_script.replace('users', name)
+                db = connect[1]
+                db.cursor.execute(
+                    f"SELECT table_name FROM information_schema.tables  WHERE table_schema = 'public' AND table_name IN ('{name}');")
+                table_names = [row[0] for row in db.cursor.fetchall()]
+                if not len(table_names):
+                    db.cursor.execute(new_content)
+                    db.connection.commit()
+                    self.show_alert()
+                    self.alert_text.setText(
+                        f"Таблица с именем {name} была создана!")
+                    self.timer.setSingleShot(True)
+                    self.timer.timeout.connect(self.hide_alert)
+                    self.timer.start(3000)
+                db.disconnection_database()
             else:
-                placeholder_text = self.name_table_edit.placeholderText().split(':')[1].strip()
-                with open(self.get_path(r'sql', "SQL.sql"), 'r') as sql_file:
-                    sql_script = sql_file.read()
-                new_content = sql_script.replace('users', placeholder_text)
-                self.main.db.cursor.execute(new_content)
-                self.main.db.connection.commit()
-            key = Fernet.generate_key()
-            fernet = Fernet(key)
-            enc_name_table_db = fernet.encrypt(self.name_table_edit.text().strip().encode())
-            with open(self.get_path(r'config', "name_table.bin"), 'wb') as file:
-                file.write(key + b'\n')
-                file.write(enc_name_table_db)
-            self.show_alert()
-            self.alert_text.setText(
-                f"Таблица с именем {self.name_table_edit.text().strip() if self.name_table_edit.text().strip() else self.name_table_edit.placeholderText().split(':')[1].strip()} была создана")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(3000)
-
+                if isinstance(connect, list):
+                    self.show_alert()
+                    self.alert_text.setText(connect[0][1])
+                    self.timer.setSingleShot(True)
+                    self.timer.timeout.connect(self.hide_alert)
+                    self.timer.start(3000)
+        else:
+            self.name_table_edit.setStyleSheet("background-color: #fff;\n"
+                                               "border-radius: 10px; \n"
+                                               "padding-left: 5px;\n"
+                                               "font-size: 15px;\n"
+                                               "border:1px solid red;\n"
+                                               "")
 
 
 
@@ -880,53 +954,86 @@ class SettingsPage(QWidget, AlertMessage):
                 enc_host_db = lines[3].strip()
                 enc_port_db = lines[4].strip()
                 enc_name_db = lines[5].strip()
+                enc_table_db = lines[6].strip()
             fernet = Fernet(key)
             dec_name_user_db = fernet.decrypt(enc_name_user_db).decode()
             dec_passwd_db = fernet.decrypt(enc_passwd_db).decode()
             dec_host_db = fernet.decrypt(enc_host_db).decode()
             dec_port_db = fernet.decrypt(enc_port_db).decode()
             dec_name_db = fernet.decrypt(enc_name_db).decode()
+            dec_table_db = fernet.decrypt(enc_table_db).decode()
             self.name_user_db_edit.setText(dec_name_user_db)
             self.password_db_edit.setText(dec_passwd_db)
             self.host_db_edit.setText(dec_host_db)
             self.port_db_edit.setText(dec_port_db)
             self.name_db_edit.setText(dec_name_db)
+            self.name_table_edit.setText(dec_table_db)
         else:
             self.name_user_db_edit.setText("")
             self.password_db_edit.setText("")
             self.host_db_edit.setText("")
             self.port_db_edit.setText("")
             self.name_db_edit.setText("")
+            self.name_table_edit.setText("")
 
     def save_info_db(self):
-        if self.connect_database()[0]:
-            key = Fernet.generate_key()
-            fernet = Fernet(key)
-            enc_name_user_db = fernet.encrypt(self.name_user_db_edit.text().strip().encode())
-            enc_passwd_db = fernet.encrypt(self.password_db_edit.text().strip().encode())
-            enc_host_db = fernet.encrypt(self.host_db_edit.text().strip().encode())
-            enc_port_db = fernet.encrypt(self.port_db_edit.text().strip().encode())
-            enc_name_db = fernet.encrypt(self.name_db_edit.text().strip().encode())
-            with open(self.get_path(r'config', "db_config.bin"), 'wb') as file:
-                file.write(key + b'\n')
-                file.write(enc_name_user_db + b'\n')
-                file.write(enc_passwd_db + b'\n')
-                file.write(enc_host_db + b'\n')
-                file.write(enc_port_db + b'\n')
-                file.write(enc_name_db)
+        connect = self.connect_database(False)
+        bool_connect = connect[0][0] if isinstance(connect, list) else connect
+        if bool_connect:
+            db = connect[1]
+            db.cursor.execute(
+                f"SELECT table_name FROM information_schema.tables  WHERE table_schema = 'public' AND table_name IN ('{self.name_table_edit.text().strip()}');")
+            table_names = [row[0] for row in db.cursor.fetchall()]
+            if len(table_names):
+                key = Fernet.generate_key()
+                fernet = Fernet(key)
+                enc_name_user_db = fernet.encrypt(self.name_user_db_edit.text().strip().encode())
+                enc_passwd_db = fernet.encrypt(self.password_db_edit.text().strip().encode())
+                enc_host_db = fernet.encrypt(self.host_db_edit.text().strip().encode())
+                enc_port_db = fernet.encrypt(self.port_db_edit.text().strip().encode())
+                enc_name_db = fernet.encrypt(self.name_db_edit.text().strip().encode())
+                enc_table_db = fernet.encrypt(self.name_table_edit.text().strip().encode())
+                with open(self.get_path(r'config', "db_config.bin"), 'wb') as file:
+                    file.write(key + b'\n')
+                    file.write(enc_name_user_db + b'\n')
+                    file.write(enc_passwd_db + b'\n')
+                    file.write(enc_host_db + b'\n')
+                    file.write(enc_port_db + b'\n')
+                    file.write(enc_name_db + b'\n')
+                    file.write(enc_table_db)
+                db.disconnection_database()
+                os.remove(self.get_path('sql', 'example.db')) if os.path.exists(self.get_path('sql', 'example.db')) else ...
+                os.remove(self.get_path('config', 'path_sqlite.bin')) if os.path.exists(self.get_path('config', 'path_sqlite.bin')) else ...
+            else:
+                self.show_alert()
+                self.alert_text.setText(
+                    f'Таблица с именем {self.name_table_edit.text().strip()} не существует. Создайте или укажите существующую!')
+                self.timer.setSingleShot(True)
+                self.timer.timeout.connect(self.hide_alert)
+                self.timer.start(3000)
 
-    def connect_database(self):
-        if self.name_db_edit.text().strip():
-            lst = [self.name_user_db_edit.text().strip(), self.password_db_edit.text().strip(),
-             self.host_db_edit.text().strip(),
-             self.port_db_edit.text().strip(), self.name_db_edit.text().strip()]
         else:
-            lst = [self.name_user_db_edit.text().strip(), self.password_db_edit.text().strip(), self.host_db_edit.text().strip(),
-               self.port_db_edit.text().strip()]
+            if isinstance(connect, list):
+                self.show_alert()
+                self.alert_text.setText(connect[0][1])
+                self.timer.setSingleShot(True)
+                self.timer.timeout.connect(self.hide_alert)
+                self.timer.start(3000)
+
+    def connect_database(self, create_db):
+        if create_db:
+            lst = [self.name_user_db_edit.text().strip(), self.password_db_edit.text().strip(),
+                   self.host_db_edit.text().strip(),
+                   self.port_db_edit.text().strip()]
+        else:
+            lst = [self.name_user_db_edit.text().strip(), self.password_db_edit.text().strip(),
+                   self.host_db_edit.text().strip(),
+                   self.port_db_edit.text().strip(), self.name_db_edit.text().strip()]
         if self.red_style_edit(lst):
-            answer = self.main.db.connect_database(user=self.name_user_db_edit.text().strip(), password=self.password_db_edit.text().strip(),
+            db = Database()
+            answer = db.connect_database('postgres' ,user=self.name_user_db_edit.text().strip(), password=self.password_db_edit.text().strip(),
                                           host=self.host_db_edit.text().strip(), port=self.port_db_edit.text().strip(),
-                                            database=self.name_db_edit.text().strip()) if len(lst) == 5 else self.main.db.connect_database(user=self.name_user_db_edit.text().strip(), password=self.password_db_edit.text().strip(),
+                                            database=self.name_db_edit.text().strip()) if len(lst) == 5 else db.connect_database('postgres' ,user=self.name_user_db_edit.text().strip(), password=self.password_db_edit.text().strip(),
                                           host=self.host_db_edit.text().strip(), port=self.port_db_edit.text().strip())
             if answer[0]:
                 self.show_alert()
@@ -934,14 +1041,16 @@ class SettingsPage(QWidget, AlertMessage):
                 self.timer.setSingleShot(True)
                 self.timer.timeout.connect(self.hide_alert)
                 self.timer.start(3000)
-                return answer
+                return [answer, db]
             else:
                 self.show_alert()
                 self.alert_text.setText(answer[1])
                 self.timer.setSingleShot(True)
                 self.timer.timeout.connect(self.hide_alert)
                 self.timer.start(3000)
-                return answer
+                return [answer]
+        else:
+            return False
 
 
     def red_style_edit(self, lst):
@@ -1146,6 +1255,45 @@ class SettingsPage(QWidget, AlertMessage):
         self.hint_text.setGeometry(QtCore.QRect(570, 290, 301, 131))
         self.line_1.setGeometry(QtCore.QRect(10, 167, 881, 5))
         self.line_2.setGeometry(QtCore.QRect(10, 410, 881, 5))
+        self.line_3.setGeometry(QtCore.QRect(10, 710, 881, 5))
+        self.alert.setGeometry(QtCore.QRect(40, 270, 821, 201))
+        self.alert_title.setGeometry(QtCore.QRect(40, 270, 821, 61))
+        self.alert_text.setGeometry(QtCore.QRect(40, 330, 821, 141))
+        self.name_user_db_label.setGeometry(QtCore.QRect(20, 420, 281, 31))
+        self.name_user_db_edit.setGeometry(QtCore.QRect(30, 460, 321, 41))
+        self.hint_button_2.setGeometry(QtCore.QRect(360, 460, 101, 41))
+        self.password_db_label.setGeometry(QtCore.QRect(480, 420, 371, 31))
+        self.password_db_edit.setGeometry(QtCore.QRect(489, 460, 281, 41))
+        self.hint_button_3.setGeometry(QtCore.QRect(780, 460, 101, 41))
+        self.host_db_label.setGeometry(QtCore.QRect(20, 522, 281, 31))
+        self.host_db_edit.setGeometry(QtCore.QRect(30, 560, 181, 41))
+        self.hint_button_4.setGeometry(QtCore.QRect(220, 560, 101, 41))
+        self.port_db_label.setGeometry(QtCore.QRect(330, 522, 281, 31))
+        self.port_db_edit.setGeometry(QtCore.QRect(340, 560, 251, 41))
+        self.name_db_label.setGeometry(QtCore.QRect(590, 522, 261, 31))
+        self.name_db_edit.setGeometry(QtCore.QRect(600, 560, 281, 41))
+        self.name_table_label.setGeometry(QtCore.QRect(610, 602, 231, 31))
+        self.name_table_edit.setGeometry(QtCore.QRect(620, 640, 261, 41))
+        self.save_info_db_connect_button.setGeometry(QtCore.QRect(30, 620, 171, 31))
+        self.check_connect_button.setGeometry(QtCore.QRect(210, 620, 251, 31))
+        self.create_db_button.setGeometry(QtCore.QRect(470, 620, 131, 31))
+        self.create_table_button.setGeometry(QtCore.QRect(470, 660, 131, 31))
+        self.path_sqliite_label.setGeometry(QtCore.QRect(20, 720, 861, 31))
+        self.path_to_sqllite_edit.setGeometry(QtCore.QRect(30, 760, 741, 41))
+        self.path_sqllite_button.setGeometry(QtCore.QRect(784, 760, 101, 41))
+        self.create_sqlite_db_button.setGeometry(QtCore.QRect(30, 820, 251, 31))
+        self.name_table_sqlite_edit.setGeometry(QtCore.QRect(310, 815, 251, 41))
+        self.create_table_sqlite_button.setGeometry(QtCore.QRect(580, 820, 171, 31))
+        self.hint_window_2.setGeometry(QtCore.QRect(130, 510, 331, 91))
+        self.hint_title_2.setGeometry(QtCore.QRect(140, 520, 311, 20))
+        self.hint_text_2.setGeometry(QtCore.QRect(140, 540, 311, 51))
+        self.hint_window_3.setGeometry(QtCore.QRect(550, 510, 331, 91))
+        self.hint_title_3.setGeometry(QtCore.QRect(560, 520, 311, 20))
+        self.hint_text_3.setGeometry(QtCore.QRect(560, 540, 311, 51))
+        self.hint_window_4.setGeometry(QtCore.QRect(30, 610, 331, 91))
+        self.hint_title_4.setGeometry(QtCore.QRect(40, 620, 311, 20))
+        self.hint_text_4.setGeometry(QtCore.QRect(40, 640, 311, 51))
+
 
     def close_sidebar(self):
         self.content_settings.setGeometry(QtCore.QRect(10, 10, 1021, 861))
@@ -1165,3 +1313,41 @@ class SettingsPage(QWidget, AlertMessage):
         self.hint_text.setGeometry(QtCore.QRect(710, 290, 301, 131))
         self.line_1.setGeometry(QtCore.QRect(10, 167, 1021, 5))
         self.line_2.setGeometry(QtCore.QRect(10, 410, 1021, 5))
+        self.line_3.setGeometry(QtCore.QRect(10, 710, 1021, 5))
+        self.name_user_db_label.setGeometry(QtCore.QRect(20, 422, 281, 31))
+        self.name_user_db_edit.setGeometry(QtCore.QRect(30, 460, 271, 41))
+        self.hint_button_2.setGeometry(QtCore.QRect(310, 460, 101, 41))
+        self.password_db_label.setGeometry(QtCore.QRect(420, 422, 281, 31))
+        self.password_db_edit.setGeometry(QtCore.QRect(430, 460, 271, 41))
+        self.hint_button_3.setGeometry(QtCore.QRect(710, 460, 101, 41))
+        self.host_db_label.setGeometry(QtCore.QRect(20, 522, 281, 31))
+        self.host_db_edit.setGeometry(QtCore.QRect(30, 560, 271, 41))
+        self.hint_button_4.setGeometry(QtCore.QRect(310, 560, 101, 41))
+        self.port_db_label.setGeometry(QtCore.QRect(420, 520, 281, 31))
+        self.port_db_edit.setGeometry(QtCore.QRect(430, 558, 271, 41))
+        self.name_db_label.setGeometry(QtCore.QRect(730, 522, 281, 31))
+        self.name_db_edit.setGeometry(QtCore.QRect(740, 560, 271, 41))
+        self.name_table_label.setGeometry(QtCore.QRect(730, 602, 281, 31))
+        self.name_table_edit.setGeometry(QtCore.QRect(740, 640, 271, 41))
+        self.save_info_db_connect_button.setGeometry(QtCore.QRect(30, 620, 241, 31))
+        self.check_connect_button.setGeometry(QtCore.QRect(290, 620, 241, 31))
+        self.create_db_button.setGeometry(QtCore.QRect(550, 620, 171, 31))
+        self.create_table_button.setGeometry(QtCore.QRect(550, 660, 171, 31))
+        self.path_sqliite_label.setGeometry(QtCore.QRect(20, 720, 981, 31))
+        self.path_to_sqllite_edit.setGeometry(QtCore.QRect(28, 760, 881, 41))
+        self.path_sqllite_button.setGeometry(QtCore.QRect(920, 760, 101, 41))
+        self.create_sqlite_db_button.setGeometry(QtCore.QRect(30, 820, 251, 31))
+        self.name_table_sqlite_edit.setGeometry(QtCore.QRect(310, 815, 251, 41))
+        self.create_table_sqlite_button.setGeometry(QtCore.QRect(580, 820, 171, 31))
+        self.hint_window_2.setGeometry(QtCore.QRect(80, 510, 331, 91))
+        self.hint_title_2.setGeometry(QtCore.QRect(90, 520, 311, 20))
+        self.hint_text_2.setGeometry(QtCore.QRect(90, 540, 311, 51))
+        self.hint_window_3.setGeometry(QtCore.QRect(480, 510, 331, 91))
+        self.hint_title_3.setGeometry(QtCore.QRect(490, 520, 311, 20))
+        self.hint_text_3.setGeometry(QtCore.QRect(490, 540, 311, 51))
+        self.hint_window_4.setGeometry(QtCore.QRect(80, 610, 331, 91))
+        self.hint_title_4.setGeometry(QtCore.QRect(90, 620, 311, 20))
+        self.hint_text_4.setGeometry(QtCore.QRect(90, 640, 311, 51))
+        self.alert.setGeometry(QtCore.QRect(40, 270, 821, 201))
+        self.alert_title.setGeometry(QtCore.QRect(40, 270, 961, 61))
+        self.alert_text.setGeometry(QtCore.QRect(40, 330, 961, 141))

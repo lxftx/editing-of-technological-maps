@@ -2908,6 +2908,846 @@ font-size: 15px;
 пароль!</string>
       </property>
      </widget>
+     <widget class="QLabel" name="port_db_label">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>522</y>
+        <width>281</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei</family>
+        <pointsize>11</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(240, 240, 240);
+ padding-left: 5px;</string>
+      </property>
+      <property name="text">
+       <string>Порт:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="name_db_edit">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>560</y>
+        <width>281</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #fff;
+border-radius: 10px; 
+padding-left: 5px;
+font-size: 15px;
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="name_user_db_label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>420</y>
+        <width>281</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei</family>
+        <pointsize>11</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(240, 240, 240);
+ padding-left: 5px;</string>
+      </property>
+      <property name="text">
+       <string>Имя пользователя PostgreSQL:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="hint_button_3">
+      <property name="geometry">
+       <rect>
+        <x>780</x>
+        <y>460</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 10px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../images/icon/bulb_out.svg</normaloff>../images/icon/bulb_out.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>24</width>
+        <height>24</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="password_db_edit">
+      <property name="geometry">
+       <rect>
+        <x>489</x>
+        <y>460</y>
+        <width>281</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #fff;
+border-radius: 10px; 
+padding-left: 5px;
+font-size: 15px;
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="name_user_db_edit">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>460</y>
+        <width>321</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #fff;
+border-radius: 10px; 
+padding-left: 5px;
+font-size: 15px;
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="name_table_edit">
+      <property name="geometry">
+       <rect>
+        <x>620</x>
+        <y>640</y>
+        <width>261</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #fff;
+border-radius: 10px; 
+padding-left: 5px;
+font-size: 15px;
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="save_info_db_connect_button">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>620</y>
+        <width>171</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei UI</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: black;
+	color: white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Сохранить</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="create_db_button">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>620</y>
+        <width>131</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei UI</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: black;
+	color: white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Создать БД</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="hint_button_2">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>460</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 10px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../images/icon/bulb_out.svg</normaloff>../images/icon/bulb_out.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>24</width>
+        <height>24</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="port_db_edit">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>560</y>
+        <width>251</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #fff;
+border-radius: 10px; 
+padding-left: 5px;
+font-size: 15px;
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="host_db_edit">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>560</y>
+        <width>181</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #fff;
+border-radius: 10px; 
+padding-left: 5px;
+font-size: 15px;
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="password_db_label">
+      <property name="geometry">
+       <rect>
+        <x>480</x>
+        <y>420</y>
+        <width>371</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei</family>
+        <pointsize>11</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(240, 240, 240);
+ padding-left: 5px;</string>
+      </property>
+      <property name="text">
+       <string>Пароль от PostgreSQL:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="name_table_label">
+      <property name="geometry">
+       <rect>
+        <x>610</x>
+        <y>602</y>
+        <width>231</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei</family>
+        <pointsize>11</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(240, 240, 240);
+ padding-left: 5px;</string>
+      </property>
+      <property name="text">
+       <string>Имя таблицы PostgreSQL:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="create_table_button">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>660</y>
+        <width>131</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei UI</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: black;
+	color: white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Создать таблицу</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="check_connect_button">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>620</y>
+        <width>251</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei UI</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: black;
+	color: white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Проверить подключение к БД</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="host_db_label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>522</y>
+        <width>281</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei</family>
+        <pointsize>11</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(240, 240, 240);
+ padding-left: 5px;</string>
+      </property>
+      <property name="text">
+       <string>Имя хоста:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="name_db_label">
+      <property name="geometry">
+       <rect>
+        <x>590</x>
+        <y>522</y>
+        <width>261</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei</family>
+        <pointsize>11</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(240, 240, 240);
+ padding-left: 5px;</string>
+      </property>
+      <property name="text">
+       <string>Имя базы данных PostgreSQL:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="hint_button_4">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>560</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 10px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../images/icon/bulb_out.svg</normaloff>../images/icon/bulb_out.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>24</width>
+        <height>24</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QLabel" name="line_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>710</y>
+        <width>881</width>
+        <height>5</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: black;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="create_sqlite_db_buttom">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>815</y>
+        <width>251</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei UI</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: black;
+	color: white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Создать БД (по расположению)</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="path_sqllite_button">
+      <property name="geometry">
+       <rect>
+        <x>784</x>
+        <y>755</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 10px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../images/icon/path_in.svg</normaloff>../images/icon/path_in.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>24</width>
+        <height>24</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QLabel" name="path_sqliite_label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>715</y>
+        <width>861</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei UI</family>
+        <pointsize>11</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(240, 240, 240);
+ padding-left: 5px;</string>
+      </property>
+      <property name="text">
+       <string>Расположение базы данных SQLite</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="create_table_sqlite_button">
+      <property name="geometry">
+       <rect>
+        <x>580</x>
+        <y>815</y>
+        <width>171</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei UI</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: black;
+	color: white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Создать таблицу</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="path_to_sqllite_edit">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>755</y>
+        <width>741</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #fff;
+border-radius: 10px; 
+padding-left: 5px;
+font-size: 15px;
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>По умолчанию внутри проекта</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="name_table_sqlite_edit">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>810</y>
+        <width>251</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #fff;
+border-radius: 10px; 
+padding-left: 5px;
+font-size: 15px;
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>Имя таблицы</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="hint_title_2">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>520</y>
+        <width>311</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+        <underline>true</underline>
+       </font>
+      </property>
+      <property name="text">
+       <string>Для чего это?</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="hint_text_2">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>540</y>
+        <width>311</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Имя пользователя: значение по умолчанию
+для базы данных PostgreSQL – postgres.</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="hint_window_2">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>510</y>
+        <width>331</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 30px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="hint_text_3">
+      <property name="geometry">
+       <rect>
+        <x>560</x>
+        <y>540</y>
+        <width>311</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Пароль: пользователь получает пароль при установке PostgreSQL.</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="hint_window_3">
+      <property name="geometry">
+       <rect>
+        <x>550</x>
+        <y>510</y>
+        <width>331</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 30px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="hint_title_3">
+      <property name="geometry">
+       <rect>
+        <x>560</x>
+        <y>520</y>
+        <width>311</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+        <underline>true</underline>
+       </font>
+      </property>
+      <property name="text">
+       <string>Для чего это?</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="hint_title_4">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>620</y>
+        <width>311</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+        <underline>true</underline>
+       </font>
+      </property>
+      <property name="text">
+       <string>Для чего это?</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="hint_window_4">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>610</y>
+        <width>331</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 30px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="hint_text_4">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>640</y>
+        <width>311</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Имя хоста: имя сервера или IP-адрес, на котором работает база данных. Если она запущена локально, то нужно использовать localhost или 127.0.0.0.</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="calculation_page">
      <widget class="QLabel" name="calculation_content">

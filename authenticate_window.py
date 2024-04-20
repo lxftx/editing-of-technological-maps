@@ -201,7 +201,6 @@ class Authenticate(QWidget):
                 fernet.decrypt(enc_name_db).decode()]
 
     def read_path_sqlite(self):
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin')
         if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin')):
             with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin'), 'rb') as file:
                 lines = file.readlines()
@@ -220,7 +219,7 @@ class Authenticate(QWidget):
             self.password_edit.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
 
     def create_table_sqlite(self):
-        self.db.connect_database(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
+        self.db.connect_database('sqlite' ,os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
         current_dir = os.path.dirname(os.path.abspath(__file__))
         # Путь к файлу SQLite.sql
         sql_file_path = os.path.join(current_dir, 'sql', 'SQLite.sql')
@@ -236,7 +235,7 @@ class Authenticate(QWidget):
         try:
             if not self.password_edit.text():
                 path = self.read_path_sqlite()
-                answer = self.db.connect_database(path) if path else self.db.connect_database(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
+                answer = self.db.connect_database('sqlite', path) if path else self.db.connect_database('sqlite', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
                 if answer[0]:
                     self.db.cursor.execute("""SELECT * FROM users WHERE email = ?""",
                                            (self.email_edit.text(),))
@@ -260,7 +259,7 @@ class Authenticate(QWidget):
                     self.feedback.setText(answer[1])
             else:
                 path = self.read_path_sqlite()
-                answer = self.db.connect_database(path) if path else self.db.connect_database(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
+                answer = self.db.connect_database('sqlite', path) if path else self.db.connect_database('sqlite', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
                 if answer[0]:
                     self.db.cursor.execute("""SELECT COUNT(*) FROM users""")
                     select = self.db.cursor.fetchone()[0]
@@ -300,7 +299,7 @@ class Authenticate(QWidget):
     def authenticate(self):
         read = self.read_file()
         if not self.password_edit.text():
-            answer = self.db.connect_database(user=read[0], password=read[1], host=read[2], port=read[3],
+            answer = self.db.connect_database('postgres', user=read[0], password=read[1], host=read[2], port=read[3],
                                               database=read[4])
             if answer[0]:
                 self.db.cursor.execute("""SELECT * FROM users WHERE email = %s""",
@@ -324,7 +323,7 @@ class Authenticate(QWidget):
             else:
                 self.feedback.setText(answer[1])
         else:
-            answer = self.db.connect_database(user=read[0], password=read[1], host=read[2], port=read[3],
+            answer = self.db.connect_database('postgres', user=read[0], password=read[1], host=read[2], port=read[3],
                                               database=read[4])
             self.db.cursor.execute("""SELECT COUNT(*) FROM users""")
             select = self.db.cursor.fetchone()[0]
@@ -391,7 +390,14 @@ class Authenticate(QWidget):
                 dec_paswd = fernet.decrypt(encpaswd).decode()
                 if dec_email.strip() and dec_paswd.strip():
                     read = self.read_file()
-                    answer = self.db.connect_database(user=read[0], password=read[1], host=read[2], port=read[3],
+                    if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql',
+                                                       'example.db')) or not os.path.exists(
+                            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin')):
+                        path = self.read_path_sqlite()
+                        answer = self.db.connect_database('sqlite', path) if path else self.db.connect_database(
+                            'sqlite', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
+                    else:
+                        answer = self.db.connect_database('postgres', user=read[0], password=read[1], host=read[2], port=read[3],
                                                       database=read[4])
                     if answer[0]:
                         self.reset_password_ui = ResetPassword(self.db, authentication, dec_email, dec_paswd)
