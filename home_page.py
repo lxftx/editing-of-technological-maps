@@ -1,9 +1,6 @@
 import datetime
 import os
-import getpass
 import glob
-import subprocess
-import sys
 import re
 
 from PyQt5 import QtCore, QtGui, QtWidgets

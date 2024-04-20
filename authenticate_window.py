@@ -167,6 +167,8 @@ class Authenticate(QWidget):
         self.button.installEventFilter(self)
         self.reset_password.installEventFilter(self)
 
+        if not os.path.exists('sql/example.db') and not os.path.exists('config/path_sqlite.bin'):
+            self.create_table_sqlite()
 
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self)
@@ -198,6 +200,17 @@ class Authenticate(QWidget):
                 fernet.decrypt(enc_port_db).decode(),
                 fernet.decrypt(enc_name_db).decode()]
 
+    def read_path_sqlite(self):
+        if os.path.exists('config/path_sqlite.bin'):
+            with open('config/path_sqlite.bin', 'rb') as file:
+                lines = file.readlines()
+                key = lines[0].strip()
+                enc_path_sqllite = lines[1]
+            fernet = Fernet(key)
+            dec_path_sqllite = fernet.decrypt(enc_path_sqllite).decode()
+            return dec_path_sqllite
+        else:
+            return False
 
     def open_password(self, event):
         if event:
@@ -205,10 +218,20 @@ class Authenticate(QWidget):
         else:
             self.password_edit.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
 
+    def create_table_sqlite(self):
+        self.db.connect_database('sql/example.db')
+        with open('sql/SQLite.sql', 'r') as sql_file:
+            sql_commands = sql_file.read().split(';')
+            for command in sql_commands:
+                if command.strip():
+                    self.db.cursor.execute(command)
+        self.db.connection.commit()
+
     def auth_sqlite(self):
         try:
             if not self.password_edit.text():
-                answer = self.db.connect_database('sql/example.db')
+                path = self.read_path_sqlite()
+                answer = self.db.connect_database(path) if path else self.db.connect_database('sql/example.db')
                 if answer[0]:
                     self.db.cursor.execute("""SELECT * FROM users WHERE email = ?""",
                                            (self.email_edit.text(),))
@@ -231,7 +254,8 @@ class Authenticate(QWidget):
                 else:
                     self.feedback.setText(answer[1])
             else:
-                answer = self.db.connect_database('sql/example.db')
+                path = self.read_path_sqlite()
+                answer = self.db.connect_database(path) if path else self.db.connect_database('sql/example.db')
                 if answer[0]:
                     self.db.cursor.execute("""SELECT COUNT(*) FROM users""")
                     select = self.db.cursor.fetchone()[0]
@@ -251,7 +275,7 @@ class Authenticate(QWidget):
                             self.feedback.setText("Неверный Email или пароль")
                     else:
                         self.db.cursor.execute("""INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email, passwd, code) 
-                                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)""", ('Admin', 'Admin', '', 'Технолог', datetime.now().strftime('%Y-%m-%d'), self.email_edit.text(), hash_passwd.hash_password(self.password_edit.text()), 0))
+                                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)""", ('Admin', 'Admin', '', 'Технолог', datetime.datetime.now().strftime('%Y-%m-%d'), self.email_edit.text(), hash_passwd.hash_password(self.password_edit.text()), 0))
                         self.db.connection.commit()
                         self.db.cursor.execute("""SELECT * FROM users WHERE email = ? and passwd = ?""",
                                                (self.email_edit.text(), hash_password(self.password_edit.text())))

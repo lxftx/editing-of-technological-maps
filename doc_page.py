@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from PyQt5.QtCore import QTimer
 from docx.enum.section import WD_SECTION_START
@@ -887,7 +887,7 @@ class DocPage(QWidget, AlertMessage):
                         font.bold = True
 
             # Вставка текущего года вместо "YEAR" и применение стилей
-            current_year = str(datetime.now().year)
+            current_year = str(datetime.datetime.now().year)
             for paragraph in doc.paragraphs:
                 if re.search(r'_([0-9]+) г\.', self.content[5]).group(1) in re.search(r'_([0-9]+) г\.',
                                                                                       paragraph.text).group(
@@ -897,7 +897,7 @@ class DocPage(QWidget, AlertMessage):
                                                             current_year)
                 elif 'YEAR' in paragraph.text:
                     # Получаем текущий год
-                    current_year = datetime.now().year
+                    current_year = datetime.datetime.now().year
                     paragraph.text = re.sub(r'YEAR', str(current_year), paragraph.text)
                 elif re.search(r'_{2,}(.+)', self.content[4]).group(1) in re.search(r'_{2,}(.+)',
                                                                                     self.content[4]).group(

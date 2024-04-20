@@ -4381,6 +4381,86 @@ QPushButton:hover {
        <string>Создать таблицу</string>
       </property>
      </widget>
+     <widget class="QLabel" name="path_sqliite_label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>740</y>
+        <width>981</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei UI</family>
+        <pointsize>11</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(240, 240, 240);
+ padding-left: 5px;</string>
+      </property>
+      <property name="text">
+       <string>Расположение базы данных SQLite</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="path_to_sqllite_edit">
+      <property name="geometry">
+       <rect>
+        <x>28</x>
+        <y>780</y>
+        <width>881</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #fff;
+border-radius: 10px; 
+padding-left: 5px;
+font-size: 15px;
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>По умолчанию внутри проекта</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="path_sqllite_button">
+      <property name="geometry">
+       <rect>
+        <x>920</x>
+        <y>780</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 10px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../images/icon/path_in.svg</normaloff>../images/icon/path_in.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>24</width>
+        <height>24</height>
+       </size>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="calculation">
      <widget class="QLabel" name="calculation_content">

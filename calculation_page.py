@@ -354,8 +354,8 @@ class CalculationPage(QWidget, AlertMessage):
                     l = [float(self.width_edit.text())]
                     lst = [l.append(l[x] * math.sqrt((float(self.coef_deform_edit.text()) + 100) / 100)) for x, _ in
                            enumerate(range(0, int(self.count_spinbox.text()) - 1))]
-                    lml = [(len(l) - x, l[x],
-                            "" if x + 2 > len(l) else (pow(l[x + 1], 2) - pow(l[x], 2)) / pow(l[x + 1], 2)) for x, _ in
+                    lml = [(len(l) - x, round(l[x],3),
+                            "" if x + 2 > len(l) else round(((pow(l[x + 1], 2) - pow(l[x], 2)) / pow(l[x + 1], 2)), 3)) for x, _ in
                            enumerate(range(0, len(l)))]
                     self.table_route.setRowCount(len(lml))
                     for row_index, row_data in enumerate(lml):

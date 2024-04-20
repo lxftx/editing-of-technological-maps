@@ -2,7 +2,6 @@ import datetime
 import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QDate
 from PyQt5.QtWidgets import QWidget
 
 import hash_passwd

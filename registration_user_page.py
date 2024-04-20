@@ -185,7 +185,7 @@ class RegistrationUserPage(QWidget, AlertMessage):
         if os.path.exists('config/db_config.bin'):
             self.db.cursor.execute("""SELECT unnest(enum_range(NULL::posts)) AS post_value""")
         else:
-            self.db.cursor.execute("""SELECT name FROM posts""")
+            self.db.cursor.execute("""SELECT post_value FROM posts""")
         select = [x[0] for x in self.db.cursor.fetchall()]
         self.posts_edit.addItems(select)
         self.posts_edit.currentTextChanged.connect(self.reset_posts)

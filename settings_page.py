@@ -445,6 +445,42 @@ class SettingsPage(QWidget, AlertMessage):
         self.create_table_button.setObjectName("create_table_button")
         self.create_table_button.clicked.connect(self.create_table)
 
+        self.path_sqliite_label = QtWidgets.QLabel(self.settings_page)
+        self.path_sqliite_label.setGeometry(QtCore.QRect(20, 740, 981, 31))
+        font = QtGui.QFont()
+        font.setFamily("Microsoft YaHei UI")
+        font.setPointSize(11)
+        font.setBold(True)
+        font.setWeight(75)
+        self.path_sqliite_label.setFont(font)
+        self.path_sqliite_label.setStyleSheet("background-color:rgb(240, 240, 240);\n"
+                                              " padding-left: 5px;")
+        self.path_sqliite_label.setObjectName("path_sqliite_label")
+        self.path_sqliite_label.setText("Расположение базы данных SQLite")
+
+        self.path_to_sqllite_edit = QtWidgets.QLineEdit(self.settings_page)
+        self.path_to_sqllite_edit.setGeometry(QtCore.QRect(28, 780, 881, 41))
+        self.path_to_sqllite_edit.setStyleSheet("background-color: #fff;\n"
+                                                "border-radius: 10px; \n"
+                                                "padding-left: 5px;\n"
+                                                "font-size: 15px;\n"
+                                                "")
+        self.path_to_sqllite_edit.setPlaceholderText("По умолчанию внутри проекта")
+        self.path_to_sqllite_edit.setObjectName("path_to_sqllite_edit")
+
+        self.path_sqllite_button = QtWidgets.QPushButton(self.settings_page)
+        self.path_sqllite_button.setGeometry(QtCore.QRect(920, 780, 101, 41))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(13)
+        self.path_sqllite_button.setFont(font)
+        self.path_sqllite_button.setStyleSheet("border-radius: 10px;")
+        self.path_sqllite_button.setText("")
+        self.path_sqllite_button.setIcon(icon2)
+        self.path_sqllite_button.setIconSize(QtCore.QSize(24, 24))
+        self.path_sqllite_button.setObjectName("path_sqllite_button")
+        self.path_sqllite_button.clicked.connect(self.path_sqllite)
+
         self.hint_window_2 = QtWidgets.QLabel(self.settings_page)
         self.hint_window_2.setGeometry(QtCore.QRect(80, 510, 331, 91))
         self.hint_window_2.setStyleSheet("border-radius: 30px;")
@@ -654,6 +690,7 @@ class SettingsPage(QWidget, AlertMessage):
         self.read_file_email()
         self.read_file_db()
         self.read_file_db_table()
+        self.read_path_sqlite()
         if self.main.burger_button.isChecked():
             self.open_sidebar()
 
@@ -725,6 +762,32 @@ class SettingsPage(QWidget, AlertMessage):
             self.hint_text_4.setVisible(False)
 
         return super().eventFilter(watched, event)
+
+    def read_path_sqlite(self):
+        if os.path.exists('config/path_sqlite.bin'):
+            with open('config/path_sqlite.bin', 'rb') as file:
+                lines = file.readlines()
+                key = lines[0].strip()
+                enc_path_sqllite = lines[1]
+            fernet = Fernet(key)
+            dec_path_sqllite = fernet.decrypt(enc_path_sqllite).decode()
+            self.path_to_sqllite_edit.setText(dec_path_sqllite)
+        else:
+            self.path_to_sqllite_edit.setText("")
+
+    def path_sqllite(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Выбрать файл", "", "Файлы SQLite (*.db)")
+        if file_path:
+            self.path_to_sqllite_edit.setText(file_path)
+            key = Fernet.generate_key()
+            fernet = Fernet(key)
+            enc_path_sql_db = fernet.encrypt(file_path.strip().encode())
+            with open('config/path_sqlite.bin', 'wb') as file:
+                file.write(key + b'\n')
+                file.write(enc_path_sql_db)
+            self.main.auth.show()
+            self.main.close()
+
 
     def create_db(self):
         try:
@@ -849,11 +912,18 @@ class SettingsPage(QWidget, AlertMessage):
                 file.write(enc_name_db)
 
     def connect_database(self):
-        if self.red_style_edit([self.name_user_db_edit.text().strip(), self.password_db_edit.text().strip(), self.host_db_edit.text().strip(),
-               self.port_db_edit.text().strip(), self.name_db_edit.text().strip()]):
+        if self.name_db_edit.text().strip():
+            lst = [self.name_user_db_edit.text().strip(), self.password_db_edit.text().strip(),
+             self.host_db_edit.text().strip(),
+             self.port_db_edit.text().strip(), self.name_db_edit.text().strip()]
+        else:
+            lst = [self.name_user_db_edit.text().strip(), self.password_db_edit.text().strip(), self.host_db_edit.text().strip(),
+               self.port_db_edit.text().strip()]
+        if self.red_style_edit(lst):
             answer = self.main.db.connect_database(user=self.name_user_db_edit.text().strip(), password=self.password_db_edit.text().strip(),
                                           host=self.host_db_edit.text().strip(), port=self.port_db_edit.text().strip(),
-                                            database=self.name_db_edit.text().strip())
+                                            database=self.name_db_edit.text().strip()) if len(lst) == 5 else self.main.db.connect_database(user=self.name_user_db_edit.text().strip(), password=self.password_db_edit.text().strip(),
+                                          host=self.host_db_edit.text().strip(), port=self.port_db_edit.text().strip())
             if answer[0]:
                 self.show_alert()
                 self.alert_text.setText(answer[1])
