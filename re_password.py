@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import os
 import random
 import re
 import ssl
@@ -11,13 +12,10 @@ from PyQt5.QtWidgets import QWidget
 import hash_passwd
 
 
-
-
 class ResetPassword(QWidget):
     def __init__(self, db, auth, email, passwd):
         super().__init__()
 
-        self.db = None
         self.time_obj = datetime.datetime.now().strftime('%X')
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_timer)
@@ -28,6 +26,12 @@ class ResetPassword(QWidget):
         self.auth = auth
         self.dec_email = email
         self.dec_passwd = passwd
+
+        if os.path.exists(self.auth.get_path(r'config', "db_config.bin")):
+            self.read = self.auth.read_file()
+        else:
+            self.path = self.auth.read_path_sqlite()
+
         self.setupUi()
 
     def setupUi(self):
@@ -260,12 +264,12 @@ class ResetPassword(QWidget):
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle("Form")
-        self.header.setText( "Забыли пароль?")
+        self.header.setText("Забыли пароль?")
         self.email.setText("Email пользователя:")
         self.email_edit.setPlaceholderText("example@<domain>.[ru/com]")
         self.code.setText("Код подтверждения:")
         self.button.setText("Подтвердить код")
-        self.button_code.setText( "Отправить код")
+        self.button_code.setText("Отправить код")
 
     def show_password(self, event):
         if event:
@@ -299,8 +303,18 @@ class ResetPassword(QWidget):
     def send_message(self):
         if self.email_edit.text():
             if re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', self.email_edit.text()):
-                self.db.cursor.execute("""SELECT * FROM users WHERE email = %s""",
-                                       (self.email_edit.text(),))
+                if os.path.exists(self.auth.get_path(r'config', "db_config.bin")):
+                    self.db.connect_database('postgres', user=self.read[0], password=self.read[1], host=self.read[2],
+                                             port=self.read[3],
+                                             database=self.read[4])
+                    self.db.cursor.execute(f"""SELECT * FROM {self.read[5]} WHERE email = %s""",
+                                           (self.email_edit.text(),))
+                    postgres_insert_query = f"""UPDATE {self.read[5]} SET code=%s WHERE user_id=%s"""
+                else:
+                    self.db.connect_database('sqlite', self.path[0])
+                    self.db.cursor.execute(f"""SELECT * FROM {self.path[1]} WHERE email = ?""",
+                                           (self.email_edit.text(),))
+                    postgres_insert_query = f"""UPDATE {self.path[1]} SET code=? WHERE user_id=?"""
                 select = self.db.cursor.fetchone()
                 if select:
                     if select[4] != 'Волочильщик':
@@ -310,7 +324,6 @@ class ResetPassword(QWidget):
 
                         random_number = random.choice(self.numbers)
 
-                        postgres_insert_query = """UPDATE users SET code=%s WHERE user_id=%s"""
                         record_to_insert = (random_number, select[0])
                         self.db.cursor.execute(postgres_insert_query, record_to_insert)
                         self.db.connection.commit()
@@ -391,7 +404,7 @@ class ResetPassword(QWidget):
                                                      "")
 
                         self.timer.start(1000)  # 1000 milliseconds = 1 second
-
+                        self.db.disconnection_database()
                     else:
                         self.feedback.setText('Волочильщик не имеет доступа к смене пароля')
                 else:
@@ -401,6 +414,7 @@ class ResetPassword(QWidget):
                                                   "border-radius: 10px;\n"
                                                   "padding: 0 10px;\n"
                                                   "")
+                    self.db.disconnection_database()
             else:
                 self.feedback.setText('Невалидный email адрес')
                 self.email_edit.setStyleSheet("background-color: #fff;\n"
@@ -449,21 +463,26 @@ class ResetPassword(QWidget):
                                   "}")
 
     def update_pswd(self):
-        try:
-            self.db.cursor.execute("""SELECT * FROM users WHERE email = %s""", (self.email_edit.text(),))
-            select = self.db.cursor.fetchone()
-            if str(select[8]) == self.code_edit.text():
-                self.new_password.setVisible(True)
-                self.new_password_edit.setVisible(True)
-                self.view_password.setVisible(True)
-                self.new_password_confim.setVisible(True)
-                self.new_password_confim_edit.setVisible(True)
-                self.button_new_password.setVisible(True)
-                self.button_code.setVisible(False)
-            else:
-                self.feedback.setText("Код не верный")
-        except Exception as e:
-            print("Error in update_pswd:", e)
+        if os.path.exists(self.auth.get_path(r'config', "db_config.bin")):
+            self.db.connect_database('postgres', user=self.read[0], password=self.read[1], host=self.read[2],
+                                     port=self.read[3],
+                                     database=self.read[4])
+            self.db.cursor.execute(f"""SELECT * FROM {self.read[5]} WHERE email = %s""", (self.email_edit.text(),))
+        else:
+            self.db.connect_database('sqlite', self.path[0])
+            self.db.cursor.execute(f"""SELECT * FROM {self.path[1]} WHERE email = ?""", (self.email_edit.text(),))
+        select = self.db.cursor.fetchone()
+        if str(select[8]) == self.code_edit.text():
+            self.new_password.setVisible(True)
+            self.new_password_edit.setVisible(True)
+            self.view_password.setVisible(True)
+            self.new_password_confim.setVisible(True)
+            self.new_password_confim_edit.setVisible(True)
+            self.button_new_password.setVisible(True)
+            self.button_code.setVisible(False)
+        else:
+            self.feedback.setText("Код не верный")
+        self.db.disconnection_database()
 
     def update_pswd_user(self):
         pswd_list = [self.new_password_edit.text(), self.new_password_confim_edit.text()]
@@ -476,13 +495,20 @@ class ResetPassword(QWidget):
         elif any([True for x in pswd_list if re.search('[а-яА-Я]', x)]):
             self.feedback.setText("Пароль должен содержать только Латинские символы")
         else:
-            postgres_insert_query = """UPDATE users SET passwd=%s WHERE email=%s"""
+            if os.path.exists(self.auth.get_path(r'config', "db_config.bin")):
+                self.db.connect_database('postgres', user=self.read[0], password=self.read[1], host=self.read[2],
+                                         port=self.read[3],
+                                         database=self.read[4])
+                postgres_insert_query = f"""UPDATE {self.read[5]} SET passwd=%s WHERE email=%s"""
+            else:
+                self.db.connect_database('sqlite', self.path[0])
+                postgres_insert_query = f"""UPDATE {self.path[1]} SET passwd=? WHERE email=?"""
             record_to_insert = (hash_passwd.hash_password(self.new_password_edit.text()), self.email_edit.text())
             self.db.cursor.execute(postgres_insert_query, record_to_insert)
             self.db.connection.commit()
+            self.db.disconnection_database()
             self.feedback.setText('Сохранено')
 
     def closeEvent(self, event):
         self.auth.show()
-        self.db.disconnection_database()
         event.accept()

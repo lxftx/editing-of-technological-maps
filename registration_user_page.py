@@ -182,15 +182,17 @@ class RegistrationUserPage(QWidget, AlertMessage):
                                       "font-size: 15px;\n"
                                       "")
         self.posts_edit.setObjectName("posts_registration_edit")
-        if os.path.exists('config/db_config.bin'):
+        if os.path.exists(self.main.auth.get_path('config', 'db_config.bin')):
+            self.db.connect_database('postgres', user=self.main.path[0], password=self.main.path[1], host=self.main.path[2], port=self.main.path[3],
+                                    database=self.main.path[4])
             self.db.cursor.execute("""SELECT unnest(enum_range(NULL::posts)) AS post_value""")
         else:
+            self.db.connect_database('sqlite', self.main.path[0])
             self.db.cursor.execute("""SELECT post_value FROM posts""")
         select = [x[0] for x in self.db.cursor.fetchall()]
-        print(select)
         self.posts_edit.addItems(select)
+        self.db.disconnection_database()
         self.posts_edit.currentTextChanged.connect(self.reset_posts)
-
 
         self.password_label = QtWidgets.QLabel(self.add_user_page)
         self.password_label.setGeometry(QtCore.QRect(40, 410, 391, 31))
@@ -342,22 +344,27 @@ class RegistrationUserPage(QWidget, AlertMessage):
         else:
             if self.posts_edit.currentText() == 'Волочильщик':
                 if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin')):
-                    self.db.cursor.execute("""INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email) 
+                    self.db.connect_database('postgres', user=self.main.path[0], password=self.main.path[1],
+                                             host=self.main.path[2], port=self.main.path[3],
+                                             database=self.main.path[4])
+                    self.db.cursor.execute(f"""INSERT INTO {self.main.path[5]} (first_name, last_name, patronymic, post, birthdate, email) 
                                             VALUES (%s, %s, %s, %s, %s, %s)""",(
                                         self.name_edit.text(), self.surname_edit.text(),
                                         self.patronic_edit.text(),
                                         self.posts_edit.currentText(),
                                         self.birthday_edit.text(), self.email_edit.text()))
                 else:
+                    self.db.connect_database('sqlite', self.main.path[0])
                     date_from_edit = self.birthday_edit.date()
                     date_str = date_from_edit.toString("dd.MM.yyyy")
-                    self.db.cursor.execute("""INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email) 
+                    self.db.cursor.execute(f"""INSERT INTO {self.main.path[1]} (first_name, last_name, patronymic, post, birthdate, email) 
                                             VALUES (?, ?, ?, ?, ?, ?)""",(
                                         self.name_edit.text(), self.surname_edit.text(),
                                         self.patronic_edit.text(),
                                         self.posts_edit.currentText(),
                                         date_str, self.email_edit.text()))
                 self.db.connection.commit()
+                self.db.disconnection_database()
                 self.alert_text.setText('Сохранено')
                 self.show_alert()
             else:
@@ -373,7 +380,10 @@ class RegistrationUserPage(QWidget, AlertMessage):
                     self.show_alert()
                 else:
                     if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin')):
-                        postgres_insert_query = """INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email, passwd) 
+                        self.db.connect_database('postgres', user=self.main.path[0], password=self.main.path[1],
+                                                 host=self.main.path[2], port=self.main.path[3],
+                                                 database=self.main.path[4])
+                        postgres_insert_query = f"""INSERT INTO {self.main.path[5]} (first_name, last_name, patronymic, post, birthdate, email, passwd) 
                                 VALUES (%s, %s, %s, %s, %s, %s, %s)"""
                         record_to_insert = (self.name_edit.text(), self.surname_edit.text(),
                                             self.patronic_edit.text(),
@@ -382,20 +392,21 @@ class RegistrationUserPage(QWidget, AlertMessage):
                                             hash_passwd.hash_password(self.password_edit.text()))
                         self.db.cursor.execute(postgres_insert_query, record_to_insert)
                     else:
+                        self.db.connect_database('sqlite', self.main.path[0])
                         date_from_edit = self.birthday_edit.date()
                         date_str = date_from_edit.toString("dd.MM.yyyy")
-                        self.db.cursor.execute("""INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email, passwd) 
+                        self.db.cursor.execute(f"""INSERT INTO {self.main.path[1]} (first_name, last_name, patronymic, post, birthdate, email, passwd) 
                                 VALUES (?, ?, ?, ?, ?, ?, ?)""",(self.name_edit.text(), self.surname_edit.text(),
                                             self.patronic_edit.text(),
                                             self.posts_edit.currentText(),
                                             date_str, self.email_edit.text(),
                                             hash_passwd.hash_password(self.password_edit.text())))
                     self.db.connection.commit()
+                    self.db.disconnection_database()
                     self.alert_text.setText('Сохранено')
                     self.show_alert()
 
     def closeEvent(self, event):
-        self.main.db.disconnection_database()
         event.accept()
 
     def reset_posts(self, text):

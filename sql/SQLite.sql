@@ -1,6 +1,3 @@
--- Удаляем таблицу users, если она существует
-DROP TABLE IF EXISTS users;
-
 -- Создаем тип ENUM posts, если он не существует
 CREATE TABLE IF NOT EXISTS posts (
     id INTEGER PRIMARY KEY,
@@ -8,7 +5,10 @@ CREATE TABLE IF NOT EXISTS posts (
 );
 
 -- Вставляем значения в таблицу posts
-INSERT INTO posts (post_value) VALUES ('Волочильщик'), ('Технолог');
+INSERT INTO posts (post_value) VALUES
+    ('Волочильщик'),
+    ('Технолог')
+ON CONFLICT (post_value) DO NOTHING;
 
 -- Создаем таблицу users
 CREATE TABLE IF NOT EXISTS users (

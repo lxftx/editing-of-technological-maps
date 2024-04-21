@@ -55,14 +55,13 @@ class UsersPage(QWidget, AlertMessage):
         self.delete_user.setStyleSheet("border-radius: 10px;")
         self.delete_user.setObjectName("delete_user")
         self.delete_user.clicked.connect(self.push_delete_button)
-
         self.populate_table()
+
 
         if self.main.burger_button.isChecked():
             self.open_sidebar()
 
     def closeEvent(self, event):
-        self.main.db.disconnection_database()
         event.accept()
 
     def get_path(self, dir, name):
@@ -71,16 +70,19 @@ class UsersPage(QWidget, AlertMessage):
     def search_users(self):
         if self.search_widget.text():
             ifo = [' ' for _ in range(3)]
-            #(self.search_widget.text() + "%",)
             list_ifo = self.search_widget.text().split()
             for i, value in enumerate(list_ifo):
                 ifo[i] = value+"%"
             if os.path.exists(self.get_path(r'config', "db_config.bin")):
+                self.db.connect_database('postgres', user=self.main.path[0], password=self.main.path[1],
+                                         host=self.main.path[2], port=self.main.path[3],
+                                         database=self.main.path[4])
                 self.db.cursor.execute(
-                    """SELECT first_name, last_name, patronymic, post, email FROM users WHERE email<>%s AND (last_name LIKE %s OR first_name LIKE %s OR patronymic LIKE %s)""", (self.main.user.email, *ifo))
+                    f"""SELECT first_name, last_name, patronymic, post, email FROM {self.main.path[5]} WHERE email<>%s AND (last_name LIKE %s OR first_name LIKE %s OR patronymic LIKE %s)""", (self.main.user.email, *ifo))
             else:
+                self.db.connect_database('sqlite', self.main.path[0])
                 self.db.cursor.execute(
-                    """SELECT first_name, last_name, patronymic, post, email FROM users WHERE email<>? AND (last_name LIKE ? OR first_name LIKE ? OR patronymic LIKE ?)""",
+                    f"""SELECT first_name, last_name, patronymic, post, email FROM {self.main.path[1]} WHERE email<>? AND (last_name LIKE ? OR first_name LIKE ? OR patronymic LIKE ?)""",
                     (self.main.user.email, *ifo))
             data = self.db.cursor.fetchall()
             self.table_users.setRowCount(len(data))
@@ -96,19 +98,24 @@ class UsersPage(QWidget, AlertMessage):
                 checkbox.setChecked(False)
                 checkbox.setStyleSheet("QCheckBox { margin-left: 35%; }")  # Пользовательский стиль для чекбокса
                 self.table_users.setCellWidget(i, 5, checkbox)
+            self.db.disconnection_database()
         else:
             self.populate_table()
 
     def populate_table(self):
         if os.path.exists(self.get_path(r'config', "db_config.bin")):
+            self.db.connect_database('postgres', user=self.main.path[0], password=self.main.path[1], host=self.main.path[2], port=self.main.path[3],
+                                     database=self.main.path[4])
             self.db.cursor.execute(
-                """SELECT first_name, last_name, patronymic, post, email FROM users WHERE email <> %s""", (self.main.user.email,))
+                f"""SELECT first_name, last_name, patronymic, post, email FROM {self.main.path[5]} WHERE email <> %s""", (self.main.user.email,))
         else:
+            self.db.connect_database('sqlite', self.main.path[0])
             self.db.cursor.execute(
-                """SELECT first_name, last_name, patronymic, post, email FROM users WHERE email <> ?""",
+                f"""SELECT first_name, last_name, patronymic, post, email FROM {self.main.path[1]} WHERE email <> ?""",
                 (self.main.user.email,))
         data = self.db.cursor.fetchall()
         self.table_users.setRowCount(len(data))
+        self.db.disconnection_database()
 
         for i, row_data in enumerate(data):
             for j, value in enumerate(row_data):
@@ -123,23 +130,24 @@ class UsersPage(QWidget, AlertMessage):
 
     def push_delete_button(self):
         rows_to_delete = []
-
         for row in range(self.table_users.rowCount()):
             checkbox = self.table_users.cellWidget(row, 5)  # Получаем чекбокс в текущей строке
             if checkbox.isChecked():  # Проверяем, выбран ли чекбокс
                 rows_to_delete.append((row, self.table_users.item(row, 4).text()))  # Добавляем индекс строки в список для удаления
-
-        # Удаляем строки из таблицы, начиная с последних, чтобы корректно удалить элементы
-        print(rows_to_delete)
         for row in reversed(rows_to_delete):
             self.table_users.removeRow(row[0])
             if os.path.exists(self.get_path(r'config', "db_config.bin")):
-                self.db.cursor.execute("""DELETE FROM users WHERE email = %s""",
+                self.db.connect_database('postgres', user=self.main.path[0], password=self.main.path[1],
+                                         host=self.main.path[2], port=self.main.path[3],
+                                         database=self.main.path[4])
+                self.db.cursor.execute(f"""DELETE FROM {self.main.path[5]} WHERE email = %s""",
                                    (row[1],))
             else:
-                self.db.cursor.execute("""DELETE FROM users WHERE email = ?""",
+                self.db.connect_database('sqlite', self.main.path[0])
+                self.db.cursor.execute(f"""DELETE FROM {self.main.path[1]} WHERE email = ?""",
                                    (row[1],))
             self.db.connection.commit()
+            self.db.disconnection_database()
 
 
     def open_sidebar(self):

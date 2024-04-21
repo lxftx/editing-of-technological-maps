@@ -241,7 +241,6 @@ class CalculationPage(QWidget, AlertMessage):
             self.open_sidebar()
 
     def closeEvent(self, event):
-        self.main.db.disconnection_database()
         event.accept()
 
     def load_excel(self):

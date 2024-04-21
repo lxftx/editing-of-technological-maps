@@ -229,7 +229,6 @@ class HomePage(QWidget, AlertMessage):
 
 
     def closeEvent(self, event):
-        self.main.db.disconnection_database()
         event.accept()
 
     def enable_widget(self, evt):

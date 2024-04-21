@@ -47,7 +47,10 @@ class Database:
                     return [False, f"Ошибка при работе с SQLite - {error_message}"]
 
     def disconnection_database(self):
-        if self.connection:
-            self.cursor.close()
-            self.connection.close()
-            print("Соединение с БД закрыто")
+        try:
+            if self.connection:
+                self.cursor.close()
+                self.connection.close()
+                print("Соединение с БД закрыто")
+        except Exception as ex:
+            print(ex)

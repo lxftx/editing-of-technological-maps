@@ -3411,7 +3411,7 @@ QPushButton:hover {
        <rect>
         <x>30</x>
         <y>815</y>
-        <width>251</width>
+        <width>261</width>
         <height>31</height>
        </rect>
       </property>
@@ -3495,7 +3495,7 @@ QPushButton:hover {
      <widget class="QPushButton" name="create_table_sqlite_button">
       <property name="geometry">
        <rect>
-        <x>580</x>
+        <x>517</x>
         <y>815</y>
         <width>171</width>
         <height>31</height>
@@ -3549,7 +3549,7 @@ font-size: 15px;
        <rect>
         <x>310</x>
         <y>810</y>
-        <width>251</width>
+        <width>191</width>
         <height>41</height>
        </rect>
       </property>
@@ -3746,6 +3746,35 @@ font-size: 15px;
       </property>
       <property name="text">
        <string>Имя хоста: имя сервера или IP-адрес, на котором работает база данных. Если она запущена локально, то нужно использовать localhost или 127.0.0.0.</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="save_sqlite_button">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
+        <y>815</y>
+        <width>181</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei UI</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: black;
+	color: white;
+}</string>
+      </property>
+      <property name="text">
+       <string>Сохранить</string>
       </property>
      </widget>
     </widget>

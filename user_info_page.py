@@ -2,6 +2,7 @@ import datetime
 import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QTimer, QDate
 from PyQt5.QtWidgets import QWidget
 
 import hash_passwd
@@ -16,6 +17,7 @@ class UserInfoPage(QWidget, AlertMessage):
         self.user = user
         self.main = main
         self.user_info_page = self
+        self.timer = QTimer()
 
         self.content_info = QtWidgets.QLabel(self.user_info_page)
         self.content_info.setGeometry(QtCore.QRect(10, 10, 1021, 861))
@@ -138,20 +140,22 @@ class UserInfoPage(QWidget, AlertMessage):
         self.birthday_label.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.birthday_label.setObjectName("birthday_info_label")
         self.birthday_label.setText("Дата рождения")
-        try:
-            self.birthday_edit = QtWidgets.QDateEdit(self.user_info_page)
-            self.birthday_edit.setGeometry(QtCore.QRect(30, 300, 431, 41))
-            self.birthday_edit.setStyleSheet("background-color: #fff;\n"
-                                             "color: black;\n"
-                                             "border-radius: 10px; \n"
-                                             "padding-left: 5px;\n"
-                                             "font-size: 15px;")
-            self.birthday_edit.setCalendarPopup(True)
-            self.birthday_edit.setDate(QtCore.QDate.fromString(self.user.birthday, "dd.MM.yyyy"))
-            self.birthday_edit.setAlignment(QtCore.Qt.AlignCenter)
-            self.birthday_edit.setObjectName("birthday_info_edit")
-        except Exception as ex:
-            print(ex)
+
+        self.birthday_edit = QtWidgets.QDateEdit(self.user_info_page)
+        self.birthday_edit.setGeometry(QtCore.QRect(30, 300, 431, 41))
+        self.birthday_edit.setStyleSheet("background-color: #fff;\n"
+                                         "color: black;\n"
+                                         "border-radius: 10px; \n"
+                                         "padding-left: 5px;\n"
+                                         "font-size: 15px;")
+        self.birthday_edit.setCalendarPopup(True)
+        if os.path.exists(self.get_path('config', 'db_config.bin')):
+            formatted_date = self.user.birthday.strftime("%d.%m.%Y")
+            self.birthday_edit.setDate(QtCore.QDate.fromString(formatted_date, "dd.MM.yyyy"))
+        else:
+            self.birthday_edit.setDate(QDate.fromString(self.user.birthday, "yyyy-MM-dd"))
+        self.birthday_edit.setAlignment(QtCore.Qt.AlignCenter)
+        self.birthday_edit.setObjectName("birthday_info_edit")
 
         self.post_label = QtWidgets.QLabel(self.user_info_page)
         self.post_label.setGeometry(QtCore.QRect(560, 260, 431, 31))
@@ -292,28 +296,40 @@ class UserInfoPage(QWidget, AlertMessage):
                 "background-color: #fff;\n border-radius: 10px; \n padding-left: 5px;\n font-size: 15px;\n border:2px solid red;\n")
             self.alert_text.setText('Поле "Имя" обязательно к заполнению')
             self.show_alert()
+            self.timer.timeout.connect(self.hide_alert)
+            self.timer.start(5000)
         elif not self.surname_edit.text():
             self.surname_edit.setStyleSheet(
                 "background-color: #fff;\n border-radius: 10px; \n padding-left: 5px;\n font-size: 15px;\n border:2px solid red;\n")
             self.alert_text.setText('Поле "Фамилия" обязательно к заполнению')
             self.show_alert()
+            self.timer.timeout.connect(self.hide_alert)
+            self.timer.start(5000)
         else:
             if self.password_edit.text() and self.confirm_password_edit.text():
                 if self.password_edit.text() != self.confirm_password_edit.text():
                     self.alert_text.setText(f'Пароли не соответствуют друг другу')
                     self.show_alert()
+                    self.timer.timeout.connect(self.hide_alert)
+                    self.timer.start(5000)
                 elif len(self.password_edit.text()) < 8 and len(self.confirm_password_edit.text()) < 8:
                     self.alert_text.setText(f'Кол-во символов в пароле должно быть 8 или больше')
                     self.show_alert()
+                    self.timer.timeout.connect(self.hide_alert)
+                    self.timer.start(5000)
                 else:
                     if os.path.exists(self.get_path(r'config', "db_config.bin")):
-                        self.db.cursor.execute("""UPDATE users SET first_name=%s, last_name=%s, patronymic=%s, birthdate=%s, 
+                        self.db.connect_database('postgres', user=self.main.path[0], password=self.main.path[1],
+                                                 host=self.main.path[2], port=self.main.path[3],
+                                                 database=self.main.path[4])
+                        self.db.cursor.execute(f"""UPDATE {self.main.path[5]} SET first_name=%s, last_name=%s, patronymic=%s, birthdate=%s, 
                                 email=%s, passwd=%s WHERE user_id=%s""",(
                                 self.name_edit.text(), self.surname_edit.text(), self.patronic_edit.text(),
                                 self.birthday_edit.text(),
                                 self.email_edit.text(), hash_passwd.hash_password(self.password_edit.text()), self.user.id))
                     else:
-                        self.db.cursor.execute("""UPDATE users SET first_name=?, last_name=?, patronymic=?, birthdate=?, 
+                        self.db.connect_database('sqlite', self.main.path[0])
+                        self.db.cursor.execute(f"""UPDATE {self.main.path[1]} SET first_name=?, last_name=?, patronymic=?, birthdate=?, 
                                 email=?, passwd=? WHERE user_id=?""",(
                                 self.name_edit.text(), self.surname_edit.text(), self.patronic_edit.text(),
                                 self.birthday_edit.text(),
@@ -322,31 +338,42 @@ class UserInfoPage(QWidget, AlertMessage):
                     self.db.connection.commit()
                     self.alert_text.setText('Сохранено')
                     self.show_alert()
+                    self.timer.timeout.connect(self.hide_alert)
+                    self.timer.start(5000)
+                    self.db.disconnection_database()
             elif self.password_edit.text() or self.confirm_password_edit.text():
                 self.alert_text.setText("Заполните другую колонку с паролем")
                 self.show_alert()
+                self.timer.timeout.connect(self.hide_alert)
+                self.timer.start(5000)
             else:
-                try:
-                    if os.path.exists(self.get_path(r'config', "db_config.bin")):
-                        self.db.cursor.execute("""UPDATE users SET first_name=%s, last_name=%s, patronymic=%s, birthdate=%s, 
-                                    email=%s WHERE user_id=%s""",(
+                date_from_edit = self.birthday_edit.date()
+                date_str = date_from_edit.toString("dd.MM.yyyy")
+
+                if os.path.exists(self.get_path(r'config', "db_config.bin")):
+                    self.db.connect_database('postgres', user=self.main.path[0], password=self.main.path[1],
+                                             host=self.main.path[2], port=self.main.path[3],
+                                             database=self.main.path[4])
+                    self.db.cursor.execute(f"""UPDATE {self.main.path[5]} SET first_name=%s, last_name=%s, patronymic=%s, birthdate=%s, 
+                                                    email=%s WHERE user_id=%s""", (
                         self.name_edit.text(), self.surname_edit.text(), self.patronic_edit.text(),
                         self.birthday_edit.text(), self.email_edit.text(), self.user.id))
-                    else:
-                        date_from_edit = self.birthday_edit.date()
-                        date_str = date_from_edit.toString("dd.MM.yyyy")
-                        self.db.cursor.execute("""UPDATE users SET first_name=?, last_name=?, patronymic=?, birthdate=?, 
-                                    email=? WHERE user_id=?""",(
+                else:
+                    self.db.connect_database('sqlite', self.main.path[0])
+                    self.db.cursor.execute(f"""UPDATE {self.main.path[1]} SET first_name=?, last_name=?, patronymic=?, birthdate=?, 
+                                                    email=? WHERE user_id=?""", (
                         self.name_edit.text(), self.surname_edit.text(), self.patronic_edit.text(),
                         date_str, self.email_edit.text(), self.user.id))
-                    self.user.update((self.user.id, self.name_edit.text(), self.surname_edit.text(),
-                                      self.patronic_edit.text(), self.user.posts, date_str,
-                                      self.user.email, self.user.password, self.user.code))
-                    self.db.connection.commit()
-                    self.alert_text.setText('Сохранено')
-                    self.show_alert()
-                except Exception as ex:
-                    print(ex)
+                self.user.update((self.user.id, self.name_edit.text(), self.surname_edit.text(),
+                                  self.patronic_edit.text(), self.user.posts, date_str,
+                                  self.user.email, self.user.password, self.user.code))
+                self.db.connection.commit()
+                self.alert_text.setText('Сохранено')
+                self.show_alert()
+                self.timer.timeout.connect(self.hide_alert)
+                self.timer.start(5000)
+                self.db.disconnection_database()
+
 
     def equal_password(self):
         style_red = "background-color: #fff;\n border-radius: 10px; \n padding-left: 5px;\n font-size: 15px;\n border:2px solid red;\n"
@@ -374,7 +401,6 @@ class UserInfoPage(QWidget, AlertMessage):
 
 
     def closeEvent(self, event):
-        self.main.db.disconnection_database()
         event.accept()
 
     def open_sidebar(self):

@@ -24,11 +24,12 @@ import hash_passwd
 
 
 class Main(QMainWindow):
-    def __init__(self, db, user, auth):
+    def __init__(self, db, user, auth, path):
         super().__init__()
         self.db = db
         self.user = user
         self.auth = auth
+        self.path = path
         self.setupUi()
 
     def setupUi(self):
@@ -309,7 +310,6 @@ class Main(QMainWindow):
         self.setWindowTitle("MainWindow")
 
     def closeEvent(self, event):
-        self.db.disconnection_database()
         event.accept()
 
     def open_home_page(self):
@@ -374,7 +374,7 @@ class Main(QMainWindow):
                 self.home_button.setStyleSheet(
                     "background-color:rgb(75, 80, 147); border: 0px; color:rgb(246, 246, 247);")
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.home_button):
-            icon.addPixmap(QtGui.QPixmap(            os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'home_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'home_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.home_button.setIcon(icon)
             if self.burger_button.isChecked():
                 self.home_button.setStyleSheet(
@@ -384,8 +384,7 @@ class Main(QMainWindow):
                     "background-color:rgb(37, 39, 72); border: 0px; color:rgb(104, 116, 124);")
 
         elif (event.type() == QtCore.QEvent.Enter) and (watched == self.calculation_button):
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'pencil_in.svg')
-            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'pencil_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'pencil_out.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.calculation_button.setIcon(icon)
             if self.burger_button.isChecked():
                 self.calculation_button.setStyleSheet(
@@ -394,7 +393,7 @@ class Main(QMainWindow):
                 self.calculation_button.setStyleSheet(
                     "background-color:rgb(75, 80, 147); border: 0px; color: rgb(104, 116, 124);")
         elif (event.type() == QtCore.QEvent.Leave) and (watched == self.calculation_button):
-            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'pencil_out.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), r'images\icon', 'pencil_in.svg')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.calculation_button.setIcon(icon)
             if self.burger_button.isChecked():
                 self.calculation_button.setStyleSheet(
@@ -664,8 +663,6 @@ class Main(QMainWindow):
             self.home_page.close_sidebar()
             self.settings_page.close_sidebar()
             self.calculation_page.close_sidebar()
-
-
             self.logo.setStyleSheet("background-color:rgb(37, 39, 72); border:0px;")
             self.home_button.setStyleSheet("background-color:rgb(37, 39, 72); border: 0px;")
             self.users_button.setStyleSheet("background-color:rgb(37, 39, 72); border: 0px;")

@@ -127,7 +127,7 @@ class Authenticate(QWidget):
                                   "}"
                                   )
         self.button.setObjectName("button")
-        self.button.clicked.connect(self.authenticate if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin')) else self.auth_sqlite)
+        self.button.clicked.connect(self.authenticate)
         self.view_password = QtWidgets.QRadioButton(self.centralwidget)
         self.view_password.setGeometry(QtCore.QRect(60, 400, 511, 21))
         font = QtGui.QFont()
@@ -167,7 +167,7 @@ class Authenticate(QWidget):
         self.button.installEventFilter(self)
         self.reset_password.installEventFilter(self)
 
-        if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db')) and not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin')):
+        if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db')) and not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin')) and not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin')):
             self.create_table_sqlite()
 
         self.retranslateUi()
@@ -193,22 +193,26 @@ class Authenticate(QWidget):
             enc_host_db = lines[3].strip()
             enc_port_db = lines[4].strip()
             enc_name_db = lines[5].strip()
+            enc_name_table = lines[6].strip()
         fernet = Fernet(key)
         return [fernet.decrypt(enc_name_user_db).decode(),
                 fernet.decrypt(enc_passwd_db).decode(),
                 fernet.decrypt(enc_host_db).decode(),
                 fernet.decrypt(enc_port_db).decode(),
-                fernet.decrypt(enc_name_db).decode()]
+                fernet.decrypt(enc_name_db).decode(),
+                fernet.decrypt(enc_name_table).decode()]
 
     def read_path_sqlite(self):
         if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin')):
             with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin'), 'rb') as file:
                 lines = file.readlines()
                 key = lines[0].strip()
-                enc_path_sqllite = lines[1]
+                enc_path_sqllite = lines[1].strip()
+                enc_name_table = lines[2].strip()
             fernet = Fernet(key)
             dec_path_sqllite = fernet.decrypt(enc_path_sqllite).decode()
-            return dec_path_sqllite
+            dec_name_table = fernet.decrypt(enc_name_table).decode()
+            return [dec_path_sqllite, dec_name_table]
         else:
             return False
 
@@ -218,8 +222,12 @@ class Authenticate(QWidget):
         else:
             self.password_edit.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
 
+    def get_path(self, dir, name):
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), dir, name)
+
     def create_table_sqlite(self):
-        self.db.connect_database('sqlite' ,os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db')
+        self.db.connect_database('sqlite' , path)
         current_dir = os.path.dirname(os.path.abspath(__file__))
         # Путь к файлу SQLite.sql
         sql_file_path = os.path.join(current_dir, 'sql', 'SQLite.sql')
@@ -229,88 +237,37 @@ class Authenticate(QWidget):
             for command in sql_commands:
                 if command.strip():
                     self.db.cursor.execute(command)
+        key = Fernet.generate_key()
+        fernet = Fernet(key)
+        enc_path_sqlite_db = fernet.encrypt(path.strip().encode())
+        enc_name_table = fernet.encrypt('users'.encode())
+        with open(self.get_path(r'config', "path_sqlite.bin"), 'wb') as file:
+            file.write(key + b'\n')
+            file.write(enc_path_sqlite_db + b'\n')
+            file.write(enc_name_table)
         self.db.connection.commit()
+        self.db.disconnection_database()
 
     def auth_sqlite(self):
-        try:
-            if not self.password_edit.text():
-                path = self.read_path_sqlite()
-                answer = self.db.connect_database('sqlite', path) if path else self.db.connect_database('sqlite', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
-                if answer[0]:
-                    self.db.cursor.execute("""SELECT * FROM users WHERE email = ?""",
-                                           (self.email_edit.text(),))
-                    select = self.db.cursor.fetchone()
-                    post = None if select is None else select[4]
-                    if post is not None and post != "Технолог":
-                        user = User(select)
-                        self.main_window = Main(self.db, user, authentication)
-                        self.main_window.show()
-                        # self.hide()
-                        self.close()
-                        self.email_edit.clear()
-                        self.password_edit.clear()
-                    else:
-                        self.feedback.setText("Неверный Email или пароль")
-                        self.email_edit.setStyleSheet(
-                            """background-color: #fff; border: 2px solid red; border-radius: 10px; padding: 0 10px;\n""")
-                        self.password_edit.setStyleSheet(
-                            """background-color: #fff; border: 2px solid red; border-radius: 10px; padding: 0 10px;\n""")
-                else:
-                    self.feedback.setText(answer[1])
-            else:
-                path = self.read_path_sqlite()
-                answer = self.db.connect_database('sqlite', path) if path else self.db.connect_database('sqlite', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
-                if answer[0]:
-                    self.db.cursor.execute("""SELECT COUNT(*) FROM users""")
-                    select = self.db.cursor.fetchone()[0]
-                    if int(select):
-                        self.db.cursor.execute("""SELECT * FROM users WHERE email = ? and passwd = ?""",
-                                               (self.email_edit.text(), hash_password(self.password_edit.text())))
-                        select = self.db.cursor.fetchone()
-                        print(select)
-                        if select:
-                            user = User(select)
-                            self.main_window = Main(self.db, user, authentication)
-                            self.main_window.show()
-                            self.hide()
-                            self.email_edit.clear()
-                            self.password_edit.clear()
-                        else:
-                            self.feedback.setText("Неверный Email или пароль")
-                    else:
-                        self.db.cursor.execute("""INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email, passwd, code) 
-                                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)""", ('Admin', 'Admin', '', 'Технолог', datetime.datetime.now().strftime('%Y-%m-%d'), self.email_edit.text(), hash_passwd.hash_password(self.password_edit.text()), 0))
-                        self.db.connection.commit()
-                        self.db.cursor.execute("""SELECT * FROM users WHERE email = ? and passwd = ?""",
-                                               (self.email_edit.text(), hash_password(self.password_edit.text())))
-                        select = self.db.cursor.fetchone()
-                        if select:
-                            user = User(select)
-                            self.main_window = Main(self.db, user, authentication)
-                            self.main_window.show()
-                            self.hide()
-                            self.email_edit.clear()
-                            self.password_edit.clear()
-                else:
-                    self.feedback.setText(answer[1])
-        except Exception as ex:
-            print(ex)
-
-    def authenticate(self):
-        read = self.read_file()
         if not self.password_edit.text():
-            answer = self.db.connect_database('postgres', user=read[0], password=read[1], host=read[2], port=read[3],
-                                              database=read[4])
+            path = self.read_path_sqlite()
+            answer = self.db.connect_database('sqlite', path[0]) if path else self.db.connect_database('sqlite',
+                                                                                                    os.path.join(
+                                                                                                        os.path.dirname(
+                                                                                                            os.path.abspath(
+                                                                                                                __file__)),
+                                                                                                        'sql',
+                                                                                                        'example.db'))
             if answer[0]:
-                self.db.cursor.execute("""SELECT * FROM users WHERE email = %s""",
+                self.db.cursor.execute(f"""SELECT * FROM {path[1]} WHERE email = ?""",
                                        (self.email_edit.text(),))
                 select = self.db.cursor.fetchone()
+                self.db.disconnection_database()
                 post = None if select is None else select[4]
                 if post is not None and post != "Технолог":
                     user = User(select)
-                    self.main_window = Main(self.db, user, authentication)
+                    self.main_window = Main(self.db, user, authentication, path)
                     self.main_window.show()
-                    # self.hide()
                     self.close()
                     self.email_edit.clear()
                     self.password_edit.clear()
@@ -323,46 +280,119 @@ class Authenticate(QWidget):
             else:
                 self.feedback.setText(answer[1])
         else:
-            answer = self.db.connect_database('postgres', user=read[0], password=read[1], host=read[2], port=read[3],
-                                              database=read[4])
-            self.db.cursor.execute("""SELECT COUNT(*) FROM users""")
-            select = self.db.cursor.fetchone()[0]
+            path = self.read_path_sqlite()
+            answer = self.db.connect_database('sqlite', path[0]) if path else self.db.connect_database('sqlite',
+                                                                                                    os.path.join(
+                                                                                                        os.path.dirname(
+                                                                                                            os.path.abspath(
+                                                                                                                __file__)),
+                                                                                                        'sql',
+                                                                                                        'example.db'))
             if answer[0]:
+                self.db.cursor.execute(f"""SELECT COUNT(*) FROM {path[1]}""")
+                select = self.db.cursor.fetchone()[0]
                 if int(select):
-                    self.db.cursor.execute("""SELECT * FROM users WHERE email = %s and passwd = %s""",
+                    self.db.cursor.execute(f"""SELECT * FROM {path[1]} WHERE email = ? and passwd = ?""",
                                            (self.email_edit.text(), hash_password(self.password_edit.text())))
                     select = self.db.cursor.fetchone()
+                    self.db.disconnection_database()
                     if select:
                         user = User(select)
-                        self.main_window = Main(self.db, user, authentication)
+                        self.main_window = Main(self.db, user, authentication, path)
                         self.main_window.show()
-                        self.hide()
+                        self.close()
                         self.email_edit.clear()
                         self.password_edit.clear()
                     else:
                         self.feedback.setText("Неверный Email или пароль")
                 else:
-                    postgres_insert_query = """INSERT INTO users (first_name, last_name, patronymic, post, birthdate, email, passwd, code) 
-                                                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
-                    record_to_insert = ('Admin', 'Admin',
-                                        '',
-                                        'Технолог',
-                                        datetime.date(2000, 1, 1), self.email_edit.text(),
-                                        hash_passwd.hash_password(self.password_edit.text()), 0)
-                    self.db.cursor.execute(postgres_insert_query, record_to_insert)
+                    self.db.cursor.execute(f"""INSERT INTO {path[1]} (first_name, last_name, patronymic, post, birthdate, email, passwd, code) 
+                                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)""", (
+                    'Admin', 'Admin', '', 'Технолог', datetime.datetime.now().strftime('%Y-%m-%d'),
+                    self.email_edit.text(), hash_passwd.hash_password(self.password_edit.text()), 0))
                     self.db.connection.commit()
-                    self.db.cursor.execute("""SELECT * FROM users WHERE email = %s and passwd = %s""",
+                    self.db.cursor.execute(f"""SELECT * FROM {path[1]} WHERE email = ? and passwd = ?""",
                                            (self.email_edit.text(), hash_password(self.password_edit.text())))
                     select = self.db.cursor.fetchone()
+                    self.db.disconnection_database()
                     if select:
                         user = User(select)
-                        self.main_window = Main(self.db, user, authentication)
+                        self.main_window = Main(self.db, user, authentication, path)
                         self.main_window.show()
-                        self.hide()
+                        self.close()
                         self.email_edit.clear()
                         self.password_edit.clear()
             else:
                 self.feedback.setText(answer[1])
+
+    def authenticate(self):
+        if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin')):
+            read = self.read_file()
+            if not self.password_edit.text():
+                answer = self.db.connect_database('postgres', user=read[0], password=read[1], host=read[2], port=read[3],
+                                                  database=read[4])
+                if answer[0]:
+                    self.db.cursor.execute(f"""SELECT * FROM {read[5]} WHERE email = %s""",
+                                           (self.email_edit.text(),))
+                    select = self.db.cursor.fetchone()
+                    self.db.disconnection_database()
+                    post = None if select is None else select[4]
+                    if post is not None and post != "Технолог":
+                        user = User(select)
+                        self.main_window = Main(self.db, user, authentication, read)
+                        self.main_window.show()
+                        self.close()
+                        self.email_edit.clear()
+                        self.password_edit.clear()
+                    else:
+                        self.feedback.setText("Неверный Email или пароль")
+                        self.email_edit.setStyleSheet(
+                            """background-color: #fff; border: 2px solid red; border-radius: 10px; padding: 0 10px;\n""")
+                        self.password_edit.setStyleSheet(
+                            """background-color: #fff; border: 2px solid red; border-radius: 10px; padding: 0 10px;\n""")
+                else:
+                    self.feedback.setText(answer[1])
+            else:
+                answer = self.db.connect_database('postgres', user=read[0], password=read[1], host=read[2], port=read[3],
+                                                  database=read[4])
+                self.db.cursor.execute(f"""SELECT COUNT(*) FROM {read[5]}""")
+                select = self.db.cursor.fetchone()[0]
+                if answer[0]:
+                    if int(select):
+                        self.db.cursor.execute(f"""SELECT * FROM {read[5]} WHERE email = %s and passwd = %s""",
+                                               (self.email_edit.text(), hash_password(self.password_edit.text())))
+                        select = self.db.cursor.fetchone()
+                        self.db.disconnection_database()
+                        if select:
+                            user = User(select)
+                            self.main_window = Main(self.db, user, authentication, read)
+                            self.main_window.show()
+                            self.close()
+                            self.email_edit.clear()
+                            self.password_edit.clear()
+                        else:
+                            self.feedback.setText("Неверный Email или пароль")
+                    else:
+                        self.db.cursor.execute(f"""INSERT INTO {read[5]} (first_name, last_name, patronymic, post, birthdate, email, passwd, code) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+                                               ('Admin', 'Admin', '', 'Технолог', datetime.date.today(), self.email_edit.text(),
+                                            hash_passwd.hash_password(self.password_edit.text()), 0))
+                        self.db.connection.commit()
+                        self.db.cursor.execute(f"""SELECT * FROM {read[5]} WHERE email = %s and passwd = %s""",
+                                               (self.email_edit.text(), hash_password(self.password_edit.text())))
+                        select = self.db.cursor.fetchone()
+                        self.db.disconnection_database()
+                        if select:
+                            user = User(select)
+                            self.main_window = Main(self.db, user, authentication, read)
+                            self.main_window.show()
+                            self.close()
+                            self.email_edit.clear()
+                            self.password_edit.clear()
+                else:
+                    self.feedback.setText(answer[1])
+        else:
+            self.auth_sqlite()
+
 
     def change_text(self):
         self.email_edit.setStyleSheet(
@@ -389,29 +419,15 @@ class Authenticate(QWidget):
                 dec_email = fernet.decrypt(encEmail).decode()
                 dec_paswd = fernet.decrypt(encpaswd).decode()
                 if dec_email.strip() and dec_paswd.strip():
-                    read = self.read_file()
-                    if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql',
-                                                       'example.db')) or not os.path.exists(
-                            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin')):
-                        path = self.read_path_sqlite()
-                        answer = self.db.connect_database('sqlite', path) if path else self.db.connect_database(
-                            'sqlite', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
-                    else:
-                        answer = self.db.connect_database('postgres', user=read[0], password=read[1], host=read[2], port=read[3],
-                                                      database=read[4])
-                    if answer[0]:
-                        self.reset_password_ui = ResetPassword(self.db, authentication, dec_email, dec_paswd)
-                        self.reset_password_ui.show()
-                        self.hide()
-                    else:
-                        self.feedback.setText(answer[1])
+                    self.reset_password_ui = ResetPassword(self.db, authentication, dec_email, dec_paswd)
+                    self.reset_password_ui.show()
+                    self.hide()
                 else:
                     self.feedback.setText("Корпоративная почта или пароль не имеют данных,\nПерейдите в настройки и установите их!")
         else:
             self.feedback.setText("Установите в настройках корпоративную почту,\nдля восстановлении учетной записи!")
 
     def closeEvent(self, event):
-        self.db.disconnection_database()
         event.accept()
 
 

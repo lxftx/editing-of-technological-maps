@@ -806,7 +806,6 @@ class DocPage(QWidget, AlertMessage):
         super().mousePressEvent(event)
 
     def closeEvent(self, event):
-        self.main.db.disconnection_database()
         event.accept()
 
     def eventFilter(self, watched, event):
