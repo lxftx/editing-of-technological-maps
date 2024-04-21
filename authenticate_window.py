@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import ctypes
 import os
 import sqlite3
 
@@ -167,6 +168,13 @@ class Authenticate(QWidget):
         self.button.installEventFilter(self)
         self.reset_password.installEventFilter(self)
 
+        if not os.path.exists(self.get_path('config', '')):
+            os.makedirs(self.get_path('', '',)+'config')
+
+        if not self.is_folder_hidden(self.get_path('config', '')):
+            name = (self.get_path('', '') + 'config').encode()
+            self.hide_folder(name)
+
         if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db')) and not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin')) and not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin')):
             self.create_table_sqlite()
 
@@ -183,6 +191,15 @@ class Authenticate(QWidget):
         self.button.setText("Войти")
         self.view_password.setText("Посмотреть пароль")
         self.reset_password.setText("Забыли пароль?")
+
+
+    def is_folder_hidden(self, folder_path):
+        attrs = ctypes.windll.kernel32.GetFileAttributesW(folder_path)
+        return attrs & 0x02 == 0x02
+
+    def hide_folder(self, folder_path):
+        path = folder_path.decode("utf-8")
+        ctypes.windll.kernel32.SetFileAttributesW(path, 0x02)
 
     def read_file(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin'), 'rb') as file:
