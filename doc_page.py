@@ -204,6 +204,7 @@ class DocPage(QWidget, AlertMessage):
         font.setPointSize(12)
         self.diametr_do_edit.setFont(font)
         self.diametr_do_edit.setObjectName("diametr_do_edit")
+        self.diametr_do_edit.textChanged.connect(self.lock_combin)
 
         self.diametr_posle = QtWidgets.QLabel(self.doc_page)
         self.diametr_posle.setGeometry(QtCore.QRect(420, 250, 151, 51))
@@ -221,6 +222,7 @@ class DocPage(QWidget, AlertMessage):
         font.setPointSize(12)
         self.diametr_posle_edit.setFont(font)
         self.diametr_posle_edit.setObjectName("diametr_posle_edit")
+        self.diametr_do_edit.textChanged.connect(self.lock_combin)
 
         self.number_marshrut = QtWidgets.QLabel(self.doc_page)
         self.number_marshrut.setGeometry(QtCore.QRect(50, 330, 91, 31))
@@ -238,6 +240,7 @@ class DocPage(QWidget, AlertMessage):
         font.setPointSize(12)
         self.number_marshrut_edit.setFont(font)
         self.number_marshrut_edit.setObjectName("number_marshrut_edit")
+        self.number_marshrut_edit.textChanged.connect(self.lock_heart_combine)
 
         self.steps_deformac = QtWidgets.QLabel(self.doc_page)
         self.steps_deformac.setGeometry(QtCore.QRect(420, 330, 172, 31))
@@ -255,6 +258,7 @@ class DocPage(QWidget, AlertMessage):
         font.setPointSize(12)
         self.steps_deformac_edit.setFont(font)
         self.steps_deformac_edit.setObjectName("steps_deformac_edit")
+        self.steps_deformac_edit.textChanged.connect(self.lock_heart_combine)
 
         self.label_heattreatment = QtWidgets.QLabel(self.doc_page)
         self.label_heattreatment.setGeometry(QtCore.QRect(30, 380, 811, 201))
@@ -300,6 +304,7 @@ class DocPage(QWidget, AlertMessage):
         font.setPointSize(12)
         self.heating_medium_edit.setFont(font)
         self.heating_medium_edit.setObjectName("heating_medium_edit")
+        self.heating_medium_edit.textChanged.connect(self.lock_heart_combine)
 
         self.annealing_temperature = QtWidgets.QLabel(self.doc_page)
         self.annealing_temperature.setGeometry(QtCore.QRect(410, 480, 171, 31))
@@ -317,6 +322,7 @@ class DocPage(QWidget, AlertMessage):
         font.setPointSize(12)
         self.annealing_temperature_edit.setFont(font)
         self.annealing_temperature_edit.setObjectName("annealing_temperature_edit")
+        self.annealing_temperature_edit.textChanged.connect(self.lock_heart_combine)
 
         self.time = QtWidgets.QLabel(self.doc_page)
         self.time.setGeometry(QtCore.QRect(50, 520, 81, 31))
@@ -334,6 +340,7 @@ class DocPage(QWidget, AlertMessage):
         font.setPointSize(12)
         self.time_edit.setFont(font)
         self.time_edit.setObjectName("time_edit")
+        self.time_edit.textChanged.connect(self.lock_heart_combine)
 
         self.cooling_conditions = QtWidgets.QLabel(self.doc_page)
         self.cooling_conditions.setGeometry(QtCore.QRect(420, 520, 151, 31))
@@ -351,6 +358,7 @@ class DocPage(QWidget, AlertMessage):
         font.setPointSize(12)
         self.cooling_conditions_edit.setFont(font)
         self.cooling_conditions_edit.setObjectName("cooling_conditions_edit")
+        self.cooling_conditions_edit.textChanged.connect(self.lock_heart_combine)
 
         self.note = QtWidgets.QLabel(self.doc_page)
         self.note.setGeometry(QtCore.QRect(50, 590, 91, 81))
@@ -839,7 +847,6 @@ class DocPage(QWidget, AlertMessage):
         except Exception as e:
             self.show_alert()
             self.alert_text.setText(f"Системная Ошибка! Произошла ошибка при изменении имени пользователя: {e}")
-            print(e)
             self.timer.setSingleShot(True)
             self.timer.timeout.connect(self.hide_alert)
             self.timer.start(5000)
@@ -974,22 +981,67 @@ class DocPage(QWidget, AlertMessage):
                 idx += 1
         doc.save(self.doc)
 
+    def lock_combin(self):
+        sender_widget = self.sender()
+        if sender_widget is not None:
+            if sender_widget.text().strip():
+                self.diametr_edit.setEnabled(False)
+            else:
+                self.diametr_edit.setEnabled(True)
+
+    def lock_heart_combine(self):
+        sender_widget = self.sender()
+        if sender_widget is not None:
+            if sender_widget.text().strip():
+                self.heat_treatment_mode_edit.setEnabled(False)
+            else:
+                self.heat_treatment_mode_edit.setEnabled(True)
+
     def fill_items_column(self, new_row):
-        items = [self.item, self.name_operation_box.currentText(),
-                 self.oborudovanie_edit.toPlainText() if self.oborudovanie_edit.toPlainText().strip() else '-',
-                 self.diametr_edit.text() if self.diametr_edit.text().strip() else '' if ~(
-                     self.diametr_do_edit.isEnabled()) else "",
-                 self.diametr_do_edit.text() if self.diametr_do_edit.text().strip() else '-' if self.diametr_do_edit.isEnabled() else "",
-                 self.diametr_posle_edit.text() if self.diametr_posle_edit.text().strip() else '-' if self.diametr_posle_edit.isEnabled() else "",
-                 self.heat_treatment_mode_edit.toPlainText() if self.heat_treatment_mode_edit.toPlainText().strip() else '' if ~(
-                     self.number_marshrut_edit.isEnabled()) else "",
-                 self.number_marshrut_edit.text() if self.number_marshrut_edit.text().strip() else '-' if self.number_marshrut_edit.isEnabled() else "",
-                 self.steps_deformac_edit.text() if self.steps_deformac_edit.text().strip() else '-' if self.steps_deformac_edit.isEnabled() else "",
-                 self.heating_medium_edit.text() if self.heating_medium_edit.text().strip() else '-' if self.heating_medium_edit.isEnabled() else "",
-                 self.annealing_temperature_edit.text() if self.annealing_temperature_edit.text().strip() else '-' if self.annealing_temperature_edit.isEnabled() else "",
-                 self.time_edit.text() if self.time_edit.text().strip() else '-' if self.time_edit.isEnabled() else "",
-                 self.cooling_conditions_edit.text() if self.cooling_conditions_edit.text().strip() else '-' if self.cooling_conditions_edit.isEnabled() else "",
-                 self.note_edit.toPlainText() if self.note_edit.toPlainText().strip() else '-']
+        items = [self.item,
+                 self.name_operation_box.currentText(),
+                 self.oborudovanie_edit.toPlainText() if self.oborudovanie_edit.toPlainText().strip() else '-']
+        if self.diametr_edit.isEnabled():
+            items.append(self.diametr_edit.text() if self.diametr_edit.text().strip() else '-')
+        else:
+            items.append("")
+        if self.diametr_do_edit.isEnabled():
+            items.append(self.diametr_do_edit.text() if self.diametr_do_edit.text().strip() else '-')
+        else:
+            items.append("")
+        if self.diametr_posle_edit.isEnabled():
+            items.append(self.diametr_posle_edit.text() if self.diametr_posle_edit.text().strip() else '-')
+        else:
+            items.append("")
+        if self.heat_treatment_mode_edit.isEnabled():
+            items.append(self.heat_treatment_mode_edit.toPlainText() if self.heat_treatment_mode_edit.toPlainText().strip() else '-')
+        else:
+            items.append("")
+        if self.number_marshrut_edit.isEnabled():
+            items.append(self.number_marshrut_edit.text() if self.number_marshrut_edit.text().strip() else '-')
+        else:
+            items.append("")
+        if self.steps_deformac_edit.isEnabled():
+            items.append(self.steps_deformac_edit.text() if self.steps_deformac_edit.text().strip() else '-')
+        else:
+            items.append("")
+        if self.heating_medium_edit.isEnabled():
+            items.append(self.heating_medium_edit.text() if self.heating_medium_edit.text().strip() else '-')
+        else:
+            items.append("")
+        if self.annealing_temperature_edit.isEnabled():
+            items.append(self.annealing_temperature_edit.text() if self.annealing_temperature_edit.text().strip() else '-')
+        else:
+            items.append("")
+        if self.time_edit.isEnabled():
+            items.append(self.time_edit.text() if self.time_edit.text().strip() else '-')
+        else:
+            items.append("")
+        if self.cooling_conditions_edit.isEnabled():
+            items.append(self.cooling_conditions_edit.text() if self.cooling_conditions_edit.text().strip() else '-')
+        else:
+            items.append("")
+        items.append(self.note_edit.toPlainText() if self.note_edit.toPlainText().strip() else '-')
         items = len([x for x in items if len(x)])
         if items == 12:
             # Заполняем новую строку пустыми ячейками
@@ -1092,7 +1144,6 @@ class DocPage(QWidget, AlertMessage):
     def add_column(self):
         try:
             if isinstance(self.row_table, int):
-                print(self.row_table, self.arr[self.row_table-3])
                 if [self.item] == self.arr[self.row_table - 3]:
                     doc = Document(self.doc)
                     # Получаем доступ к таблице (например, первой таблице в документе)
@@ -1266,26 +1317,40 @@ class DocPage(QWidget, AlertMessage):
                 self.timer.start(5000)
             self.arr = []
             if self.id_table == 0:
-                a = 3
+                self.sum_id_column = 3
             else:
-                a = 1
-            for i in table_content[a:]:
+                self.sum_id_column = 1
+            for i in table_content[self.sum_id_column:]:
                 unique_arr = []
-                seen = set()
+                seen_3_5 = set()
+                seen_5_11 = set()
+
                 for item in i:
-                    if item not in seen or item == '-':
+                    if item in i[3:5]:
+                        if item != '-' and item in seen_3_5:
+                            continue
+                        else:
+                            unique_arr.append(item)
+                            seen_3_5.add(item)
+                    elif item in i[5:11]:
+                        if item in seen_5_11:
+                            continue
+                        else:
+                            unique_arr.append(item)
+                            seen_5_11.add(item)
+                    else:
                         unique_arr.append(item)
-                        seen.add(item)
+
                 self.arr.append(unique_arr)
-            self.table.setRowCount(len(table_content[a:]))
+            self.table.setRowCount(len(table_content[self.sum_id_column:]))
             self.table.setColumnCount(12)
-            for row_index, row_data in enumerate(table_content[a:]):
-                if len(set(row_data[:])) == 1:
+            for row_index, row_data in enumerate(table_content[self.sum_id_column:]):
+                if len(set(row_data)) == 1 and '-' not in row_data:
                     self.table.setSpan(row_index, 0, 1, 12)
                 else:
-                    if len(set(row_data[3:5])) == 1 and '-' not in set(row_data[3:5]):
+                    if len(set(row_data[3:5])) == 1 and '-' not in row_data[3:5]:
                         self.table.setSpan(row_index, 3, 1, 2)
-                    if len(set(row_data[5:11])) == 1 and '-' not in set(row_data[5:11]):
+                    if len(set(row_data[5:11])) == 1 and '-' not in row_data[5:11]:
                         self.table.setSpan(row_index, 5, 1, 6)
                 for col_index, col_data in enumerate(row_data):
                     item = QtWidgets.QTableWidgetItem(col_data)
@@ -1443,16 +1508,22 @@ class DocPage(QWidget, AlertMessage):
         self.table_widget.clear()
         self.enabled_widget(False)
         doc = Document(self.doc)
+        # for i, table in enumerate(doc.tables):
+        #     self.table_widget.addItem(f'Таблица - {str(i + 1)}')
+        #     item = self.table_widget.item(i)
+        #     item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+        doc = Document(self.doc)
         for i, table in enumerate(doc.tables):
-            self.table_widget.addItem(f'Таблица - {str(i + 1)}')
-            item = self.table_widget.item(i)
-            item.setTextAlignment(QtCore.Qt.AlignCenter)
+            if all(len(row.cells) == 12 for row in table.rows):
+                item = QtWidgets.QListWidgetItem(f'Таблица - {str(i + 1)}')
+                item.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.table_widget.addItem(item)
 
     def del_column(self):
         try:
             # Загрузка документа
             doc = Document(self.doc)
-
             # Индекс удаляемой строки (начиная с 0)
             row_to_remove_index = self.row_table  # Нумерация строк начинается с 0
             # Проход по всем таблицам в документе
@@ -1492,7 +1563,6 @@ class DocPage(QWidget, AlertMessage):
         try:
             doc = Document(self.doc)
             table = doc.tables[self.id_table]
-
             if self.row_table:
                 row_to_remove_index = self.row_table  # Нумерация строк начинается с 0
                 # Проход по всем таблицам в документе
@@ -1591,7 +1661,7 @@ class DocPage(QWidget, AlertMessage):
         self.item = unique_rows
         self.button_save_column.setEnabled(True)
         self.button_del_column.setEnabled(True)
-        self.row_table = row + 3
+        self.row_table = row + self.sum_id_column
         self.cursor.setText(f"Курсор установлен на {row+1} строке")
 
     def on_item_clicked(self, row):
@@ -1607,7 +1677,6 @@ class DocPage(QWidget, AlertMessage):
             # Если текущая строка уникальна, добавляем ее в список уникальных строк
             if row_data not in unique_rows or row_data == '-':
                 unique_rows.append(row_data)
-        print(unique_rows)
         if len(unique_rows) == 1:
                 self.lineEdit.setText(unique_rows[0])
         elif len(unique_rows) == 6:
@@ -1650,7 +1719,7 @@ class DocPage(QWidget, AlertMessage):
         if self.main.user.posts != 'Технолог':
             self.button_save_column.setEnabled(True)
             self.button_del_column.setEnabled(True)
-        self.row_table = row + 3
+        self.row_table = row + self.sum_id_column
         self.cursor.setText(f"Курсор установлен на {row+1} строке")
 
     def save_file_item(self):
