@@ -15,6 +15,7 @@ class UsersPage(QWidget, AlertMessage):
         self.db = db
         self.main = main
 
+        self.setWindowIcon(QtGui.QIcon(self.get_path('images/icon', 'logo.png')))
         self.search_widget = search_widget
         self.search_widget.clear()
         self.search_widget.textChanged.connect(self.search_users)
@@ -69,21 +70,22 @@ class UsersPage(QWidget, AlertMessage):
 
     def search_users(self):
         if self.search_widget.text():
-            ifo = [' ' for _ in range(3)]
+            ifo = ['' for _ in range(3)]
             list_ifo = self.search_widget.text().split()
             for i, value in enumerate(list_ifo):
-                ifo[i] = "%" + value + "%"
+                ifo[i] = value
             if os.path.exists(self.get_path(r'config', "db_config.bin")):
                 self.db.connect_database('postgres', user=self.main.path[0], password=self.main.path[1],
                                          host=self.main.path[2], port=self.main.path[3],
                                          database=self.main.path[4])
-                self.db.cursor.execute(
-                    f"""SELECT first_name, last_name, patronymic, post, email FROM {self.main.path[5]} WHERE email<>%s AND (last_name LIKE %s AND first_name LIKE %s AND patronymic LIKE %s)""", (self.main.user.email, *ifo))
+                table_name = self.main.path[5]
             else:
                 self.db.connect_database('sqlite', self.main.path[0])
-                self.db.cursor.execute(
-                    f"""SELECT first_name, last_name, patronymic, post, email FROM {self.main.path[1]} WHERE email<>? AND (last_name LIKE ? AND first_name LIKE ? AND patronymic LIKE ?)""",
-                    (self.main.user.email, *ifo))
+                table_name = self.main.path[1]
+
+            request = """SELECT first_name, last_name, patronymic, post, email FROM {} WHERE email<>'{}' AND last_name LIKE '{}%' AND first_name LIKE '{}%' AND patronymic LIKE '{}%'""".format(
+                table_name, self.main.user.email, *ifo)
+            self.db.cursor.execute(request)
             data = self.db.cursor.fetchall()
             self.table_users.setRowCount(len(data))
 

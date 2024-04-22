@@ -46,6 +46,7 @@ class DocPage(QWidget, AlertMessage):
                        "}"
         self.timer = QTimer()
 
+        self.setWindowIcon(QtGui.QIcon(self.get_path('images/icon', 'logo.png')))
         self.doc_content = QtWidgets.QLabel(self.doc_page)
         self.doc_content.setGeometry(QtCore.QRect(10, 10, 1021, 861))
         font = QtGui.QFont()

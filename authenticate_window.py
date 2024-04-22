@@ -34,6 +34,7 @@ class Authenticate(QWidget):
         self.setupUi()
 
     def setupUi(self):
+        self.setWindowIcon(QtGui.QIcon(self.get_path('images/icon', 'logo.png')))
         self.setObjectName("MainWindow")
         self.setFixedSize(641, 674)
         self.setStyleSheet("background-color: rgb(240, 240, 240);")
@@ -452,5 +453,6 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     authentication = Authenticate()
+    app.setWindowIcon(QtGui.QIcon(authentication.get_path('images/icon', 'logo.png')))
     authentication.show()
     sys.exit(app.exec_())

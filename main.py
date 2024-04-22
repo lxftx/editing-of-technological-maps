@@ -37,7 +37,7 @@ class Main(QMainWindow):
         self.setFixedSize(1125, 942)
         self.setStyleSheet("background-color: #fff;")
 
-
+        self.setWindowIcon(QtGui.QIcon(self.auth.get_path('images/icon', 'logo.png')))
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setFixedSize(1125, 942)
         self.centralwidget.setObjectName("centralwidget")

@@ -35,6 +35,7 @@ class ResetPassword(QWidget):
         self.setupUi()
 
     def setupUi(self):
+        self.setWindowIcon(QtGui.QIcon(self.auth.get_path('images/icon', 'logo.png')))
         self.setObjectName("Form")
         self.setFixedSize(641, 662)
         self.setStyleSheet("background-color: rgb(240, 240, 240);")
