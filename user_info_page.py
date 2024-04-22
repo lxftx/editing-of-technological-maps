@@ -19,6 +19,7 @@ class UserInfoPage(QWidget, AlertMessage):
         self.user_info_page = self
         self.timer = QTimer()
 
+        self.setWindowTitle("TechMap")
         self.setWindowIcon(QtGui.QIcon(self.get_path('images/icon', 'logo.png')))
         self.content_info = QtWidgets.QLabel(self.user_info_page)
         self.content_info.setGeometry(QtCore.QRect(10, 10, 1021, 861))

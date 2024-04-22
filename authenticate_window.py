@@ -35,8 +35,8 @@ class Authenticate(QWidget):
 
     def setupUi(self):
         self.setWindowIcon(QtGui.QIcon(self.get_path('images/icon', 'logo.png')))
-        self.setObjectName("MainWindow")
         self.setFixedSize(641, 674)
+        self.setWindowTitle("TechMap")
         self.setStyleSheet("background-color: rgb(240, 240, 240);")
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
@@ -184,7 +184,6 @@ class Authenticate(QWidget):
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.setWindowTitle("MainWindow")
         self.header.setText("Авторизация")
         self.email.setText("Email пользователя:")
         self.email_edit.setPlaceholderText("example@<domain>.[ru/com]")

@@ -22,6 +22,7 @@ class CalculationPage(QWidget, AlertMessage):
         self.lml = []
         self.timer = QTimer()
 
+        self.setWindowTitle("TechMap")
         self.setWindowIcon(QtGui.QIcon(self.get_path('images/icon', 'logo.png')))
         self.calculation_content = QtWidgets.QLabel(self.calculation)
         self.calculation_content.setGeometry(QtCore.QRect(10, 10, 1021, 861))

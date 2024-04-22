@@ -21,6 +21,7 @@ class SettingsPage(QWidget, AlertMessage):
         self.paswd = None
         self.timer = QTimer()
 
+        self.setWindowTitle("TechMap")
         self.setWindowIcon(QtGui.QIcon(self.get_path('images/icon', 'logo.png')))
         self.content_settings = QtWidgets.QLabel(self.settings_page)
         self.content_settings.setGeometry(QtCore.QRect(10, 10, 1021, 861))

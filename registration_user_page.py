@@ -16,6 +16,7 @@ class RegistrationUserPage(QWidget, AlertMessage):
         self.db = db
         self.main = main
 
+        self.setWindowTitle("TechMap")
         self.setWindowIcon(QtGui.QIcon(self.main.auth.get_path('images/icon', 'logo.png')))
         self.content_registration = QtWidgets.QLabel(self.add_user_page)
         self.content_registration.setGeometry(QtCore.QRect(10, 10, 1021, 861))

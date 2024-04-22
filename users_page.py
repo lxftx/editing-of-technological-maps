@@ -15,6 +15,7 @@ class UsersPage(QWidget, AlertMessage):
         self.db = db
         self.main = main
 
+        self.setWindowTitle("TechMap")
         self.setWindowIcon(QtGui.QIcon(self.get_path('images/icon', 'logo.png')))
         self.search_widget = search_widget
         self.search_widget.clear()

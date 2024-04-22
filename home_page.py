@@ -27,6 +27,7 @@ class HomePage(QWidget, AlertMessage):
         self.search_widget.clear()
         self.search_widget.textChanged.connect(self.search_users)
 
+        self.setWindowTitle("TechMap")
         self.setWindowIcon(QtGui.QIcon(self.get_path('images/icon', 'logo.png')))
         self.home_content = QtWidgets.QLabel(self.home_page)
         self.home_content.setGeometry(QtCore.QRect(10, 10, 1021, 861))

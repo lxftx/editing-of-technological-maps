@@ -36,7 +36,7 @@ class ResetPassword(QWidget):
 
     def setupUi(self):
         self.setWindowIcon(QtGui.QIcon(self.auth.get_path('images/icon', 'logo.png')))
-        self.setObjectName("Form")
+        self.setWindowTitle("TechMap")
         self.setFixedSize(641, 662)
         self.setStyleSheet("background-color: rgb(240, 240, 240);")
         self.container = QtWidgets.QLabel(self)
@@ -264,7 +264,6 @@ class ResetPassword(QWidget):
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.setWindowTitle("Form")
         self.header.setText("Забыли пароль?")
         self.email.setText("Email пользователя:")
         self.email_edit.setPlaceholderText("example@<domain>.[ru/com]")

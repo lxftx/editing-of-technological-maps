@@ -33,7 +33,7 @@ class Main(QMainWindow):
         self.setupUi()
 
     def setupUi(self):
-        self.setObjectName("MainWindow")
+        self.setWindowTitle("TechMap")
         self.setFixedSize(1125, 942)
         self.setStyleSheet("background-color: #fff;")
 
@@ -307,7 +307,6 @@ class Main(QMainWindow):
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.setWindowTitle("MainWindow")
 
     def closeEvent(self, event):
         event.accept()
