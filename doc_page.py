@@ -1508,12 +1508,6 @@ class DocPage(QWidget, AlertMessage):
         self.table_widget.clear()
         self.enabled_widget(False)
         doc = Document(self.doc)
-        # for i, table in enumerate(doc.tables):
-        #     self.table_widget.addItem(f'Таблица - {str(i + 1)}')
-        #     item = self.table_widget.item(i)
-        #     item.setTextAlignment(QtCore.Qt.AlignCenter)
-
-        doc = Document(self.doc)
         for i, table in enumerate(doc.tables):
             if all(len(row.cells) == 12 for row in table.rows):
                 item = QtWidgets.QListWidgetItem(f'Таблица - {str(i + 1)}')

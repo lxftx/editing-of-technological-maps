@@ -72,17 +72,17 @@ class UsersPage(QWidget, AlertMessage):
             ifo = [' ' for _ in range(3)]
             list_ifo = self.search_widget.text().split()
             for i, value in enumerate(list_ifo):
-                ifo[i] = value+"%"
+                ifo[i] = "%" + value + "%"
             if os.path.exists(self.get_path(r'config', "db_config.bin")):
                 self.db.connect_database('postgres', user=self.main.path[0], password=self.main.path[1],
                                          host=self.main.path[2], port=self.main.path[3],
                                          database=self.main.path[4])
                 self.db.cursor.execute(
-                    f"""SELECT first_name, last_name, patronymic, post, email FROM {self.main.path[5]} WHERE email<>%s AND (last_name LIKE %s OR first_name LIKE %s OR patronymic LIKE %s)""", (self.main.user.email, *ifo))
+                    f"""SELECT first_name, last_name, patronymic, post, email FROM {self.main.path[5]} WHERE email<>%s AND (last_name LIKE %s AND first_name LIKE %s AND patronymic LIKE %s)""", (self.main.user.email, *ifo))
             else:
                 self.db.connect_database('sqlite', self.main.path[0])
                 self.db.cursor.execute(
-                    f"""SELECT first_name, last_name, patronymic, post, email FROM {self.main.path[1]} WHERE email<>? AND (last_name LIKE ? OR first_name LIKE ? OR patronymic LIKE ?)""",
+                    f"""SELECT first_name, last_name, patronymic, post, email FROM {self.main.path[1]} WHERE email<>? AND (last_name LIKE ? AND first_name LIKE ? AND patronymic LIKE ?)""",
                     (self.main.user.email, *ifo))
             data = self.db.cursor.fetchall()
             self.table_users.setRowCount(len(data))
