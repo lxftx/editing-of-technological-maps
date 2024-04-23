@@ -21,30 +21,9 @@ class DocPage(QWidget, AlertMessage):
         self.doc_page = self
         self.main = main
         self.doc = doc
-        self.content = []
-        self.item = None
-        self.table_widget = QListWidget(self.doc_page)
-        self.row_table = None
-        self.id_table = None
-        self.css_green = "QPushButton {\n" \
-                         "    background-color: rgb(115, 115, 115); \n" \
-                         "    color: white;\n" \
-                         "    border-radius: 10px;\n" \
-                         "}\n" \
-                         "\n" \
-                         "QPushButton:hover {\n" \
-                         "    background-color: green;\n" \
-                         "}"
-        self.css_red = "QPushButton {\n" \
-                       "    background-color: rgb(115, 115, 115); \n" \
-                       "    color: white;\n" \
-                       "    border-radius: 10px;\n" \
-                       "}\n" \
-                       "\n" \
-                       "QPushButton:hover {\n" \
-                       "    background-color: red;\n" \
-                       "}"
         self.timer = QTimer()
+        self.row = 0 # переменная которая будет хранить строку при нажатии на таблицу
+        self.content_info = [] # лист в котором будут собираться информация о тех.карте
 
         self.setWindowTitle("TechMap")
         self.setWindowIcon(QtGui.QIcon(self.get_path('images/icon', 'logo.png')))
@@ -63,20 +42,12 @@ class DocPage(QWidget, AlertMessage):
 
         self.open_list_table = QtWidgets.QPushButton(self.doc_page)
         self.open_list_table.setGeometry(QtCore.QRect(740, 20, 41, 31))
-        self.open_list_table.setStyleSheet("QPushButton {\n"
-                                        "    background-color: black; \n"
-                                        "    color: white;\n"
-                                        "    border-radius: 10px;\n"
-                                        "}\n"
-                                        "\n"
-                                        "QPushButton:hover {\n"
-                                        "    background-color: green;\n"
-                                        "}")
+
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "open_table_in.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.open_list_table.setIcon(icon)
         self.open_list_table.setObjectName("open_list_table")
-        self.open_list_table.clicked.connect(self.load_table_item)
+        self.open_list_table.clicked.connect(self.show_list_table)
 
         self.open_scroll = QtWidgets.QPushButton(self.doc_page)
         self.open_scroll.setGeometry(QtCore.QRect(850, 60, 171, 31))
@@ -84,33 +55,18 @@ class DocPage(QWidget, AlertMessage):
         font.setFamily("Microsoft YaHei UI")
         font.setPointSize(10)
         self.open_scroll.setFont(font)
-        self.open_scroll.setStyleSheet("QPushButton#open_scroll {\n"
-                                       "    background-color: rgb(115, 115, 115); \n"
-                                       "    color: black;\n"
-                                       "    border-radius: 10px;\n"
-                                       "}\n"
-                                       "\n"
-                                       "QPushButton#open_scroll:hover {\n"
-                                       "    background-color: green;\n"
-                                       "}")
+
+
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "strelka_left.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.open_scroll.setIcon(icon1)
         self.open_scroll.setObjectName("open_scroll")
         self.open_scroll.setCheckable(True)
-        self.open_scroll.clicked.connect(self.unwrap_talbe)
+        self.open_scroll.clicked.connect(self.unwrap_table)
 
         self.reset_button = QtWidgets.QPushButton(self.doc_page)
         self.reset_button.setGeometry(QtCore.QRect(794, 20, 41, 31))
-        self.reset_button.setStyleSheet("QPushButton {\n"
-                                        "    background-color: black; \n"
-                                        "    color: white;\n"
-                                        "    border-radius: 10px;\n"
-                                        "}\n"
-                                        "\n"
-                                        "QPushButton:hover {\n"
-                                        "    background-color: green;\n"
-                                        "}")
+
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "reset_in.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.reset_button.setIcon(icon2)
@@ -125,7 +81,7 @@ class DocPage(QWidget, AlertMessage):
         self.cursor.setStyleSheet("background-color:rgb(240, 240, 240);\n"
                                    "color: rgb(197, 197, 197);")
         self.cursor.setObjectName("cursor")
-        self.cursor.setText(f"Курсор установлен на {self.row_table} строке")
+        self.cursor.setText(f"Курсор установлен на {self.row} строке")
 
         self.name_operation = QtWidgets.QLabel(self.doc_page)
         self.name_operation.setGeometry(QtCore.QRect(22, 70, 176, 31))
@@ -411,7 +367,6 @@ class DocPage(QWidget, AlertMessage):
         font.setFamily("Microsoft YaHei UI")
         font.setPointSize(10)
         self.button_column.setFont(font)
-        self.button_column.setStyleSheet(self.css_green)
         icon3 = QtGui.QIcon()
         icon3.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "add_meger_column.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_column.setIcon(icon3)
@@ -423,7 +378,6 @@ class DocPage(QWidget, AlertMessage):
         font.setFamily("Microsoft YaHei UI")
         font.setPointSize(10)
         self.button_save_column.setFont(font)
-        self.button_save_column.setStyleSheet(self.css_green)
         icon4 = QtGui.QIcon()
         icon4.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "save_column.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_save_column.setIcon(icon4)
@@ -435,7 +389,6 @@ class DocPage(QWidget, AlertMessage):
         font.setFamily("Microsoft YaHei UI")
         font.setPointSize(10)
         self.button_add_column.setFont(font)
-        self.button_add_column.setStyleSheet(self.css_green)
         icon5 = QtGui.QIcon()
         icon5.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "add_column.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_add_column.setIcon(icon5)
@@ -447,7 +400,6 @@ class DocPage(QWidget, AlertMessage):
         font.setFamily("Times New Roman")
         font.setPointSize(12)
         self.button_del_column.setFont(font)
-        self.button_del_column.setStyleSheet(self.css_red)
         icon6 = QtGui.QIcon()
         icon6.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "delete.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_del_column.setIcon(icon6)
@@ -459,7 +411,6 @@ class DocPage(QWidget, AlertMessage):
         font.setFamily("Microsoft YaHei UI")
         font.setPointSize(10)
         self.save_file.setFont(font)
-        self.save_file.setStyleSheet(self.css_green)
         icon7 = QtGui.QIcon()
         icon7.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "save_file.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.save_file.setIcon(icon7)
@@ -471,7 +422,6 @@ class DocPage(QWidget, AlertMessage):
         font.setFamily("Microsoft YaHei UI")
         font.setPointSize(10)
         self.open_file.setFont(font)
-        self.open_file.setStyleSheet(self.css_green)
         icon8 = QtGui.QIcon()
         icon8.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "open_file.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.open_file.setIcon(icon8)
@@ -483,7 +433,6 @@ class DocPage(QWidget, AlertMessage):
         font.setFamily("Microsoft YaHei UI")
         font.setPointSize(10)
         self.delete_file.setFont(font)
-        self.delete_file.setStyleSheet(self.css_red)
         self.delete_file.setIcon(icon6)
         self.delete_file.setObjectName("delete_file")
 
@@ -492,6 +441,12 @@ class DocPage(QWidget, AlertMessage):
         self.window.setStyleSheet("border:1px solid black;")
         self.window.setText("")
         self.window.setObjectName("window")
+
+        self.table_widget = QListWidget(self.doc_page)
+        self.table_widget.setStyleSheet("font-size: 32px;")
+        self.table_widget.itemDoubleClicked.connect(self.open_table)
+        if self.main.user.posts == 'Технолог':
+           self.table_widget.itemClicked.connect(self.enable_table)
 
         self.tables = QtWidgets.QScrollArea(self.doc_page)
         self.tables.setGeometry(QtCore.QRect(230, 190, 521, 471))
@@ -502,10 +457,6 @@ class DocPage(QWidget, AlertMessage):
         self.scrollAreaWidgetContents1.setObjectName("scrollAreaWidgetContents")
         self.tables.setWidget(self.scrollAreaWidgetContents1)
         self.tables.setWidget(self.table_widget)
-        self.table_widget.setStyleSheet("font-size: 32px;")
-        self.table_widget.itemDoubleClicked.connect(self.open_table)
-        if self.main.user.posts == 'Технолог':
-            self.table_widget.itemClicked.connect(self.enabel_table)
 
         self.table_window = QtWidgets.QLabel(self.doc_page)
         self.table_window.setGeometry(QtCore.QRect(232, 115, 511, 71))
@@ -532,8 +483,7 @@ class DocPage(QWidget, AlertMessage):
                                             "    background-color: green;\n"
                                             "}")
         self.button_add_table.setObjectName("button_add_table")
-
-        self.button_add_table.clicked.connect(self.add_table)
+        self.button_add_table.clicked.connect(self.add_new_table)
 
         self.button_del_table = QtWidgets.QPushButton(self.doc_page)
         self.button_del_table.setGeometry(QtCore.QRect(490, 670, 251, 31))
@@ -541,10 +491,8 @@ class DocPage(QWidget, AlertMessage):
         font.setFamily("Microsoft YaHei UI")
         font.setPointSize(12)
         self.button_del_table.setFont(font)
-        self.button_del_table.setStyleSheet(self.css_red)
         self.button_del_table.setObjectName("button_del_table")
-        self.button_del_table.setEnabled(False)
-        self.button_del_table.clicked.connect(self.del_table)
+        self.button_del_table.clicked.connect(self.delele_table)
 
         self.info_window = QtWidgets.QLabel(self.doc_page)
         self.info_window.setGeometry(QtCore.QRect(280, 150, 401, 459))
@@ -684,13 +632,12 @@ class DocPage(QWidget, AlertMessage):
         font.setFamily("Microsoft YaHei UI")
         font.setPointSize(10)
         self.button_info_window.setFont(font)
-        self.button_info_window.setStyleSheet(self.css_green)
         icon9 = QtGui.QIcon()
         icon9.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "info_window.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_info_window.setIcon(icon9)
         self.button_info_window.setIconSize(QtCore.QSize(25, 25))
         self.button_info_window.setObjectName("button_info_window")
-        self.button_info_window.clicked.connect(self.open_info_window)
+        self.button_info_window.clicked.connect(lambda: self.open_info_window(True))
 
         self.alert = QtWidgets.QLabel(self.doc_page)
         self.alert.setGeometry(QtCore.QRect(40, 270, 821, 201))
@@ -738,8 +685,8 @@ class DocPage(QWidget, AlertMessage):
         self.table.setHorizontalHeaderLabels(["№п/п", "Наименование операций", "Оборудование", "До волочения", "После волочения", '№ маршрута', 'Степень деформации, %', 'Среда нагрева', 'Температура отжига, ̊С', 'Время, мин', 'Условия охлаждения', 'Примечание'])
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         if self.main.user.posts == 'Технолог':
-             self.table.cellClicked.connect(self.on_item)
-        self.table.cellDoubleClicked.connect(self.on_item_clicked)
+            self.table.cellClicked.connect(self.on_row)
+        self.table.cellDoubleClicked.connect(self.turn_item_in_table)
 
 
         self.director.setText("Директор:")
@@ -776,43 +723,21 @@ class DocPage(QWidget, AlertMessage):
         self.button_del_table.setText("Удалить таблицу")
         self.button_info_window.setText("Инфо. тех.карта")
 
-        self.button_save_column.setEnabled(False)
-        self.button_del_column.setEnabled(False)
-
         self.button_save_column.clicked.connect(self.save_column)
         self.button_del_column.clicked.connect(self.del_column)
-        self.button_column.clicked.connect(self.add_column)
+        self.button_column.clicked.connect(self.add_merger_column)
         self.button_add_column.clicked.connect(self.add_column_item)
         self.save_file.clicked.connect(self.save_file_item)
         self.open_file.clicked.connect(self.open_file_docx)
         self.delete_file.clicked.connect(self.del_file_docx)
-        self.reset_button.clicked.connect(self.clear_text)
+        self.reset_button.clicked.connect(self.clear_widget)
         self.load_table_item()
 
         self.reset_button.installEventFilter(self)
         self.open_list_table.installEventFilter(self)
 
-    def get_path(self, dir, name):
-        return os.path.join(os.path.dirname(os.path.abspath(__file__)), dir, name)
-
     def mousePressEvent(self, event):
-        if not self.info_window.geometry().contains(event.pos()):
-            self.info_window.setVisible(False)
-            self.director.setVisible(False)
-            self.director_edit.setVisible(False)
-            self.number_card.setVisible(False)
-            self.number_card_edit.setVisible(False)
-            self.splav.setVisible(False)
-            self.splav_edit.setVisible(False)
-            self.gost.setVisible(False)
-            self.gost_edit.setVisible(False)
-            self.sto.setVisible(False)
-            self.sto_edit.setVisible(False)
-            self.vzamen.setVisible(False)
-            self.vzamen_edit.setVisible(False)
-        self.row_table = None
-        self.item = None
-        self.cursor.setText(f"Курсор установлен на {self.row_table} строке")
+        self.open_info_window(False)
         super().mousePressEvent(event)
 
     def closeEvent(self, event):
@@ -834,28 +759,143 @@ class DocPage(QWidget, AlertMessage):
             self.open_list_table.setIcon(icon)
         return super().eventFilter(watched, event)
 
-    def unwrap_talbe(self):
-        if self.open_scroll.isChecked():
-            self.table.setGeometry(QtCore.QRect(20, 110, 1001, 701))
-        else:
-            self.table.setGeometry(QtCore.QRect(850, 110, 171, 701))
+    def get_path(self, dir, name):
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), dir, name)
 
-    def set_last_modified_by(self):
+    # Функция, которая загружает в список сущетсвующих таблиц
+    def load_table_item(self):
+        self.table_widget.clear()
+        doc = Document(self.doc)
+        for i, table in enumerate(doc.tables):
+            if all(len(row.cells) == 12 for row in table.rows):
+                item = QtWidgets.QListWidgetItem(f'Таблица - {str(i + 1)}')
+                item.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.table_widget.addItem(item)
+        # Установка не рабочих виджетов
+        self.widget_enable_true_or_false(False)
+        self.set_stylesheet_widget("QPushButton {\n"
+                                       "    background-color: rgb(115, 115, 115); \n"
+                                       "    color: black;\n"
+                                       "    border-radius: 10px;\n"
+                                       "}\n"
+                                       "\n"
+                                       "QPushButton:hover {\n"
+                                       "    background-color: green;\n"
+                                       "}", "QPushButton {\n"
+                                       "    background-color: rgb(115, 115, 115); \n"
+                                       "    color: black;\n"
+                                       "    border-radius: 10px;\n"
+                                       "}\n"
+                                       "\n"
+                                       "QPushButton:hover {\n"
+                                       "    background-color: red;\n"
+                                       "}", False)
+
+    # Выбор таблицы
+    def enable_table(self, item):
+        self.table_id = int(item.text()[-1]) - 1 # берем число из текста, делаем int и вычитаем 1 так как прибавляется 1
+        self.row_table = 0 if self.table_id else 2  # Чтение будет производится после какой строки, если таблица 0, то с 2, если нет, то с 0
+        if not self.table_widget.count() == 1:
+            self.button_del_table.setEnabled(True)
+            self.button_del_table.setStyleSheet("QPushButton#button_del_table {\n"
+                                                "    background-color: black; \n"
+                                                "    color: white;\n"
+                                                "    border-radius: 10px;\n"
+                                                "}\n"
+                                                "\n"
+                                                "QPushButton#button_del_table:hover {\n"
+                                                "    background-color: red;\n"
+                                                "}")
+        else:
+            self.button_del_table.setEnabled(False)
+            self.button_del_table.setStyleSheet("QPushButton#button_del_table {\n"
+                                                "    background-color: rgb(115, 115, 115);; \n"
+                                                "    color: white;\n"
+                                                "    border-radius: 10px;\n"
+                                                "}\n"
+                                                "\n"
+                                                "QPushButton#button_del_table:hover {\n"
+                                                "    background-color: red;\n"
+                                                "}")
+
+    # Создание новой таблицы
+    def add_new_table(self):
         try:
             doc = Document(self.doc)
-            core_props = doc.core_properties
-            core_props.last_modified_by = f'{self.main.user.surname} {self.main.user.name}'
+            doc.add_section(WD_SECTION_START.NEW_PAGE)
+            table = doc.add_table(rows=1, cols=12)
+
+            # Применяем стиль "Table Grid" к таблице
+            table.style = "Table Grid"
+
+            for i in range(12):
+                cell = table.cell(0, i)
+                cell.text = str(i + 1)
+                paragraphs = cell.paragraphs
+                for paragraph in paragraphs:
+                    run = paragraph.runs[0]
+                    run.bold = True
+
+            for row in table.rows:
+                for cell in row.cells:
+                    for paragraph in cell.paragraphs:
+                        for run in paragraph.runs:
+                            run.font.name = 'Times New Roman'
+                            run.font.size = Pt(10)  # Используем Pt для установки размера шрифта
+                        # Выравниваем текст по центру ячеек
+                    cell.paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             doc.save(self.doc)
-        except Exception as e:
+            self.table_widget.clear()
+            self.load_table_item()
+            self.modific_doc_file()
+        except PermissionError:
             self.show_alert()
-            self.alert_text.setText(f"Системная Ошибка! Произошла ошибка при изменении имени пользователя: {e}")
+            self.alert_text.setText(f"Файл был открыт!\nЗайкроте его и снова выполните создание таблицы!")
             self.timer.setSingleShot(True)
             self.timer.timeout.connect(self.hide_alert)
             self.timer.start(5000)
 
+
+    # Функция, которая удаляет таблицу
+    def delele_table(self):
+        try:
+            if not self.table_widget.count() == 1:
+                # Удаляем таблицу с файла
+                doc = Document(self.doc)
+                table_to_delete = doc.tables[self.table_id]
+                table_to_delete._element.getparent().remove(table_to_delete._element)
+                doc.save(self.doc)
+
+                # Обновляем список таблиц и имя пользователя который изменил файл
+                self.table_widget.clear()
+                self.load_table_item()
+                self.modific_doc_file()
+
+                # При удалении курсор будет смещаться на предыдущую таблицу.
+                self.table_id -= 1
+            else:
+                self.button_del_table.setEnabled(False)
+                self.button_del_table.setStyleSheet("QPushButton#button_del_table {\n"
+                                                    "    background-color: rgb(115, 115, 115);; \n"
+                                                    "    color: white;\n"
+                                                    "    border-radius: 10px;\n"
+                                                    "}\n"
+                                                    "\n"
+                                                    "QPushButton#button_del_table:hover {\n"
+                                                    "    background-color: red;\n"
+                                                    "}")
+        except PermissionError:
+            self.show_alert()
+            self.alert_text.setText("Файл был открыт!\nЗайкроте его и снова выполните удаление таблицы!")
+            self.timer.setSingleShot(True)
+            self.timer.timeout.connect(self.hide_alert)
+            self.timer.start(5000)
+
+    # Функция, которая открывает нынешний файл
     def open_file_docx(self):
         os.startfile(self.doc)
 
+    # Функция, которая удаляет нынешний файл
     def del_file_docx(self):
         try:
             os.remove(self.doc)
@@ -863,34 +903,43 @@ class DocPage(QWidget, AlertMessage):
             self.main.stackedWidget.setCurrentWidget(self.main.home_page)
         except PermissionError:
             self.show_alert()
-            self.alert_text.setText(f"Файл был открыт, зайкроте его и снова выполните удаление тех.карты!")
+            self.alert_text.setText(f"Файл был открыт!\nЗайкроте его и снова выполните удаление тех.карты!")
             self.timer.setSingleShot(True)
             self.timer.timeout.connect(self.hide_alert)
             self.timer.start(5000)
 
-    def open_info_window(self):
-        self.info_window.setVisible(True)
-        self.director.setVisible(True)
-        self.director_edit.setVisible(True)
-        self.number_card.setVisible(True)
-        self.number_card_edit.setVisible(True)
-        self.splav.setVisible(True)
-        self.splav_edit.setVisible(True)
-        self.gost.setVisible(True)
-        self.gost_edit.setVisible(True)
-        self.sto.setVisible(True)
-        self.sto_edit.setVisible(True)
-        self.vzamen.setVisible(True)
-        self.vzamen_edit.setVisible(True)
+    # Функция, которая сохраняет все изменения в файле
+    def save_file_item(self):
+        try:
+            self.save_info()
+            old_filename = self.doc
+            directory = os.path.dirname(old_filename)
+            new_filename = f"{directory}/{self.number_card_edit.text()}.docx"
+            self.doc = new_filename
+            os.rename(old_filename, new_filename)
+            self.modific_doc_file()
+        except PermissionError:
+            self.show_alert()
+            self.alert_text.setText(f"Файл был открыт!\nЗайкроте его и снова выполните сохранение тех.карты!")
+            self.timer.setSingleShot(True)
+            self.timer.timeout.connect(self.hide_alert)
+            self.timer.start(3000)
+        except Exception as ex:
+            self.show_alert()
+            self.alert_text.setText(f"Системная Ошибка! {ex}")
+            self.timer.setSingleShot(True)
+            self.timer.timeout.connect(self.hide_alert)
+            self.timer.start(5000)
 
+    # Функция, которая сохраняет информацию о тех. карте.
     def save_info(self):
         try:
             doc = Document(self.doc)
             # Замена текста "NUMBER_CARD" на другой текст и применение стилей
             for paragraph in doc.paragraphs:
-                if self.content[0] in paragraph.text:
+                if self.content_info[0] in paragraph.text:
                     # Замена текста
-                    paragraph.text = paragraph.text.replace(self.content[0], self.number_card_edit.text())
+                    paragraph.text = paragraph.text.replace(self.content_info[0], self.number_card_edit.text())
                     # Применение стилей
                     for run in paragraph.runs:
                         font = run.font
@@ -901,20 +950,20 @@ class DocPage(QWidget, AlertMessage):
             # Вставка текущего года вместо "YEAR" и применение стилей
             current_year = str(datetime.datetime.now().year)
             for paragraph in doc.paragraphs:
-                if re.search(r'_([0-9]+) г\.', self.content[5]).group(1) in re.search(r'_([0-9]+) г\.',
+                if re.search(r'_([0-9]+) г\.', self.content_info[5]).group(1) in re.search(r'_([0-9]+) г\.',
                                                                                       paragraph.text).group(
                         1) if re.search(r'_([0-9]+) г\.', paragraph.text) else None:
                     # Замена текста
-                    paragraph.text = paragraph.text.replace(re.search(r'_([0-9]+) г\.', self.content[5]).group(1),
+                    paragraph.text = paragraph.text.replace(re.search(r'_([0-9]+) г\.', self.content_info[5]).group(1),
                                                             current_year)
                 elif 'YEAR' in paragraph.text:
                     # Получаем текущий год
                     current_year = datetime.datetime.now().year
                     paragraph.text = re.sub(r'YEAR', str(current_year), paragraph.text)
-                elif re.search(r'_{2,}(.+)', self.content[4]).group(1) in re.search(r'_{2,}(.+)',
-                                                                                    self.content[4]).group(
+                elif re.search(r'_{2,}(.+)', self.content_info[4]).group(1) in re.search(r'_{2,}(.+)',
+                                                                                    self.content_info[4]).group(
                         1) if re.search(r'_{2,}(.+)', paragraph.text) else None:
-                    paragraph.text = paragraph.text.replace(re.search(r'_{2,}(.+)', self.content[4]).group(1),
+                    paragraph.text = paragraph.text.replace(re.search(r'_{2,}(.+)', self.content_info[4]).group(1),
                                                             self.director_edit.text())
                 for run in paragraph.runs:
                     font = run.font
@@ -924,11 +973,11 @@ class DocPage(QWidget, AlertMessage):
 
             # Маппинг ключевых слов и значений для вставки и применение стилей
             keyword_value_map = {
-                re.search(r'сплава\s+(.*?)\s+по', self.content[8]).group(1): self.splav_edit.text(),
-                re.search(rf'\b{re.escape("ГОСТ")}\s+(.*?)\s+{re.escape("и")}', self.content[8]).group(
+                re.search(r'сплава\s+(.*?)\s+по', self.content_info[8]).group(1): self.splav_edit.text(),
+                re.search(rf'\b{re.escape("ГОСТ")}\s+(.*?)\s+{re.escape("и")}', self.content_info[8]).group(
                     1): self.gost_edit.text(),
-                re.search(rf'\b{re.escape("СТО")}\s+(.*)$', self.content[8]).group(1): self.sto_edit.text(),
-                re.search(rf'\b{re.escape("Взамен")}\s+(.*?)$', self.content[10]).group(1): self.vzamen_edit.text()
+                re.search(rf'\b{re.escape("СТО")}\s+(.*)$', self.content_info[8]).group(1): self.sto_edit.text(),
+                re.search(rf'\b{re.escape("Взамен")}\s+(.*?)$', self.content_info[10]).group(1): self.vzamen_edit.text()
             }
             for keyword, value in keyword_value_map.items():
                 for paragraph in doc.paragraphs:
@@ -943,218 +992,421 @@ class DocPage(QWidget, AlertMessage):
                             font.bold = True
 
             doc.save(self.doc)
-            self.set_last_modified_by()
+            self.modific_doc_file()
         except PermissionError:
             self.show_alert()
-            self.alert_text.setText(f"Файл был открыт, зайкроте его и снова выполните добавление колонки!")
+            self.alert_text.setText(f"Файл был открыт!\nЗайкроте его и снова выполните сохранение файла!")
+            self.timer.setSingleShot(True)
+            self.timer.timeout.connect(self.hide_alert)
+            self.timer.start(3000)
+
+    # Функция, которая изменяем имя изменившего файл
+    def modific_doc_file(self):
+        try:
+            doc = Document(self.doc)
+            core_props = doc.core_properties
+            core_props.last_modified_by = f'{self.main.user.surname} {self.main.user.name}'
+            doc.save(self.doc)
+        except Exception as e:
+            self.show_alert()
+            self.alert_text.setText(f"Системная Ошибка!\nПроизошла ошибка при изменении имени пользователя: {e}")
             self.timer.setSingleShot(True)
             self.timer.timeout.connect(self.hide_alert)
             self.timer.start(5000)
 
-    def update_idx(self):
+    # Функция которая открывает выбранную таблицу
+    def open_table(self):
+        self.clear_widget()
+        self.widget_enable_true_or_false(True)
+        self.hide_table_window(False)
+        self.set_stylesheet_widget("QPushButton {\n"
+                                            "    background-color: black; \n"
+                                            "    color: white;\n"
+                                            "    border-radius: 10px;\n"
+                                            "}\n"
+                                            "\n"
+                                            "QPushButton:hover {\n"
+                                            "    background-color: green;\n"
+                                            "}", "QPushButton {\n"
+                                            "    background-color: black; \n"
+                                            "    color: white;\n"
+                                            "    border-radius: 10px;\n"
+                                            "}\n"
+                                            "\n"
+                                            "QPushButton:hover {\n"
+                                            "    background-color: red;\n"
+                                            "}", True)
+        # Читаем данные из файла
+        self.read_file_table()
+
+    # Функция по чтению данных из таблиц
+    def read_file_table(self):
+        self.table.setRowCount(0)  # Сбрасывает кол-во строк в открывающей таблице
         doc = Document(self.doc)
-        # Получаем таблицу, которую нужно изменить (например, первую таблицу в документе)
-        table = doc.tables[self.id_table]
-        idx = 1
-        # Проходимся по строкам таблицы, начиная с четвертой строки
-        for i, row in enumerate(table.rows):
-            if i >= 3:  # Начиная с четвертой строки
-                # Получаем значения всех ячеек текущей строки
-                cell_values = [cell.text for cell in row.cells]
-
-                # Проверяем, все ли значения ячеек одинаковы
-                if len(set(cell_values)) == 1:
-                    # Пропускаем эту строку, так как все значения одинаковы
-                    continue
-                # Получаем ячейку, в которую нужно вставить индекс
-                cell = row.cells[self.id_table]
-                # Очищаем содержимое ячейки
-                for paragraph in cell.paragraphs:
-                    for run in paragraph.runs:
-                        run.clear()
-                # Вставляем новый текст (индекс) с нужным форматированием
-                paragraph = cell.paragraphs[0]
-                run = paragraph.add_run(str(idx))
-                run.font.name = 'Times New Roman'
-                run.font.size = Pt(10)
-                # Выравниваем текст по центру ячейки
-                paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-
-                idx += 1
-        doc.save(self.doc)
-
-    def lock_combin(self):
-        sender_widget = self.sender()
-        if sender_widget is not None:
-            if sender_widget.text().strip():
-                self.diametr_edit.setEnabled(False)
+        table = doc.tables[self.table_id]  # указывается какой номер таблицы
+        table_items = []    # лист с уникальными данными
+        table_content = []  # лист в котором буду содержаться при чтении из файла
+        # Читаем содержимое таблицы
+        for row_id, row in enumerate(table.rows):
+            if row_id > self.row_table:
+                row_data = []
+                for cell in row.cells:
+                    row_data.append(cell.text.strip())
+                table_content.append(row_data)
+        # Перебираем и делаем уникальный вид
+        print(table_content)
+        for row in table_content:
+            if len(set(row)) == 1 and '-' not in row:
+                table_items.append([row[0]])
             else:
-                self.diametr_edit.setEnabled(True)
+                unique_arr = []  # Создаем список для уникальных элементов в текущей строке
+                seen_3_5 = set()
+                seen_5_11 = set()
+                for idx, item in enumerate(row):
+                    if idx in [3, 4] and item in row[3:5]:
+                        if item != '-' and item in seen_3_5:
+                            continue
+                        else:
+                            unique_arr.append(item)
+                            seen_3_5.add(item)
+                    elif idx in [5, 6, 7, 8, 9, 10] and item in row[5:11]:
+                        if item != '-' and item in seen_5_11:
+                            continue
+                        else:
+                            unique_arr.append(item)
+                            seen_5_11.add(item)
+                    else:
+                        unique_arr.append(item)
+                table_items.append(unique_arr)
+        self.table.setRowCount(len(table_items))    # Устанавливаем кол-во строк в таблице
+        self.table.setColumnCount(12)               # Устанаваливаем кол-во колонок в таблице
+        for row_index, row_data in enumerate(table_items):
+            match len(row_data):
+                case 1:
+                    self.table.setSpan(row_index, 0, 1, 12)
+                case 6:
+                    self.table.setSpan(row_index, 3, 1, 2)
+                    self.table.setSpan(row_index, 5, 1, 6)
+                case 7:
+                    self.table.setSpan(row_index, 5, 1, 6)
+                case 11:
+                    self.table.setSpan(row_index, 3, 1, 2)
+                case _:
+                    print('Ничего не объединяем')
+            for row_index, row_data in enumerate(table_content):
+                for col_index, col_data in enumerate(row_data):
+                    item = QtWidgets.QTableWidgetItem(col_data)
+                    item.setTextAlignment(0x0004 | 0x0080)
+                    self.table.setItem(row_index, col_index, item)
+        self.info()
 
-    def lock_heart_combine(self):
-        sender_widget = self.sender()
-        if sender_widget is not None:
-            if sender_widget.text().strip():
-                self.heat_treatment_mode_edit.setEnabled(False)
-            else:
-                self.heat_treatment_mode_edit.setEnabled(True)
+    # Функция, которая считывает данные с тех.карты
+    def info(self):
+        doc = Document(self.doc)
+        # Создаем пустой список для хранения текста и других элементов
+        # Читаем содержимое каждого элемента в документе
+        for element in doc.element.body:
+            if element.tag.endswith('p'):  # Обрабатываем параграфы
+                self.content_info.append(element.text)
+            elif element.tag.endswith('tbl'):  # Обрабатываем таблицы
+                table_content = []
+                for row in element.findall('.//tr'):
+                    table_row = []
+                    for cell in row.findall('.//tc'):
+                        cell_text = ''
+                        for paragraph in cell.findall('.//p'):
+                            cell_text += paragraph.text + '\n'
+                        table_row.append(cell_text.strip())
+                    table_content.append(table_row)
+                self.content_info.append(table_content)
 
-    def fill_items_column(self, new_row):
-        items = [self.item,
+        if len(self.content_info):
+            self.number_card_edit.setText(self.content_info[0])
+            match = re.search(r'_{2,}(.+)', self.content_info[4])
+            if match:
+                self.director_edit.setText(match.group(1))
+            match = re.search(r'сплава\s+(.*?)\s+по', self.content_info[8])
+            if match:
+                self.splav_edit.setText(match.group(1))
+            match = re.search(rf'\b{re.escape("ГОСТ")}\s+(.*?)\s+{re.escape("и")}', self.content_info[8])
+            if match:
+                self.gost_edit.setText(match.group(1))
+            match = re.search(rf'\b{re.escape("СТО")}\s+(.*)$', self.content_info[8])
+            if match:
+                self.sto_edit.setText(match.group(1))
+            match = re.search(rf'\b{re.escape("Взамен")}\s+(.*?)$', self.content_info[10])
+            if match:
+                self.vzamen_edit.setText(match.group(1))
+
+    # Функция, которая присваивает элемент self.row
+    def on_row(self, row):
+        self.row = self.row_table + row + 1
+        self.cursor.setText(f"Курсор установлен на {row + 1} строке")
+
+
+    # Функция которая вызывыется, путем двумя нажатиями на элемент в таблице
+    def turn_item_in_table(self, row):
+        self.clear_widget() # Чистим все виджеты, после того, как хотим их перенести на виджеты
+        row_data = []
+        table_items = []
+        for column in range(self.table.columnCount()):
+            item = self.table.item(row, column)
+            if item is not None:
+                row_data.append(item.text())
+
+        unique_arr = []
+        if len(set(row_data)) == 1 and '-' not in row_data:
+            unique_arr.append(row_data[0])
+        else:
+            seen_3_5 = set()
+            seen_5_11 = set()
+            for idx, item in enumerate(row_data):
+                if idx in [3, 4] and item in row_data[3:5]:
+                    if item != '-' and item in seen_3_5:
+                        continue
+                    else:
+                        unique_arr.append(item)
+                        seen_3_5.add(item)
+                elif idx in [5, 6, 7, 8, 9, 10] and item in row_data[5:11]:
+                    if item != '-' and item in seen_5_11:
+                        continue
+                    else:
+                        unique_arr.append(item)
+                        seen_5_11.add(item)
+                else:
+                    unique_arr.append(item)
+        match len(unique_arr):
+            case 1:
+                self.lineEdit.setText(row_data[0])
+            case 6:
+                self.name_operation_box.setCurrentText(unique_arr[1]), self.oborudovanie_edit.setText(unique_arr[2])
+                self.diametr_edit.setText(unique_arr[3]), self.heat_treatment_mode_edit.setText(unique_arr[4])
+                self.note_edit.setText(unique_arr[5])
+            case 7:
+                self.name_operation_box.setCurrentText(unique_arr[1]), self.oborudovanie_edit.setText(unique_arr[2])
+                self.diametr_do_edit.setText(unique_arr[3]), self.diametr_posle_edit.setText(unique_arr[4])
+                self.heat_treatment_mode_edit.setText(unique_arr[5]), self.note_edit.setText(unique_arr[6])
+            case 11:
+                self.name_operation_box.setCurrentText(unique_arr[1]), self.oborudovanie_edit.setText(unique_arr[2])
+                self.diametr_edit.setText(unique_arr[3]), self.number_marshrut_edit.setText(unique_arr[4])
+                self.steps_deformac_edit.setText(unique_arr[5]), self.heating_medium_edit.setText(unique_arr[6])
+                self.annealing_temperature_edit.setText(unique_arr[7]), self.time_edit.setText(unique_arr[8])
+                self.cooling_conditions_edit.setText(unique_arr[9]), self.note_edit.setText(unique_arr[10])
+            case 12:
+                self.name_operation_box.setCurrentText(unique_arr[1]), self.oborudovanie_edit.setText(unique_arr[2])
+                self.diametr_do_edit.setText(unique_arr[3]), self.diametr_posle_edit.setText(unique_arr[4])
+                self.number_marshrut_edit.setText(unique_arr[5]) , self.steps_deformac_edit.setText(unique_arr[6])
+                self.heating_medium_edit.setText(unique_arr[7]), self.annealing_temperature_edit.setText(unique_arr[8])
+                self.time_edit.setText(unique_arr[9]), self.cooling_conditions_edit.setText(unique_arr[10])
+                self.note_edit.setText(unique_arr[11])
+            case _:
+                print(f"Sorry, {len(unique_arr)}")
+        self.row = row + self.row_table + 1
+
+    def read_text_widgets_and_write_file(self, new_row):
+        items = ['idx',
                  self.name_operation_box.currentText(),
                  self.oborudovanie_edit.toPlainText() if self.oborudovanie_edit.toPlainText().strip() else '-']
-        if self.diametr_edit.isEnabled():
-            items.append(self.diametr_edit.text() if self.diametr_edit.text().strip() else '-')
-        else:
-            items.append("")
-        if self.diametr_do_edit.isEnabled():
-            items.append(self.diametr_do_edit.text() if self.diametr_do_edit.text().strip() else '-')
-        else:
-            items.append("")
-        if self.diametr_posle_edit.isEnabled():
-            items.append(self.diametr_posle_edit.text() if self.diametr_posle_edit.text().strip() else '-')
-        else:
-            items.append("")
-        if self.heat_treatment_mode_edit.isEnabled():
-            items.append(self.heat_treatment_mode_edit.toPlainText() if self.heat_treatment_mode_edit.toPlainText().strip() else '-')
-        else:
-            items.append("")
-        if self.number_marshrut_edit.isEnabled():
-            items.append(self.number_marshrut_edit.text() if self.number_marshrut_edit.text().strip() else '-')
-        else:
-            items.append("")
-        if self.steps_deformac_edit.isEnabled():
-            items.append(self.steps_deformac_edit.text() if self.steps_deformac_edit.text().strip() else '-')
-        else:
-            items.append("")
-        if self.heating_medium_edit.isEnabled():
-            items.append(self.heating_medium_edit.text() if self.heating_medium_edit.text().strip() else '-')
-        else:
-            items.append("")
-        if self.annealing_temperature_edit.isEnabled():
-            items.append(self.annealing_temperature_edit.text() if self.annealing_temperature_edit.text().strip() else '-')
-        else:
-            items.append("")
-        if self.time_edit.isEnabled():
-            items.append(self.time_edit.text() if self.time_edit.text().strip() else '-')
-        else:
-            items.append("")
-        if self.cooling_conditions_edit.isEnabled():
-            items.append(self.cooling_conditions_edit.text() if self.cooling_conditions_edit.text().strip() else '-')
-        else:
-            items.append("")
+        list_widgets = [self.diametr_edit, self.diametr_do_edit, self.diametr_posle_edit, self.heat_treatment_mode_edit,
+                        self.number_marshrut_edit, self.steps_deformac_edit, self.heating_medium_edit, self.annealing_temperature_edit
+                        , self.time_edit, self.cooling_conditions_edit]
+        for widget in list_widgets:
+            if widget.isEnabled():
+                try:
+                    items.append(widget.text() if widget.text().strip() else '-')
+                except Exception:
+                    items.append(widget.toPlainText() if widget.toPlainText().strip() else '-')
+            else:
+                items.append("")
         items.append(self.note_edit.toPlainText() if self.note_edit.toPlainText().strip() else '-')
+        print(items)
         items = len([x for x in items if len(x)])
-        if items == 12:
-            # Заполняем новую строку пустыми ячейками
-            for cell, text in zip(new_row.cells,
-                                  [self.item,
-                                   self.name_operation_box.currentText() if self.name_operation_box.currentText().strip() else self.name_operation_box.setCurrentIndex(
-                                       0),
-                                   self.oborudovanie_edit.toPlainText().strip() if self.oborudovanie_edit.toPlainText().strip() else '-',
-                                   self.diametr_do_edit.text().strip() if self.diametr_do_edit.text().strip() else '-',
-                                   self.diametr_posle_edit.text().strip() if self.diametr_posle_edit.text().strip() else '-',
-                                   self.number_marshrut_edit.text().strip() if self.number_marshrut_edit.text().strip() else '-',
-                                   self.steps_deformac_edit.text().strip() if self.steps_deformac_edit.text().strip() else '-',
-                                   self.heating_medium_edit.text().strip() if self.heating_medium_edit.text().strip() else '-',
-                                   self.annealing_temperature_edit.text().strip() if self.annealing_temperature_edit.text().strip() else '-',
-                                   self.time_edit.text().strip() if self.time_edit.text().strip() else '-',
-                                   self.cooling_conditions_edit.text().strip() if self.cooling_conditions_edit.text().strip() else '-',
-                                   self.note_edit.toPlainText().strip() if self.note_edit.toPlainText().strip() else '-']):
-                cell.text = text
-                paragraph = cell.paragraphs[0]
-                # Выравниваем текст по центру
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                # Устанавливаем шрифт, стиль и размер шрифта для текста в объединенной ячейке
-                run = paragraph.runs[0]
-                run.font.name = 'Times New Roman'
-                run.font.size = Pt(10)
-        elif items == 11:
-            new_row.cells[3].merge(new_row.cells[4])
-            for cell, text in zip(new_row.cells,
-                                  [self.item,
-                                   self.name_operation_box.currentText() if self.name_operation_box.currentText().strip() else self.name_operation_box.setCurrentIndex(
-                                       0),
-                                   self.oborudovanie_edit.toPlainText().strip() if self.oborudovanie_edit.toPlainText().strip() else '-',
-                                   '',
-                                   self.diametr_edit.text().strip() if self.diametr_edit.text().strip() else '-',
-                                   self.number_marshrut_edit.text().strip() if self.number_marshrut_edit.text().strip() else '-',
-                                   self.steps_deformac_edit.text().strip() if self.steps_deformac_edit.text().strip() else '-',
-                                   self.heating_medium_edit.text().strip() if self.heating_medium_edit.text().strip() else '-',
-                                   self.annealing_temperature_edit.text().strip() if self.annealing_temperature_edit.text().strip() else '-',
-                                   self.time_edit.text().strip() if self.time_edit.text().strip() else '-',
-                                   self.cooling_conditions_edit.text().strip() if self.cooling_conditions_edit.text().strip() else '-',
-                                   self.note_edit.toPlainText().strip() if self.note_edit.toPlainText().strip() else '-']):
-                cell.text = text
-                paragraph = cell.paragraphs[0]
-                # Выравниваем текст по центру
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                # Устанавливаем шрифт, стиль и размер шрифта для текста в объединенной ячейке
-                run = paragraph.runs[0]
-                run.font.name = 'Times New Roman'
-                run.font.size = Pt(10)
-        elif items == 6:
-            new_row.cells[3].merge(new_row.cells[4])
-            new_row.cells[5].merge(new_row.cells[10])
-            for cell, text in zip(new_row.cells,
-                                  [self.item,
-                                   self.name_operation_box.currentText() if self.name_operation_box.currentText().strip() else self.name_operation_box.setCurrentIndex(
-                                       0),
-                                   self.oborudovanie_edit.toPlainText().strip() if self.oborudovanie_edit.toPlainText().strip() else '-',
-                                   '',
-                                   self.diametr_edit.text().strip() if self.diametr_edit.text().strip() else '-',
-                                   '',
-                                   '',
-                                   '',
-                                   '',
-                                   '',
-                                   self.heat_treatment_mode_edit.toPlainText().strip() if self.heat_treatment_mode_edit.toPlainText().strip() else '-',
-                                   self.note_edit.toPlainText().strip() if self.note_edit.toPlainText().strip() else '-']):
-                cell.text = text
-                paragraph = cell.paragraphs[0]
-                # Выравниваем текст по центру
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                # Устанавливаем шрифт, стиль и размер шрифта для текста в объединенной ячейке
-                run = paragraph.runs[0]
-                run.font.name = 'Times New Roman'
-                run.font.size = Pt(10)
-        elif items == 7:
-            new_row.cells[5].merge(new_row.cells[10])
-            for cell, text in zip(new_row.cells,
-                                  [self.item,
-                                   self.name_operation_box.currentText() if self.name_operation_box.currentText().strip() else self.name_operation_box.setCurrentIndex(
-                                       0),
-                                   self.oborudovanie_edit.toPlainText().strip() if self.oborudovanie_edit.toPlainText().strip() else '-',
-                                   self.diametr_do_edit.text().strip() if self.diametr_do_edit.text().strip() else '-',
-                                   self.diametr_posle_edit.text().strip() if self.diametr_posle_edit.text().strip() else '-',
-                                   '',
-                                   '',
-                                   '',
-                                   '',
-                                   '',
-                                   self.heat_treatment_mode_edit.toPlainText().strip() if self.heat_treatment_mode_edit.toPlainText().strip() else '-',
-                                   self.note_edit.toPlainText().strip() if self.note_edit.toPlainText().strip() else '-']):
-                cell.text = text
-                paragraph = cell.paragraphs[0]
-                # Выравниваем текст по центру
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                # Устанавливаем шрифт, стиль и размер шрифта для текста в объединенной ячейке
-                run = paragraph.runs[0]
-                run.font.name = 'Times New Roman'
-                run.font.size = Pt(10)
+        match items:
+            case 12:
+                for cell, text in zip(new_row.cells,
+                                      ['idx',
+                                       self.name_operation_box.currentText() if self.name_operation_box.currentText().strip() else self.name_operation_box.setCurrentIndex(
+                                           0),
+                                       self.oborudovanie_edit.toPlainText().strip() if self.oborudovanie_edit.toPlainText().strip() else '-',
+                                       self.diametr_do_edit.text().strip() if self.diametr_do_edit.text().strip() else '-',
+                                       self.diametr_posle_edit.text().strip() if self.diametr_posle_edit.text().strip() else '-',
+                                       self.number_marshrut_edit.text().strip() if self.number_marshrut_edit.text().strip() else '-',
+                                       self.steps_deformac_edit.text().strip() if self.steps_deformac_edit.text().strip() else '-',
+                                       self.heating_medium_edit.text().strip() if self.heating_medium_edit.text().strip() else '-',
+                                       self.annealing_temperature_edit.text().strip() if self.annealing_temperature_edit.text().strip() else '-',
+                                       self.time_edit.text().strip() if self.time_edit.text().strip() else '-',
+                                       self.cooling_conditions_edit.text().strip() if self.cooling_conditions_edit.text().strip() else '-',
+                                       self.note_edit.toPlainText().strip() if self.note_edit.toPlainText().strip() else '-']):
+                    cell.text = text
+                    paragraph = cell.paragraphs[0]
+                    # Выравниваем текст по центру
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    # Устанавливаем шрифт, стиль и размер шрифта для текста в объединенной ячейке
+                    run = paragraph.runs[0]
+                    run.font.name = 'Times New Roman'
+                    run.font.size = Pt(10)
+            case 11:
+                new_row.cells[3].merge(new_row.cells[4])
+                for cell, text in zip(new_row.cells,
+                                      ['idx',
+                                       self.name_operation_box.currentText() if self.name_operation_box.currentText().strip() else self.name_operation_box.setCurrentIndex(
+                                           0),
+                                       self.oborudovanie_edit.toPlainText().strip() if self.oborudovanie_edit.toPlainText().strip() else '-',
+                                       '',
+                                       self.diametr_edit.text().strip() if self.diametr_edit.text().strip() else '-',
+                                       self.number_marshrut_edit.text().strip() if self.number_marshrut_edit.text().strip() else '-',
+                                       self.steps_deformac_edit.text().strip() if self.steps_deformac_edit.text().strip() else '-',
+                                       self.heating_medium_edit.text().strip() if self.heating_medium_edit.text().strip() else '-',
+                                       self.annealing_temperature_edit.text().strip() if self.annealing_temperature_edit.text().strip() else '-',
+                                       self.time_edit.text().strip() if self.time_edit.text().strip() else '-',
+                                       self.cooling_conditions_edit.text().strip() if self.cooling_conditions_edit.text().strip() else '-',
+                                       self.note_edit.toPlainText().strip() if self.note_edit.toPlainText().strip() else '-']):
+                    cell.text = text
+                    paragraph = cell.paragraphs[0]
+                    # Выравниваем текст по центру
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    # Устанавливаем шрифт, стиль и размер шрифта для текста в объединенной ячейке
+                    run = paragraph.runs[0]
+                    run.font.name = 'Times New Roman'
+                    run.font.size = Pt(10)
+            case 6:
+                new_row.cells[3].merge(new_row.cells[4])
+                new_row.cells[5].merge(new_row.cells[10])
+                for cell, text in zip(new_row.cells,
+                                      ['idx',
+                                       self.name_operation_box.currentText() if self.name_operation_box.currentText().strip() else self.name_operation_box.setCurrentIndex(
+                                           0),
+                                       self.oborudovanie_edit.toPlainText().strip() if self.oborudovanie_edit.toPlainText().strip() else '-',
+                                       '',
+                                       self.diametr_edit.text().strip() if self.diametr_edit.text().strip() else '-',
+                                       '',
+                                       '',
+                                       '',
+                                       '',
+                                       '',
+                                       self.heat_treatment_mode_edit.toPlainText().strip() if self.heat_treatment_mode_edit.toPlainText().strip() else '-',
+                                       self.note_edit.toPlainText().strip() if self.note_edit.toPlainText().strip() else '-']):
+                    cell.text = text
+                    paragraph = cell.paragraphs[0]
+                    # Выравниваем текст по центру
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    # Устанавливаем шрифт, стиль и размер шрифта для текста в объединенной ячейке
+                    run = paragraph.runs[0]
+                    run.font.name = 'Times New Roman'
+                    run.font.size = Pt(10)
+            case 7:
+                new_row.cells[5].merge(new_row.cells[10])
+                for cell, text in zip(new_row.cells,
+                                      ['idx',
+                                       self.name_operation_box.currentText() if self.name_operation_box.currentText().strip() else self.name_operation_box.setCurrentIndex(
+                                           0),
+                                       self.oborudovanie_edit.toPlainText().strip() if self.oborudovanie_edit.toPlainText().strip() else '-',
+                                       self.diametr_do_edit.text().strip() if self.diametr_do_edit.text().strip() else '-',
+                                       self.diametr_posle_edit.text().strip() if self.diametr_posle_edit.text().strip() else '-',
+                                       '',
+                                       '',
+                                       '',
+                                       '',
+                                       '',
+                                       self.heat_treatment_mode_edit.toPlainText().strip() if self.heat_treatment_mode_edit.toPlainText().strip() else '-',
+                                       self.note_edit.toPlainText().strip() if self.note_edit.toPlainText().strip() else '-']):
+                    cell.text = text
+                    paragraph = cell.paragraphs[0]
+                    # Выравниваем текст по центру
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    # Устанавливаем шрифт, стиль и размер шрифта для текста в объединенной ячейке
+                    run = paragraph.runs[0]
+                    run.font.name = 'Times New Roman'
+                    run.font.size = Pt(10)
 
-    def add_column(self):
+    # Функция, которая сохраняет текст в таблицу
+    def save_column(self):
         try:
-            if isinstance(self.row_table, int):
-                if [self.item] == self.arr[self.row_table - 3]:
-                    doc = Document(self.doc)
-                    # Получаем доступ к таблице (например, первой таблице в документе)
-                    table = doc.tables[self.id_table]
-                    # Указываем номер строки (например, 1) и номер столбца (например, 2)
-                    row_index = self.row_table
-                    column_index = 1
+            if self.row:
+                doc = Document(self.doc)
+                row_to_remove_index = self.row
+                table = doc.tables[self.table_id]
+                if 0 <= row_to_remove_index < len(table.rows):
+                    row_to_remove = table.rows[row_to_remove_index]
+                    parent = row_to_remove._element.getparent()
+                    parent.remove(row_to_remove._element)
+                    new_row = table.add_row()
+                    table.rows[row_to_remove_index]._element.addprevious(new_row._element)
+                    self.read_text_widgets_and_write_file(new_row)
+                doc.save(self.doc)
+                self.table.clearContents()  # Чистим таблицу
+                self.update_table_rows()
+                self.read_file_table()      # Заполняем таблицу
+                self.modific_doc_file()
+            else:
+                self.show_alert()
+                self.alert_text.setText(f"Выберите колонку!")
+                self.timer.setSingleShot(True)
+                self.timer.timeout.connect(self.hide_alert)
+                self.timer.start(3000)
+        except PermissionError:
+            self.show_alert()
+            self.alert_text.setText(f"Файл был открыт!\nЗайкроте его и снова выполните сохранение данных в строке!")
+            self.timer.setSingleShot(True)
+            self.timer.timeout.connect(self.hide_alert)
+            self.timer.start(5000)
+        except Exception as ex:
+            self.show_alert()
+            self.alert_text.setText(f"Системная Ошибка! {ex}")
+            self.timer.setSingleShot(True)
+            self.timer.timeout.connect(self.hide_alert)
+            self.timer.start(5000)
+
+    # Функция, которая добавляет новую строку в таблицу
+    def add_column_item(self):
+        try:
+            doc = Document(self.doc)
+            table = doc.tables[self.table_id]
+            if self.row:
+                row_to_remove_index = self.row  # Нумерация строк начинается с 0
+                print(row_to_remove_index)
+                # Проход по всем таблицам в документе
+                # Проверяем, что индекс удаляемой строки находится в пределах диапазона строк таблицы
+                if 0 <= row_to_remove_index < len(table.rows):
+                    new_row = table.add_row()
+                    table.rows[row_to_remove_index]._element.addprevious(new_row._element)
+                    self.read_text_widgets_and_write_file(new_row)
+
+
+            else:
+                new_row = table.add_row()
+                self.read_text_widgets_and_write_file(new_row)
+
+            # Сохранение изменений в документе
+            doc.save(self.doc)
+            self.table.clearContents()
+            self.update_table_rows()
+            self.read_file_table()
+            self.modific_doc_file()
+        except PermissionError:
+            self.show_alert()
+            self.alert_text.setText(f"Файл был открыт!\nЗайкроте его и снова выполните добавление строки!")
+            self.timer.setSingleShot(True)
+            self.timer.timeout.connect(self.hide_alert)
+            self.timer.start(5000)
+        except Exception as ex:
+            self.show_alert()
+            self.alert_text.setText(f"Системная Ошибка!\n{ex}")
+            self.timer.setSingleShot(True)
+            self.timer.timeout.connect(self.hide_alert)
+            self.timer.start(5000)
+
+    def add_merger_column(self):
+        try:
+            if self.row:
+                doc = Document(self.doc)
+                table = doc.tables[self.table_id]
+                # Получаем строку по индексу
+                row = table.rows[self.row]
+                row_data = [cell.text.strip() for cell in row.cells]
+                if len(set(row_data)) == 1:
                     # Получаем доступ к ячейке в указанной строке и столбце
-                    cell = table.cell(row_index, column_index)
+                    cell = table.cell(self.row, 0)
                     # Устанавливаем новое значение содержимого ячейки
                     cell.text = self.lineEdit.text()
                     paragraph = cell.paragraphs[0]
@@ -1165,11 +1417,9 @@ class DocPage(QWidget, AlertMessage):
                     run.font.name = 'Times New Roman'
                     run.font.bold = True
                     run.font.size = Pt(10)
-
                 else:
-                    doc = Document(self.doc)
                     # Индекс строки, перед которой нужно добавить новую строку (начиная с 0)
-                    insert_row_index = self.row_table  # Например, добавляем перед 4-й строкой (индекс 3)
+                    insert_row_index = self.row
                     # Проходим по всем таблицам в документе
                     for table in doc.tables:
                         # Проверяем, что индекс вставляемой строки находится в пределах диапазона строк таблицы
@@ -1196,7 +1446,7 @@ class DocPage(QWidget, AlertMessage):
             else:
                 doc = Document(self.doc)
                 # Получаем первую таблицу в документе
-                table = doc.tables[self.id_table]
+                table = doc.tables[self.table_id]
                 # Добавляем новую строку в таблицу
                 new_row = table.add_row()
                 # Объединяем новые ячейки в одну
@@ -1214,54 +1464,105 @@ class DocPage(QWidget, AlertMessage):
                 run.font.size = Pt(10)
                 # Сохраняем изменения
             doc.save(self.doc)
-            self.set_last_modified_by()
-            self.clear_text()
-            self.update_idx()
+            self.update_table_rows()
             self.table.clearContents()
-            self.fill_table()
+            self.read_file_table()
+            self.modific_doc_file()
         except PermissionError:
             self.show_alert()
-            self.alert_text.setText(f"Файл был открыт, зайкроте его и снова выполните добавление колонки!")
+            self.alert_text.setText(f"Файл был открыт\nЗайкроте его и снова выполните добавление колонки!")
+            self.timer.setSingleShot(True)
+            self.timer.timeout.connect(self.hide_alert)
+            self.timer.start(3000)
+
+    # Функция, которая удаляет строку в таблице
+    def del_column(self):
+        try:
+            if self.row:
+                # Загрузка документа
+                doc = Document(self.doc)
+                table = doc.tables[self.table_id]
+                row_count = len(table.rows)
+                # Индекс удаляемой строки (начиная с 0)
+                row_to_remove_index = self.row  # Нумерация строк начинается с 0
+                # Проход по всем таблицам в документе
+                table = doc.tables[self.table_id]
+                # Проверяем, что индекс удаляемой строки находится в пределах диапазона строк таблицы
+                if 0 <= row_to_remove_index < len(table.rows):
+                    # Удаляем строку из таблицы
+                    parent = table.rows[row_to_remove_index]._element.getparent()
+                    parent.remove(table.rows[row_to_remove_index]._element)
+
+                doc.save(self.doc)
+                self.table.clearContents()
+                if row_count:
+                    self.update_table_rows()
+                self.read_file_table()
+                self.modific_doc_file()
+                self.row = 0
+            else:
+                self.show_alert()
+                self.alert_text.setText(f"Выберите колонку!")
+                self.timer.setSingleShot(True)
+                self.timer.timeout.connect(self.hide_alert)
+                self.timer.start(3000)
+        except PermissionError:
+            self.show_alert()
+            self.alert_text.setText(f"Файл был открыт!\nЗайкроте его и снова выполните удаление строки!")
+            self.timer.setSingleShot(True)
+            self.timer.timeout.connect(self.hide_alert)
+            self.timer.start(3000)
+        except Exception as ex:
+            self.show_alert()
+            self.alert_text.setText(f"Системная Ошибка!\n{ex}")
             self.timer.setSingleShot(True)
             self.timer.timeout.connect(self.hide_alert)
             self.timer.start(5000)
 
-    def enabled_widget(self, evt):
-        widgets = [self.director_edit, self.number_card_edit, self.splav_edit, self.gost_edit, self.sto_edit,
-                   self.vzamen_edit,
-                   self.name_operation_box, self.oborudovanie_edit, self.open_scroll, self.diametr_edit,
-                   self.diametr_do_edit,
-                   self.diametr_posle_edit, self.number_marshrut_edit, self.steps_deformac_edit, self.time_edit,
-                   self.heat_treatment_mode_edit,
-                   self.heating_medium_edit, self.annealing_temperature_edit, self.cooling_conditions_edit,
-                   self.note_edit, self.lineEdit,
-                   self.button_column, self.button_save_column, self.button_add_column, self.button_del_column,
-                   self.open_file, self.save_file, self.delete_file]
-        if self.main.user.posts != 'Технолог':
-            for widget in widgets:
-                widget.setEnabled(False)
-            self.button_add_table.setEnabled(False)
-            self.button_del_table.setEnabled(False)
-            self.button_add_table.setStyleSheet(self.css_green)
-            self.open_scroll.setEnabled(evt)
-        else:
-            for widget in widgets:
-                widget.setEnabled(evt)
-        self.window.setVisible(not evt)
-        self.table_window.setVisible(not evt)
-        self.tables.setVisible(not evt)
-        self.button_add_table.setVisible(not evt)
-        self.button_del_table.setVisible(not evt)
-        self.button_info_window.setEnabled(evt)
+    # функция которая обновляет id или №п/п
+    def update_table_rows(self):
+        doc = Document(self.doc)
+        idx = 1
 
-    def combining_diametr(self):
-        if self.diametr_edit.text().strip():
-            self.diametr_do_edit.setEnabled(False)
-            self.diametr_posle_edit.setEnabled(False)
-        else:
-            self.diametr_do_edit.setEnabled(True)
-            self.diametr_posle_edit.setEnabled(True)
+        # Проходимся по всем таблицам в документе
+        for table_id, table in enumerate(doc.tables):
+            # Пропускаем таблицы, у которых не 12 ячеек
+            if len(table.columns) != 12:
+                continue
+            elif table_id == 0:
+                start_row = 3
+            else:
+                start_row = 1
+            # Проходимся по строкам таблицы, начиная с четвертой строки
+            for i, row in enumerate(table.rows):
+                if i >= start_row:  # Начиная с четвертой строки
+                    # Получаем значения всех ячеек текущей строки
+                    cell_values = [cell.text for cell in row.cells]
 
+                    # Проверяем, все ли значения ячеек одинаковы
+                    if len(set(cell_values)) == 1:
+                        # Пропускаем эту строку, так как все значения одинаковы
+                        continue
+
+                    # Получаем ячейку в первой колонке текущей строки
+                    cell = row.cells[0]
+                    # Очищаем содержимое ячейки
+                    for paragraph in cell.paragraphs:
+                        for run in paragraph.runs:
+                            run.clear()
+                    # Вставляем новый текст (индекс) с нужным форматированием
+                    paragraph = cell.paragraphs[0]
+                    run = paragraph.add_run(str(idx))
+                    run.font.name = 'Times New Roman'
+                    run.font.size = Pt(10)
+                    # Выравниваем текст по центру ячейки
+                    paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+
+                    idx += 1
+
+        doc.save(self.doc)
+
+    # Функция, которая блокирует некоторые виджеты, но оставляет режим термообработки
     def combining_heat_treatment(self):
         if self.main.user.posts == 'Технолог':
             if self.heat_treatment_mode_edit.toPlainText().strip():
@@ -1279,485 +1580,149 @@ class DocPage(QWidget, AlertMessage):
                 self.number_marshrut_edit.setEnabled(True)
                 self.steps_deformac_edit.setEnabled(True)
 
-    def fill_table(self):
-        if self.doc:
-            doc = Document(self.doc)
-
-            # Создаем пустой список для хранения текста и других элементов
-
-            # Читаем содержимое каждого элемента в документе
-            for element in doc.element.body:
-                if element.tag.endswith('p'):  # Обрабатываем параграфы
-                    self.content.append(element.text)
-                elif element.tag.endswith('tbl'):  # Обрабатываем таблицы
-                    table_content = []
-                    for row in element.findall('.//tr'):
-                        table_row = []
-                        for cell in row.findall('.//tc'):
-                            cell_text = ''
-                            for paragraph in cell.findall('.//p'):
-                                cell_text += paragraph.text + '\n'
-                            table_row.append(cell_text.strip())
-                        table_content.append(table_row)
-                    self.content.append(table_content)
-            try:
-                # Находим таблицу по индексу
-                table = doc.tables[self.id_table]
-
-                # Читаем содержимое таблицы
-                table_content = []
-                for row in table.rows:
-                    row_data = []
-                    for cell in row.cells:
-                        row_data.append(cell.text.strip())
-                    table_content.append(row_data)
-            except Exception as e:
-                self.show_alert()
-                self.alert_text.setText(f"Ошибка при чтении таблицы из файла DOCX: {e}")
-                self.timer.setSingleShot(True)
-                self.timer.timeout.connect(self.hide_alert)
-                self.timer.start(5000)
-            self.arr = []
-            if self.id_table == 0:
-                self.sum_id_column = 3
-            else:
-                self.sum_id_column = 1
-            for i in table_content[self.sum_id_column:]:
-                unique_arr = []
-                seen_3_5 = set()
-                seen_5_11 = set()
-
-                for item in i:
-                    if item in i[3:5]:
-                        if item != '-' and item in seen_3_5:
-                            continue
-                        else:
-                            unique_arr.append(item)
-                            seen_3_5.add(item)
-                    elif item in i[5:11]:
-                        if item in seen_5_11:
-                            continue
-                        else:
-                            unique_arr.append(item)
-                            seen_5_11.add(item)
-                    else:
-                        unique_arr.append(item)
-
-                self.arr.append(unique_arr)
-            self.table.setRowCount(len(table_content[self.sum_id_column:]))
-            self.table.setColumnCount(12)
-            for row_index, row_data in enumerate(table_content[self.sum_id_column:]):
-                if len(set(row_data)) == 1 and '-' not in row_data:
-                    self.table.setSpan(row_index, 0, 1, 12)
-                else:
-                    if len(set(row_data[3:5])) == 1 and '-' not in row_data[3:5]:
-                        self.table.setSpan(row_index, 3, 1, 2)
-                    if len(set(row_data[5:11])) == 1 and '-' not in row_data[5:11]:
-                        self.table.setSpan(row_index, 5, 1, 6)
-                for col_index, col_data in enumerate(row_data):
-                    item = QtWidgets.QTableWidgetItem(col_data)
-                    item.setTextAlignment(0x0004 | 0x0080)
-                    self.table.setItem(row_index, col_index, item)
-            if len(self.content):
-                self.number_card_edit.setText(self.content[0])
-                match = re.search(r'_{2,}(.+)', self.content[4])
-                if match:
-                    self.director_edit.setText(match.group(1))
-                match = re.search(r'сплава\s+(.*?)\s+по', self.content[8])
-                if match:
-                    self.splav_edit.setText(match.group(1))
-                match = re.search(rf'\b{re.escape("ГОСТ")}\s+(.*?)\s+{re.escape("и")}', self.content[8])
-                if match:
-                    self.gost_edit.setText(match.group(1))
-                match = re.search(rf'\b{re.escape("СТО")}\s+(.*)$', self.content[8])
-                if match:
-                    self.sto_edit.setText(match.group(1))
-                match = re.search(rf'\b{re.escape("Взамен")}\s+(.*?)$', self.content[10])
-                if match:
-                    self.vzamen_edit.setText(match.group(1))
-
-    def open_table(self, item):
-        self.css_green = "QPushButton {\n" \
-                         "    background-color: black; \n" \
-                         "    color: white;\n" \
-                         "    border-radius: 10px;\n" \
-                         "}\n" \
-                         "\n" \
-                         "QPushButton:hover {\n" \
-                         "    background-color: green;\n" \
-                         "}"
-        self.css_red = "QPushButton {\n" \
-                       "    background-color: black; \n" \
-                       "    color: white;\n" \
-                       "    border-radius: 10px;\n" \
-                       "}\n" \
-                       "\n" \
-                       "QPushButton:hover {\n" \
-                       "    background-color: red;\n" \
-                       "}"
-        self.id_table = int(item.text()[-1]) - 1
-        if self.main.user.posts == 'Технолог':
-            self.button_column.setStyleSheet(self.css_green)
-            self.button_save_column.setStyleSheet(self.css_green)
-            self.button_add_column.setStyleSheet(self.css_green)
-            self.button_del_column.setStyleSheet(self.css_red)
-            self.open_file.setStyleSheet(self.css_green)
-            self.save_file.setStyleSheet(self.css_green)
-            self.delete_file.setStyleSheet(self.css_red)
-            self.button_info_window.setStyleSheet(self.css_green)
+    # Функция, которая блокирует вводить значения до и после диметра.
+    def combining_diametr(self):
+        if self.diametr_edit.text().strip():
+            self.diametr_do_edit.setEnabled(False)
+            self.diametr_posle_edit.setEnabled(False)
         else:
-            self.button_info_window.setStyleSheet(self.css_green)
-        self.enabled_widget(True)
-        self.open_scroll.setStyleSheet("QPushButton#open_scroll {\n"
+            self.diametr_do_edit.setEnabled(True)
+            self.diametr_posle_edit.setEnabled(True)
+
+    # Функция, которая блокирует комбинируемый диаметр
+    def lock_combin(self):
+        sender_widget = self.sender()
+        if sender_widget is not None:
+            if sender_widget.text().strip():
+                self.diametr_edit.setEnabled(False)
+            else:
+                self.diametr_edit.setEnabled(True)
+
+    # Функция, которая блокирует комбинируемый режим термообработки
+    def lock_heart_combine(self):
+        sender_widget = self.sender()
+        if sender_widget is not None:
+            if sender_widget.text().strip():
+                self.heat_treatment_mode_edit.setEnabled(False)
+            else:
+                self.heat_treatment_mode_edit.setEnabled(True)
+
+    # Функция которая чистит текст во всех виджетах
+    def clear_widget(self):
+        self.name_operation_box.setCurrentText(''), self.oborudovanie_edit.clear(), self.diametr_edit.clear()
+        self.diametr_do_edit.clear(), self.diametr_posle_edit.clear(), self.number_marshrut_edit.clear()
+        self.steps_deformac_edit.clear(), self.time_edit.clear()
+        self.heat_treatment_mode_edit.clear(), self.heating_medium_edit.clear(), self.annealing_temperature_edit.clear()
+        self.cooling_conditions_edit.clear(), self.note_edit.clear(), self.lineEdit.clear()
+        self.row = 0
+        self.cursor.setText(f"Курсор установлен на {self.row} строке")
+
+    # Раскрывает список с таблицами
+    def show_list_table(self):
+        self.load_table_item()
+        self.hide_table_window(True)
+
+    # Раскрывает таблицу на максимум
+    def unwrap_table(self):
+        if self.open_scroll.isChecked():
+            self.table.setGeometry(QtCore.QRect(20, 110, 1001, 701))
+        else:
+            self.table.setGeometry(QtCore.QRect(850, 110, 171, 701))
+
+    # Функция, которая открывает или закрывает окно с информацией
+    def open_info_window(self, bolean):
+        self.info_window.setVisible(bolean)
+        self.director.setVisible(bolean)
+        self.director_edit.setVisible(bolean)
+        self.number_card.setVisible(bolean)
+        self.number_card_edit.setVisible(bolean)
+        self.splav.setVisible(bolean)
+        self.splav_edit.setVisible(bolean)
+        self.gost.setVisible(bolean)
+        self.gost_edit.setVisible(bolean)
+        self.sto.setVisible(bolean)
+        self.sto_edit.setVisible(bolean)
+        self.vzamen.setVisible(bolean)
+        self.vzamen_edit.setVisible(bolean)
+
+    # Установка использования виджетов
+    def widget_enable_true_or_false(self, bolean):
+        self.open_list_table.setEnabled(bolean), self.open_scroll.setEnabled(bolean)
+        self.reset_button.setEnabled(bolean), self.name_operation_box.setEnabled(bolean)
+        self.oborudovanie_edit.setEnabled(bolean), self.diametr_edit.setEnabled(bolean)
+        self.diametr_do_edit.setEnabled(bolean), self.diametr_posle_edit.setEnabled(bolean)
+        self.number_marshrut_edit.setEnabled(bolean), self.steps_deformac_edit.setEnabled(bolean)
+        self.heat_treatment_mode_edit.setEnabled(bolean), self.heating_medium_edit.setEnabled(bolean)
+        self.annealing_temperature_edit.setEnabled(bolean), self.time_edit.setEnabled(bolean)
+        self.cooling_conditions_edit.setEnabled(bolean), self.note_edit.setEnabled(bolean)
+        self.lineEdit.setEnabled(bolean), self.button_column.setEnabled(bolean)
+        self.button_save_column.setEnabled(bolean), self.button_add_column.setEnabled(bolean)
+        self.button_del_column.setEnabled(bolean), self.save_file.setEnabled(bolean)
+        self.open_file.setEnabled(bolean), self.delete_file.setEnabled(bolean)
+        self.button_info_window.setEnabled(bolean)
+
+    # Скрывает или показывает окно выбора таблица
+    def hide_table_window(self, bolean):
+        self.window.setVisible(bolean)
+        self.table_window.setVisible(bolean)
+        self.tables.setVisible(bolean)
+        self.button_add_table.setVisible(bolean)
+        self.button_del_table.setVisible(bolean)
+
+    # Возвращает прежний вид виджетов
+    def set_stylesheet_widget(self, stylesheet_green, stylesheet_red, open_window):
+        self.save_file.setStyleSheet(stylesheet_green), self.open_file.setStyleSheet(stylesheet_green)
+        self.delete_file.setStyleSheet(stylesheet_red), self.button_info_window.setStyleSheet(stylesheet_green)
+        self.open_scroll.setStyleSheet("QPushButton {\n"
                                        "    background-color: white; \n"
                                        "    color: black;\n"
                                        "    border-radius: 10px;\n"
                                        "}\n"
                                        "\n"
-                                       "QPushButton#open_scroll:hover {\n"
+                                       "QPushButton:hover {\n"
                                        "    background-color: green;\n"
-                                       "}")
-        self.fill_table()
-
-    def enabel_table(self, item):
-        self.id_table = int(item.text()[-1]) - 1
-        self.button_del_table.setEnabled(True)
-        self.button_del_table.setStyleSheet("QPushButton#button_del_table {\n"
+                                       "}" if open_window else "QPushButton {\n"
+                                       "    background-color: rgb(115, 115, 115); \n"
+                                       "    color: black;\n"
+                                       "    border-radius: 10px;\n"
+                                       "}\n"
+                                       "\n"
+                                       "QPushButton:hover {\n"
+                                       "    background-color: green;\n"
+                                       "}"), self.button_column.setStyleSheet(stylesheet_green)
+        self.button_save_column.setStyleSheet(stylesheet_green), self.button_add_column.setStyleSheet(stylesheet_green)
+        self.button_del_column.setStyleSheet(stylesheet_green), self.open_list_table.setStyleSheet("QPushButton {\n"
                                             "    background-color: black; \n"
                                             "    color: white;\n"
                                             "    border-radius: 10px;\n"
-                                            "}\n"
-                                            "\n"
-                                            "QPushButton#button_del_table:hover {\n"
-                                            "    background-color: red;\n"
-                                            "}")
-
-    def add_table(self):
-        try:
-            doc = Document(self.doc)
-            doc.add_section(WD_SECTION_START.NEW_PAGE)
-            table = doc.add_table(rows=1, cols=12)
-
-            # Применяем стиль "Table Grid" к таблице
-            table.style = "Table Grid"
-
-            for i in range(12):
-                cell = table.cell(0, i)
-                cell.text = str(i + 1)
-                paragraphs = cell.paragraphs
-                for paragraph in paragraphs:
-                    run = paragraph.runs[0]
-                    run.bold = True
-
-            for row in table.rows:
-                for cell in row.cells:
-                    for paragraph in cell.paragraphs:
-                        for run in paragraph.runs:
-                            run.font.name = 'Times New Roman'
-                            run.font.size = Pt(10)  # Используем Pt для установки размера шрифта
-                        # Выравниваем текст по центру ячеек
-                    cell.paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            doc.save(self.doc)
-            self.set_last_modified_by()
-            self.table_widget.clear()
-            self.load_table_item()
-            self.css_red = "QPushButton {\n" \
-                           "    background-color: rgb(115, 115, 115); \n" \
-                           "    color: white;\n" \
-                           "    border-radius: 10px;\n" \
-                           "}\n" \
-                           "\n" \
-                           "QPushButton:hover {\n" \
-                           "    background-color: red;\n" \
-                           "}"
-            self.button_del_table.setStyleSheet(self.css_red)
-            self.button_del_table.setEnabled(False)
-        except PermissionError:
-            self.show_alert()
-            self.alert_text.setText(f"Файл был открыт, зайкроте его и снова выполните создание таблицы!")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(5000)
-
-    def del_table(self):
-        try:
-            doc = Document(self.doc)
-            table_to_delete = doc.tables[self.id_table]
-            table_to_delete._element.getparent().remove(table_to_delete._element)
-            doc.save(self.doc)
-            self.set_last_modified_by()
-            self.table_widget.clear()
-            self.load_table_item()
-            self.css_red = "QPushButton {\n" \
-                           "    background-color: rgb(115, 115, 115); \n" \
-                           "    color: white;\n" \
-                           "    border-radius: 10px;\n" \
-                           "}\n" \
-                           "\n" \
-                           "QPushButton:hover {\n" \
-                           "    background-color: red;\n" \
-                           "}"
-            self.button_del_table.setStyleSheet(self.css_red)
-            self.button_del_table.setEnabled(False)
-        except PermissionError:
-            self.show_alert()
-            self.alert_text.setText(f"Файл был открыт, зайкроте его и снова выполните удаление таблицы!")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(5000)
-
-    def load_table_item(self):
-        self.table_widget.clear()
-        self.enabled_widget(False)
-        doc = Document(self.doc)
-        for i, table in enumerate(doc.tables):
-            if all(len(row.cells) == 12 for row in table.rows):
-                item = QtWidgets.QListWidgetItem(f'Таблица - {str(i + 1)}')
-                item.setTextAlignment(QtCore.Qt.AlignCenter)
-                self.table_widget.addItem(item)
-
-    def del_column(self):
-        try:
-            # Загрузка документа
-            doc = Document(self.doc)
-            # Индекс удаляемой строки (начиная с 0)
-            row_to_remove_index = self.row_table  # Нумерация строк начинается с 0
-            # Проход по всем таблицам в документе
-            table = doc.tables[self.id_table]
-            # Проверяем, что индекс удаляемой строки находится в пределах диапазона строк таблицы
-            if 0 <= row_to_remove_index < len(table.rows):
-                # Удаляем строку из таблицы
-                parent = table.rows[row_to_remove_index]._element.getparent()
-                parent.remove(table.rows[row_to_remove_index]._element)
-
-            doc.save(self.doc)
-            self.set_last_modified_by()
-
-            if len(self.arr):
-                self.update_idx()
-            self.table.clearContents()
-            self.fill_table()
-            self.clear_text()
-            self.item = None
-            self.row_table = None
-
-
-        except PermissionError:
-            self.show_alert()
-            self.alert_text.setText(f"Файл был открыт, зайкроте его и снова выполните удаление строки!")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(5000)
-        except Exception as ex:
-            self.show_alert()
-            self.alert_text.setText(f"Системная Ошибка! {ex}")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(5000)
-
-    def add_column_item(self):
-        try:
-            doc = Document(self.doc)
-            table = doc.tables[self.id_table]
-            if self.row_table:
-                row_to_remove_index = self.row_table  # Нумерация строк начинается с 0
-                # Проход по всем таблицам в документе
-                # Проверяем, что индекс удаляемой строки находится в пределах диапазона строк таблицы
-                if 0 <= row_to_remove_index < len(table.rows):
-                    new_row = table.add_row()
-                    table.rows[row_to_remove_index]._element.addprevious(new_row._element)
-                    self.fill_items_column(new_row)
-
-
-            else:
-                new_row = table.add_row()
-                self.item = str(len([x for x in self.arr if len(x) != 1]) + 1) if len(
-                    [x for x in self.arr if len(x) != 1]) else '1'
-                self.fill_items_column(new_row)
-
-            # Сохранение изменений в документе
-            doc.save(self.doc)
-            self.set_last_modified_by()
-            self.clear_text()
-            self.table.clearContents()
-            self.update_idx()
-            self.fill_table()
-        except PermissionError:
-            self.show_alert()
-            self.alert_text.setText(f"Файл был открыт, зайкроте его и снова выполните добавление строки!")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(5000)
-        except Exception as ex:
-            self.show_alert()
-            self.alert_text.setText(f"Системная Ошибка! {ex}")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(5000)
-
-    def save_column(self):
-        try:
-            if self.item:
-                # Загрузка документа
-                doc = Document(self.doc)
-                # Индекс удаляемой строки (начиная с 0)
-                row_to_remove_index = self.row_table  # Нумерация строк начинается с 0
-
-                # Проход по всем таблицам в документе
-                table = doc.tables[self.id_table]
-                # Проверяем, что индекс удаляемой строки находится в пределах диапазона строк таблицы
-                if 0 <= row_to_remove_index < len(table.rows):
-                    # Удаляем строку из таблицы
-                    row_to_remove = table.rows[row_to_remove_index]
-                    parent = row_to_remove._element.getparent()
-                    parent.remove(row_to_remove._element)
-                    # Вставляем новую строку на место удаленной
-                    new_row = table.add_row()
-                    table.rows[row_to_remove_index]._element.addprevious(new_row._element)
-                    self.fill_items_column(new_row)
-
-                    # Сохранение изменений в документе
-                doc.save(self.doc)
-                self.set_last_modified_by()
-                self.update_idx()
-                self.table.clearContents()
-                self.fill_table()
-            else:
-                self.show_alert()
-                self.alert_text.setText(f"Выберите колонку!")
-                self.timer.setSingleShot(True)
-                self.timer.timeout.connect(self.hide_alert)
-                self.timer.start(5000)
-        except PermissionError:
-            self.show_alert()
-            self.alert_text.setText(f"Файл был открыт, зайкроте его и снова выполните сохранение данных в строке!")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(5000)
-        except Exception as ex:
-            self.show_alert()
-            self.alert_text.setText(f"Системная Ошибка! {ex}")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(5000)
-
-    def on_item(self, row):
-        unique_rows = []
-        row_data = []
-        for column in range(self.table.columnCount()):
-            item = self.table.item(row, column)
-            if item is not None:
-                row_data.append(item.text())
-        self.clear_text()
-        # Проходим по каждой строке
-        for row_data in row_data:
-            # Если текущая строка уникальна, добавляем ее в список уникальных строк
-            if row_data not in unique_rows or row_data == '-':
-                unique_rows.append(row_data)
-        self.item = unique_rows
-        self.button_save_column.setEnabled(True)
-        self.button_del_column.setEnabled(True)
-        self.row_table = row + self.sum_id_column
-        self.cursor.setText(f"Курсор установлен на {row+1} строке")
-
-    def on_item_clicked(self, row):
-        unique_rows = []
-        row_data = []
-        for column in range(self.table.columnCount()):
-            item = self.table.item(row, column)
-            if item is not None:
-                row_data.append(item.text())
-        self.clear_text()
-        # Проходим по каждой строке
-        for row_data in row_data:
-            # Если текущая строка уникальна, добавляем ее в список уникальных строк
-            if row_data not in unique_rows or row_data == '-':
-                unique_rows.append(row_data)
-        if len(unique_rows) == 1:
-                self.lineEdit.setText(unique_rows[0])
-        elif len(unique_rows) == 6:
-            self.name_operation_box.setCurrentText(unique_rows[1])
-            self.oborudovanie_edit.setText(unique_rows[2])
-            self.diametr_edit.setText(unique_rows[3])
-            self.heat_treatment_mode_edit.setText(unique_rows[4])
-            self.note_edit.setText(unique_rows[5])
-        elif len(unique_rows) == 7:
-            self.name_operation_box.setCurrentText(unique_rows[1])
-            self.oborudovanie_edit.setText(unique_rows[2])
-            self.diametr_do_edit.setText(unique_rows[3])
-            self.diametr_posle_edit.setText(unique_rows[4])
-            self.heat_treatment_mode_edit.setText(unique_rows[5])
-            self.note_edit.setText(unique_rows[6])
-        elif len(unique_rows) == 11:
-            self.name_operation_box.setCurrentText(unique_rows[1])
-            self.oborudovanie_edit.setText(unique_rows[2])
-            self.diametr_edit.setText(unique_rows[3])
-            self.number_marshrut_edit.setText(unique_rows[4])
-            self.steps_deformac_edit.setText(unique_rows[5])
-            self.heating_medium_edit.setText(unique_rows[6])
-            self.annealing_temperature_edit.setText(unique_rows[7])
-            self.time_edit.setText(unique_rows[8])
-            self.cooling_conditions_edit.setText(unique_rows[9])
-            self.note_edit.setText(unique_rows[10])
-        elif len(unique_rows) == 12:
-            self.name_operation_box.setCurrentText(unique_rows[1])
-            self.oborudovanie_edit.setText(unique_rows[2])
-            self.diametr_do_edit.setText(unique_rows[3])
-            self.diametr_posle_edit.setText(unique_rows[4])
-            self.number_marshrut_edit.setText(unique_rows[5])
-            self.steps_deformac_edit.setText(unique_rows[6])
-            self.heating_medium_edit.setText(unique_rows[7])
-            self.annealing_temperature_edit.setText(unique_rows[8])
-            self.time_edit.setText(unique_rows[9])
-            self.cooling_conditions_edit.setText(unique_rows[10])
-            self.note_edit.setText(unique_rows[11])
-        self.item = unique_rows
-        if self.main.user.posts != 'Технолог':
-            self.button_save_column.setEnabled(True)
-            self.button_del_column.setEnabled(True)
-        self.row_table = row + self.sum_id_column
-        self.cursor.setText(f"Курсор установлен на {row+1} строке")
-
-    def save_file_item(self):
-        try:
-            self.save_info()
-            self.content = []
-            self.table.clearContents()
-            self.fill_table()
-            old_filename = self.doc
-            directory = os.path.dirname(old_filename)
-            new_filename = f"{directory}/{self.number_card_edit.text()}.docx"
-            self.doc = new_filename
-            os.rename(old_filename, new_filename)
-            self.set_last_modified_by()
-        except PermissionError:
-            self.show_alert()
-            self.alert_text.setText(f"Файл был открыт, зайкроте его и снова выполните сохранение тех.карты!")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(5000)
-        except Exception as ex:
-            self.show_alert()
-            self.alert_text.setText(f"Системная Ошибка! {ex}")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(5000)
-
-    def clear_text(self):
-        self.name_operation_box.setCurrentText('')
-        self.oborudovanie_edit.clear()
-        self.diametr_edit.clear()
-        self.diametr_do_edit.clear()
-        self.diametr_posle_edit.clear()
-        self.number_marshrut_edit.clear()
-        self.steps_deformac_edit.clear()
-        self.time_edit.clear()
-        self.heat_treatment_mode_edit.clear()
-        self.heating_medium_edit.clear()
-        self.annealing_temperature_edit.clear()
-        self.cooling_conditions_edit.clear()
-        self.note_edit.clear()
-        self.lineEdit.clear()
-        self.item = None
-        self.row_table = None
-        self.cursor.setText(f"Курсор установлен на {self.row_table} строке")
+                                            "}" if open_window else "QPushButton {\n"
+                                       "    background-color: rgb(115, 115, 115); \n"
+                                       "    color: black;\n"
+                                       "    border-radius: 10px;\n"
+                                       "}")
+        self.reset_button.setStyleSheet("QPushButton {\n"
+                                            "    background-color: black; \n"
+                                            "    color: white;\n"
+                                            "    border-radius: 10px;\n"
+                                            "}" if open_window else "QPushButton {\n"
+                                       "    background-color: rgb(115, 115, 115); \n"
+                                       "    color: black;\n"
+                                       "    border-radius: 10px;\n"
+                                       "}")
+        self.button_del_table.setStyleSheet("QPushButton {\n"
+                                                    "    background-color: black; \n"
+                                                    "    color: white;\n"
+                                                    "    border-radius: 10px;\n"
+                                                    "}\n"
+                                                    "\n"
+                                                    "QPushButton:hover {\n"
+                                                    "    background-color: red;\n"
+                                                    "}" if open_window else "QPushButton {\n"
+                                                    "    background-color: rgb(115, 115, 115);; \n"
+                                                    "    color: white;\n"
+                                                    "    border-radius: 10px;\n"
+                                                    "}\n"
+                                                    "\n"
+                                                    "QPushButton:hover {\n"
+                                                    "    background-color: red;\n"
+                                                    "}")

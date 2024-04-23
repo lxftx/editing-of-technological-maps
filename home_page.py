@@ -203,11 +203,15 @@ class HomePage(QWidget, AlertMessage):
         self.alert_text.setVisible(False)
 
         if self.dir:
+            self.add_document.setEnabled(True)
+            self.delete_document.setEnabled(True)
             self.load_table()
             if hasattr(self, 'alert'):
                 self.hide_alert()
         else:
             self.show_alert()
+            self.add_document.setEnabled(False)
+            self.delete_document.setEnabled(False)
             self.alert_text.setText("Укажите путь к тех.картам через настройки")
         self.table_docx.cellClicked.connect(self.turn_document)
         self.table_docx.cellDoubleClicked.connect(self.open_document)
@@ -239,11 +243,13 @@ class HomePage(QWidget, AlertMessage):
         self.delete_document.setEnabled(evt)
         self.main.burger_button.setEnabled(evt)
         self.main.home_button.setEnabled(evt)
+        self.main.calculation_button.setEnabled(evt)
         self.main.users_button.setEnabled(evt)
         self.main.search_button.setEnabled(evt)
         self.main.user_info_button.setEnabled(evt)
         self.main.search_edit.setEnabled(evt)
         self.main.add_user_button.setEnabled(evt)
+        self.main.settings_button.setEnabled(evt)
         self.main.exit_user_button.setEnabled(evt)
         self.window_add_document.setVisible(not evt)
         self.window_add_document_title.setVisible(not evt)
