@@ -445,8 +445,7 @@ class DocPage(QWidget, AlertMessage):
         self.table_widget = QListWidget(self.doc_page)
         self.table_widget.setStyleSheet("font-size: 32px;")
         self.table_widget.itemDoubleClicked.connect(self.open_table)
-        if self.main.user.posts == 'Технолог':
-           self.table_widget.itemClicked.connect(self.enable_table)
+        self.table_widget.itemClicked.connect(self.enable_table)
 
         self.tables = QtWidgets.QScrollArea(self.doc_page)
         self.tables.setGeometry(QtCore.QRect(230, 190, 521, 471))
@@ -483,7 +482,7 @@ class DocPage(QWidget, AlertMessage):
                                             "    background-color: green;\n"
                                             "}")
         self.button_add_table.setObjectName("button_add_table")
-        self.button_add_table.clicked.connect(self.add_new_table)
+        self.button_add_table.clicked.connect(self.safety if self.main.user.posts != 'Технолог' else self.add_new_table)
 
         self.button_del_table = QtWidgets.QPushButton(self.doc_page)
         self.button_del_table.setGeometry(QtCore.QRect(490, 670, 251, 31))
@@ -492,7 +491,7 @@ class DocPage(QWidget, AlertMessage):
         font.setPointSize(12)
         self.button_del_table.setFont(font)
         self.button_del_table.setObjectName("button_del_table")
-        self.button_del_table.clicked.connect(self.delele_table)
+        self.button_del_table.clicked.connect(self.safety if self.main.user.posts != 'Технолог' else self.delele_table)
 
         self.info_window = QtWidgets.QLabel(self.doc_page)
         self.info_window.setGeometry(QtCore.QRect(280, 150, 401, 459))
@@ -639,6 +638,17 @@ class DocPage(QWidget, AlertMessage):
         self.button_info_window.setObjectName("button_info_window")
         self.button_info_window.clicked.connect(lambda: self.open_info_window(True))
 
+        self.table = QtWidgets.QTableWidget(self.doc_page)
+        self.table.setGeometry(QtCore.QRect(850, 110, 171, 701))
+        self.table.setTabletTracking(False)
+        self.table.setObjectName("table")
+        self.table.setColumnCount(12)  # Увеличиваем количество столбцов на 1
+        self.table.setRowCount(0)
+        self.table.setHorizontalHeaderLabels(["№п/п", "Наименование операций", "Оборудование", "До волочения", "После волочения", '№ маршрута', 'Степень деформации, %', 'Среда нагрева', 'Температура отжига, ̊С', 'Время, мин', 'Условия охлаждения', 'Примечание'])
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.cellClicked.connect(self.on_row)
+        self.table.cellDoubleClicked.connect(self.turn_item_in_table)
+
         self.alert = QtWidgets.QLabel(self.doc_page)
         self.alert.setGeometry(QtCore.QRect(40, 270, 821, 201))
         self.alert.setStyleSheet("border-radius: 30px;")
@@ -676,19 +686,6 @@ class DocPage(QWidget, AlertMessage):
         self.alert_text.setObjectName("alert_info_text")
         self.alert_text.setVisible(False)
 
-        self.table = QtWidgets.QTableWidget(self.doc_page)
-        self.table.setGeometry(QtCore.QRect(850, 110, 171, 701))
-        self.table.setTabletTracking(False)
-        self.table.setObjectName("table")
-        self.table.setColumnCount(12)  # Увеличиваем количество столбцов на 1
-        self.table.setRowCount(0)
-        self.table.setHorizontalHeaderLabels(["№п/п", "Наименование операций", "Оборудование", "До волочения", "После волочения", '№ маршрута', 'Степень деформации, %', 'Среда нагрева', 'Температура отжига, ̊С', 'Время, мин', 'Условия охлаждения', 'Примечание'])
-        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        if self.main.user.posts == 'Технолог':
-            self.table.cellClicked.connect(self.on_row)
-        self.table.cellDoubleClicked.connect(self.turn_item_in_table)
-
-
         self.director.setText("Директор:")
         self.gost.setText("по ГОСТ:")
         self.vzamen.setText("Взамен")
@@ -723,13 +720,13 @@ class DocPage(QWidget, AlertMessage):
         self.button_del_table.setText("Удалить таблицу")
         self.button_info_window.setText("Инфо. тех.карта")
 
-        self.button_save_column.clicked.connect(self.save_column)
-        self.button_del_column.clicked.connect(self.del_column)
-        self.button_column.clicked.connect(self.add_merger_column)
-        self.button_add_column.clicked.connect(self.add_column_item)
-        self.save_file.clicked.connect(self.save_file_item)
-        self.open_file.clicked.connect(self.open_file_docx)
-        self.delete_file.clicked.connect(self.del_file_docx)
+        self.button_save_column.clicked.connect(self.safety if self.main.user.posts != 'Технолог' else self.save_column)
+        self.button_del_column.clicked.connect(self.safety if self.main.user.posts != 'Технолог' else self.del_column)
+        self.button_column.clicked.connect(self.safety if self.main.user.posts != 'Технолог' else self.add_merger_column)
+        self.button_add_column.clicked.connect(self.safety if self.main.user.posts != 'Технолог' else self.add_column_item)
+        self.save_file.clicked.connect(self.safety if self.main.user.posts != 'Технолог' else self.save_file_item)
+        self.open_file.clicked.connect(self.safety if self.main.user.posts != 'Технолог' else self.open_file_docx)
+        self.delete_file.clicked.connect(self.safety if self.main.user.posts != 'Технолог' else self.del_file_docx)
         self.reset_button.clicked.connect(self.clear_widget)
         self.load_table_item()
 
@@ -738,6 +735,7 @@ class DocPage(QWidget, AlertMessage):
 
     def mousePressEvent(self, event):
         self.open_info_window(False)
+        self.hide_alert()
         super().mousePressEvent(event)
 
     def closeEvent(self, event):
@@ -1054,7 +1052,6 @@ class DocPage(QWidget, AlertMessage):
                     row_data.append(cell.text.strip())
                 table_content.append(row_data)
         # Перебираем и делаем уникальный вид
-        print(table_content)
         for row in table_content:
             if len(set(row)) == 1 and '-' not in row:
                 table_items.append([row[0]])
@@ -1202,6 +1199,7 @@ class DocPage(QWidget, AlertMessage):
             case _:
                 print(f"Sorry, {len(unique_arr)}")
         self.row = row + self.row_table + 1
+        self.cursor.setText(f"Курсор установлен на {row + 1} строке")
 
     def read_text_widgets_and_write_file(self, new_row):
         items = ['idx',
@@ -1219,7 +1217,6 @@ class DocPage(QWidget, AlertMessage):
             else:
                 items.append("")
         items.append(self.note_edit.toPlainText() if self.note_edit.toPlainText().strip() else '-')
-        print(items)
         items = len([x for x in items if len(x)])
         match items:
             case 12:
@@ -1364,7 +1361,6 @@ class DocPage(QWidget, AlertMessage):
             table = doc.tables[self.table_id]
             if self.row:
                 row_to_remove_index = self.row  # Нумерация строк начинается с 0
-                print(row_to_remove_index)
                 # Проход по всем таблицам в документе
                 # Проверяем, что индекс удаляемой строки находится в пределах диапазона строк таблицы
                 if 0 <= row_to_remove_index < len(table.rows):
@@ -1691,7 +1687,7 @@ class DocPage(QWidget, AlertMessage):
                                        "    background-color: green;\n"
                                        "}"), self.button_column.setStyleSheet(stylesheet_green)
         self.button_save_column.setStyleSheet(stylesheet_green), self.button_add_column.setStyleSheet(stylesheet_green)
-        self.button_del_column.setStyleSheet(stylesheet_green), self.open_list_table.setStyleSheet("QPushButton {\n"
+        self.button_del_column.setStyleSheet(stylesheet_red), self.open_list_table.setStyleSheet("QPushButton {\n"
                                             "    background-color: black; \n"
                                             "    color: white;\n"
                                             "    border-radius: 10px;\n"
@@ -1726,3 +1722,10 @@ class DocPage(QWidget, AlertMessage):
                                                     "QPushButton:hover {\n"
                                                     "    background-color: red;\n"
                                                     "}")
+
+    def safety(self):
+        self.show_alert()
+        self.alert_text.setText(f"Вам отказано в доступе!")
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.hide_alert)
+        self.timer.start(3000)

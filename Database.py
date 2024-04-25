@@ -51,6 +51,5 @@ class Database:
             if self.connection:
                 self.cursor.close()
                 self.connection.close()
-                print("Соединение с БД закрыто")
         except Exception as ex:
             print(ex)
