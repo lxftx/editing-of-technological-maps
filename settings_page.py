@@ -1065,9 +1065,12 @@ class SettingsPage(QWidget, AlertMessage):
 
 
     def path_sqllite(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Выбрать файл", "", "Файлы SQLite (*.db)")
-        if file_path:
-            self.path_to_sqllite_edit.setText(file_path)
+        if self.paswd:
+            file_path, _ = QFileDialog.getOpenFileName(self, "Выбрать файл", "", "Файлы SQLite (*.db)")
+            if file_path:
+                self.path_to_sqllite_edit.setText(file_path)
+        else:
+            self.save_safyti()
 
     def create_db(self):
         if self.paswd:
@@ -1348,6 +1351,15 @@ class SettingsPage(QWidget, AlertMessage):
                 if self.safety_password_edit.text() == dec_message:
                     self.paswd = True
                     self.widget_safyte_visible(False)
+                else:
+                    self.safety_password_edit.setStyleSheet("background-color: #fff;\n"
+                                                "border-radius: 10px; \n"
+                                                "padding-left: 5px;\n"
+                                                "font-size: 15px;\n"
+                                                "border:1px solid red;\n"
+                                                "color:black;\n"
+                                                "")
+
         else:
             key = Fernet.generate_key()
             fernet = Fernet(key)
@@ -1360,32 +1372,16 @@ class SettingsPage(QWidget, AlertMessage):
 
     def save_password(self):
         if os.path.exists(self.get_path(r'config', "auth.bin")) and self.paswd:
-            with open(self.get_path(r'config', "auth.bin"), 'rb') as file:
-                key = file.readline().strip()
-                enc_message = file.read()
-                fernet = Fernet(key)
-                dec_message = fernet.decrypt(enc_message).decode()
-                if self.safety_password_edit.text() == dec_message:
-                    self.paswd = True
-                    self.widget_safyte_visible(False)
-                    key = Fernet.generate_key()
-                    fernet = Fernet(key)
-                    encEmail = fernet.encrypt(self.email_edit.text().encode())
-                    encpaswd = fernet.encrypt(self.password_edit.text().encode())
-                    with open(self.get_path(r'config', "email.bin"), 'wb') as file:
-                        file.write(key)
-                        file.write(b'\n')
-                        file.write(encEmail)
-                        file.write(b'\n')
-                        file.write(encpaswd)
-                else:
-                    self.safety_password_edit.setStyleSheet("background-color: #fff;\n"
-                                                "border-radius: 10px; \n"
-                                                "padding-left: 5px;\n"
-                                                "font-size: 15px;\n"
-                                                "border:1px solid red;\n"
-                                                "color:black;\n"
-                                                "")
+            key = Fernet.generate_key()
+            fernet = Fernet(key)
+            encEmail = fernet.encrypt(self.email_edit.text().encode())
+            encpaswd = fernet.encrypt(self.password_edit.text().encode())
+            with open(self.get_path(r'config', "email.bin"), 'wb') as file:
+                file.write(key)
+                file.write(b'\n')
+                file.write(encEmail)
+                file.write(b'\n')
+                file.write(encpaswd)
         else:
             self.save_safyti()
 
