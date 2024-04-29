@@ -209,7 +209,7 @@ class SettingsPage(QWidget, AlertMessage):
                                        "}")
         self.save_button.setText("Сохранить")
         self.save_button.setObjectName("save_button")
-        self.save_button.clicked.connect(self.save_email)
+        self.save_button.clicked.connect(self.save_password)
 
         self.show_password = QtWidgets.QRadioButton(self.settings_page)
         self.show_password.setGeometry(QtCore.QRect(300, 360, 171, 31))
@@ -232,7 +232,7 @@ class SettingsPage(QWidget, AlertMessage):
         self.name_user_db_label.setFont(font)
         self.name_user_db_label.setStyleSheet("background-color:rgb(240, 240, 240);\n"
                                               " padding-left: 5px;")
-        self.name_user_db_label.setText("Имя пользователя:")
+        self.name_user_db_label.setText("Имя пользователя PostgresSQL:")
         self.name_user_db_label.setObjectName("name_user_db_label")
 
         self.name_user_db_edit = QtWidgets.QLineEdit(self.settings_page)
@@ -262,7 +262,7 @@ class SettingsPage(QWidget, AlertMessage):
         self.password_db_label.setFont(font)
         self.password_db_label.setStyleSheet("background-color:rgb(240, 240, 240);\n"
                                              " padding-left: 5px;")
-        self.password_db_label.setText("Пароль:")
+        self.password_db_label.setText("Пароль PostgresSQL:")
         self.password_db_label.setObjectName("password_db_label")
 
         self.password_db_edit = QtWidgets.QLineEdit(self.settings_page)
@@ -293,7 +293,7 @@ class SettingsPage(QWidget, AlertMessage):
         self.host_db_label.setFont(font)
         self.host_db_label.setStyleSheet("background-color:rgb(240, 240, 240);\n"
                                          " padding-left: 5px;")
-        self.host_db_label.setText("Имя хоста:")
+        self.host_db_label.setText("Имя хоста PostgresSQL:")
         self.host_db_label.setObjectName("host_db_label")
 
         self.host_db_edit = QtWidgets.QLineEdit(self.settings_page)
@@ -323,7 +323,7 @@ class SettingsPage(QWidget, AlertMessage):
         self.port_db_label.setFont(font)
         self.port_db_label.setStyleSheet("background-color:rgb(240, 240, 240);\n"
                                          " padding-left: 5px;")
-        self.port_db_label.setText("Порт:")
+        self.port_db_label.setText("Порт PostgresSQL:")
         self.port_db_label.setObjectName("port_db_label")
 
         self.port_db_edit = QtWidgets.QLineEdit(self.settings_page)
@@ -346,7 +346,7 @@ class SettingsPage(QWidget, AlertMessage):
         self.name_db_label.setFont(font)
         self.name_db_label.setStyleSheet("background-color:rgb(240, 240, 240);\n"
                                          " padding-left: 5px;")
-        self.name_db_label.setText("Имя базы данных:")
+        self.name_db_label.setText("Имя базы данных PostgresSQL:")
         self.name_db_label.setObjectName("name_db_label")
 
         self.name_db_edit = QtWidgets.QLineEdit(self.settings_page)
@@ -699,7 +699,7 @@ class SettingsPage(QWidget, AlertMessage):
         self.save_button_safety.setText("Далее")
         self.save_button_safety.setObjectName("save_button_safety")
         self.save_button_safety.setVisible(False)
-        self.save_button_safety.clicked.connect(self.save_password)
+        self.save_button_safety.clicked.connect(self.confirm_and_create_safyte)
 
         self.cancel_button_safety = QtWidgets.QPushButton(self.settings_page)
         self.cancel_button_safety.setGeometry(QtCore.QRect(480, 400, 191, 31))
@@ -859,107 +859,47 @@ class SettingsPage(QWidget, AlertMessage):
             self.name_table_sqlite_edit.setText("")
 
     def save_path_sqlite(self):
-        if self.path_to_sqllite_edit.text().strip():
-            directory, file_name = os.path.split(self.path_to_sqllite_edit.text().strip())
-            if os.path.exists(self.get_path(directory, file_name)):
-                if self.name_table_sqlite_edit.text().strip() and not re.compile(r'[^a-zA-Z]').search(self.name_table_sqlite_edit.text().strip()):
-                    db = Database()
-                    db.connect_database('sqlite', self.path_to_sqllite_edit.text().strip())
-                    db.cursor.execute(
-                        f"SELECT name FROM sqlite_master WHERE type='table' and name='{self.name_table_sqlite_edit.text().strip()}';")
-                    len_lst = [x[0] for x in db.cursor.fetchall()]
-                    if len_lst:
-                        key = Fernet.generate_key()
-                        fernet = Fernet(key)
-                        enc_path_sqlite_db = fernet.encrypt(self.path_to_sqllite_edit.text().strip().encode())
-                        enc_name_table = fernet.encrypt(self.name_table_sqlite_edit.text().strip().encode())
-                        with open(self.get_path(r'config', "path_sqlite.bin"), 'wb') as file:
-                            file.write(key + b'\n')
-                            file.write(enc_path_sqlite_db + b'\n')
-                            file.write(enc_name_table)
-                        os.remove(self.get_path('config', 'db_config.bin')) if os.path.exists(
-                            self.get_path('config', 'db_config.bin')) else ...
-                        self.main.auth.show()
-                        self.main.close()
-                    else:
-                        self.show_alert()
-                        self.alert_text.setText(
-                            f'В базе данных - {file_name} нету таблицы с именем - {self.name_table_sqlite_edit.text().strip()}!')
-                        self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
-                                                                  "border-radius: 10px; \n"
-                                                                  "padding-left: 5px;\n"
-                                                                  "font-size: 15px;\n"
-                                                                  "border:1px solid red;\n"
-                                                                  "")
-                        self.timer.setSingleShot(True)
-                        self.timer.timeout.connect(self.hide_alert)
-                        self.timer.start(3000)
-                    db.disconnection_database()
-                else:
-                    self.show_alert()
-                    self.alert_text.setText(
-                        f'Укажите название таблицы для ее создания!\nНаверное в название есть запрещаюшие символы!')
-                    self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
-                                                              "border-radius: 10px; \n"
-                                                              "padding-left: 5px;\n"
-                                                              "font-size: 15px;\n"
-                                                              "border:1px solid red;\n"
-                                                              "")
-                    self.timer.setSingleShot(True)
-                    self.timer.timeout.connect(self.hide_alert)
-                    self.timer.start(3000)
-            else:
-                self.show_alert()
-                self.alert_text.setText(f'База данных - {file_name} по этому пути - {directory}\n,не существует!')
-                self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
-                                                          "border-radius: 10px; \n"
-                                                          "padding-left: 5px;\n"
-                                                          "font-size: 15px;\n"
-                                                          "border:1px solid red;\n"
-                                                          "")
-                self.timer.setSingleShot(True)
-                self.timer.timeout.connect(self.hide_alert)
-                self.timer.start(3000)
-        else:
-            self.show_alert()
-            self.alert_text.setText(f'Укажите путь к базе данных!')
-            self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
-                                                      "border-radius: 10px; \n"
-                                                      "padding-left: 5px;\n"
-                                                      "font-size: 15px;\n"
-                                                      "border:1px solid red;\n"
-                                                      "")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(3000)
-
-
-    def create_table_sqlite(self):
-        if self.name_table_sqlite_edit.text().strip() and not re.search(r'[^a-zA-Z_]', self.name_table_sqlite_edit.text().strip()):
+        if self.paswd:
             if self.path_to_sqllite_edit.text().strip():
                 directory, file_name = os.path.split(self.path_to_sqllite_edit.text().strip())
                 if os.path.exists(self.get_path(directory, file_name)):
-                    db = Database()
-                    db.connect_database('sqlite', self.path_to_sqllite_edit.text().strip())
-                    db.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' and name='{self.name_table_sqlite_edit.text().strip()}';")
-                    len_lst = [x[0] for x in db.cursor.fetchall()]
-                    if not len_lst:
-                        with open(self.get_path('sql', 'SQLite.sql'), 'r') as sql_file:
-                            sql_commands = sql_file.read().replace('users', self.name_table_sqlite_edit.text().strip()).split(';')
-                            for command in sql_commands:
-                                if command.strip():
-                                    db.cursor.execute(command)
-                        db.connection.commit()
-                        self.show_alert()
-                        self.alert_text.setText(
-                            f'В базе данных - {file_name} создана таблица - {self.name_table_sqlite_edit.text().strip()}!')
-                        self.timer.setSingleShot(True)
-                        self.timer.timeout.connect(self.hide_alert)
-                        self.timer.start(3000)
+                    if self.name_table_sqlite_edit.text().strip() and not re.compile(r'[^a-zA-Z]').search(self.name_table_sqlite_edit.text().strip()):
+                        db = Database()
+                        db.connect_database('sqlite', self.path_to_sqllite_edit.text().strip())
+                        db.cursor.execute(
+                            f"SELECT name FROM sqlite_master WHERE type='table' and name='{self.name_table_sqlite_edit.text().strip()}';")
+                        len_lst = [x[0] for x in db.cursor.fetchall()]
+                        if len_lst:
+                            key = Fernet.generate_key()
+                            fernet = Fernet(key)
+                            enc_path_sqlite_db = fernet.encrypt(self.path_to_sqllite_edit.text().strip().encode())
+                            enc_name_table = fernet.encrypt(self.name_table_sqlite_edit.text().strip().encode())
+                            with open(self.get_path(r'config', "path_sqlite.bin"), 'wb') as file:
+                                file.write(key + b'\n')
+                                file.write(enc_path_sqlite_db + b'\n')
+                                file.write(enc_name_table)
+                            os.remove(self.get_path('config', 'db_config.bin')) if os.path.exists(
+                                self.get_path('config', 'db_config.bin')) else ...
+                            self.main.auth.show()
+                            self.main.close()
+                        else:
+                            self.show_alert()
+                            self.alert_text.setText(
+                                f'В базе данных - {file_name} нету таблицы с именем - {self.name_table_sqlite_edit.text().strip()}!')
+                            self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
+                                                                      "border-radius: 10px; \n"
+                                                                      "padding-left: 5px;\n"
+                                                                      "font-size: 15px;\n"
+                                                                      "border:1px solid red;\n"
+                                                                      "")
+                            self.timer.setSingleShot(True)
+                            self.timer.timeout.connect(self.hide_alert)
+                            self.timer.start(3000)
+                        db.disconnection_database()
                     else:
                         self.show_alert()
                         self.alert_text.setText(
-                            f'В базе данных - {file_name} есть таблица - {self.name_table_sqlite_edit.text().strip()}!')
+                            f'Укажите название таблицы для ее создания!\nНаверное в название есть запрещаюшие символы!')
                         self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
                                                                   "border-radius: 10px; \n"
                                                                   "padding-left: 5px;\n"
@@ -969,10 +909,9 @@ class SettingsPage(QWidget, AlertMessage):
                         self.timer.setSingleShot(True)
                         self.timer.timeout.connect(self.hide_alert)
                         self.timer.start(3000)
-                    db.disconnection_database()
                 else:
                     self.show_alert()
-                    self.alert_text.setText(f'База данных - {file_name}\nпо этому пути - {directory},не существует!')
+                    self.alert_text.setText(f'База данных - {file_name} по этому пути - {directory}\n,не существует!')
                     self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
                                                               "border-radius: 10px; \n"
                                                               "padding-left: 5px;\n"
@@ -995,43 +934,74 @@ class SettingsPage(QWidget, AlertMessage):
                 self.timer.timeout.connect(self.hide_alert)
                 self.timer.start(3000)
         else:
-            self.show_alert()
-            self.alert_text.setText(f'Укажите название таблицы для ее создания!\nНаверное в название есть запрещаюшие символы!')
-            self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
-                                                    "border-radius: 10px; \n"
-                                                    "padding-left: 5px;\n"
-                                                    "font-size: 15px;\n"
-                                                    "border:1px solid red;\n"
-                                                    "")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(3000)
+            self.save_safyti()
 
-    def create_sqlite_db(self):
-        if self.path_to_sqllite_edit.text().strip():
-            reversed_path = self.path_to_sqllite_edit.text().strip().replace("/", "\\")
-            directory, file_name = os.path.split(reversed_path.strip())
-            if not file_name:
-                file_name = "no_name_db.db"
+
+    def create_table_sqlite(self):
+        if self.paswd:
+            if self.name_table_sqlite_edit.text().strip() and not re.search(r'[^a-zA-Z_]', self.name_table_sqlite_edit.text().strip()):
+                if self.path_to_sqllite_edit.text().strip():
+                    directory, file_name = os.path.split(self.path_to_sqllite_edit.text().strip())
+                    if os.path.exists(self.get_path(directory, file_name)):
+                        db = Database()
+                        db.connect_database('sqlite', self.path_to_sqllite_edit.text().strip())
+                        db.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' and name='{self.name_table_sqlite_edit.text().strip()}';")
+                        len_lst = [x[0] for x in db.cursor.fetchall()]
+                        if not len_lst:
+                            with open(self.get_path('sql', 'SQLite.sql'), 'r') as sql_file:
+                                sql_commands = sql_file.read().replace('users', self.name_table_sqlite_edit.text().strip()).split(';')
+                                for command in sql_commands:
+                                    if command.strip():
+                                        db.cursor.execute(command)
+                            db.connection.commit()
+                            self.show_alert()
+                            self.alert_text.setText(
+                                f'В базе данных - {file_name} создана таблица - {self.name_table_sqlite_edit.text().strip()}!')
+                            self.timer.setSingleShot(True)
+                            self.timer.timeout.connect(self.hide_alert)
+                            self.timer.start(3000)
+                        else:
+                            self.show_alert()
+                            self.alert_text.setText(
+                                f'В базе данных - {file_name} есть таблица - {self.name_table_sqlite_edit.text().strip()}!')
+                            self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
+                                                                      "border-radius: 10px; \n"
+                                                                      "padding-left: 5px;\n"
+                                                                      "font-size: 15px;\n"
+                                                                      "border:1px solid red;\n"
+                                                                      "")
+                            self.timer.setSingleShot(True)
+                            self.timer.timeout.connect(self.hide_alert)
+                            self.timer.start(3000)
+                        db.disconnection_database()
+                    else:
+                        self.show_alert()
+                        self.alert_text.setText(f'База данных - {file_name}\nпо этому пути - {directory},не существует!')
+                        self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
+                                                                  "border-radius: 10px; \n"
+                                                                  "padding-left: 5px;\n"
+                                                                  "font-size: 15px;\n"
+                                                                  "border:1px solid red;\n"
+                                                                  "")
+                        self.timer.setSingleShot(True)
+                        self.timer.timeout.connect(self.hide_alert)
+                        self.timer.start(3000)
+                else:
+                    self.show_alert()
+                    self.alert_text.setText(f'Укажите путь к базе данных!')
+                    self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
+                                                              "border-radius: 10px; \n"
+                                                              "padding-left: 5px;\n"
+                                                              "font-size: 15px;\n"
+                                                              "border:1px solid red;\n"
+                                                              "")
+                    self.timer.setSingleShot(True)
+                    self.timer.timeout.connect(self.hide_alert)
+                    self.timer.start(3000)
             else:
-                file_name_extension = os.path.splitext(file_name)
-                print(file_name_extension)
-                if not file_name_extension[1]:
-                    file_name = file_name_extension[0] + ".db"
-            new_file_path = os.path.join(directory, file_name)
-            if os.path.exists(directory):
-                db = Database()
-                db.connect_database('sqlite', new_file_path)
                 self.show_alert()
-                self.alert_text.setText(f'База данных SQLite c именем {file_name} была создана!\n Расположение: {new_file_path}')
-                self.timer.setSingleShot(True)
-                self.timer.timeout.connect(self.hide_alert)
-                self.timer.start(3000)
-                db.disconnection_database()
-            else:
-                self.show_alert()
-                self.alert_text.setText(f'Путь, который вы указали - не существует! Создайте директорию или выберите другой путь.')
-                self.path_to_sqllite_edit.setStyleSheet("background-color: #fff;\n"
+                self.alert_text.setText(f'Укажите название таблицы для ее создания!\nНаверное в название есть запрещаюшие символы!')
+                self.name_table_sqlite_edit.setStyleSheet("background-color: #fff;\n"
                                                         "border-radius: 10px; \n"
                                                         "padding-left: 5px;\n"
                                                         "font-size: 15px;\n"
@@ -1040,19 +1010,58 @@ class SettingsPage(QWidget, AlertMessage):
                 self.timer.setSingleShot(True)
                 self.timer.timeout.connect(self.hide_alert)
                 self.timer.start(3000)
-
         else:
-            self.show_alert()
-            self.alert_text.setText(f'Укажите где должны быть расположена бд с названием!')
-            self.path_to_sqllite_edit.setStyleSheet("background-color: #fff;\n"
-                         "border-radius: 10px; \n"
-                         "padding-left: 5px;\n"
-                         "font-size: 15px;\n"
-                         "border:1px solid red;\n"
-                         "")
-            self.timer.setSingleShot(True)
-            self.timer.timeout.connect(self.hide_alert)
-            self.timer.start(3000)
+            self.save_safyti()
+
+    def create_sqlite_db(self):
+        if self.paswd:
+            if self.path_to_sqllite_edit.text().strip():
+                reversed_path = self.path_to_sqllite_edit.text().strip().replace("/", "\\")
+                directory, file_name = os.path.split(reversed_path.strip())
+                if not file_name:
+                    file_name = "no_name_db.db"
+                else:
+                    file_name_extension = os.path.splitext(file_name)
+                    print(file_name_extension)
+                    if not file_name_extension[1]:
+                        file_name = file_name_extension[0] + ".db"
+                new_file_path = os.path.join(directory, file_name)
+                if os.path.exists(directory):
+                    db = Database()
+                    db.connect_database('sqlite', new_file_path)
+                    self.show_alert()
+                    self.alert_text.setText(f'База данных SQLite c именем {file_name} была создана!\n Расположение: {new_file_path}')
+                    self.timer.setSingleShot(True)
+                    self.timer.timeout.connect(self.hide_alert)
+                    self.timer.start(3000)
+                    db.disconnection_database()
+                else:
+                    self.show_alert()
+                    self.alert_text.setText(f'Путь, который вы указали - не существует! Создайте директорию или выберите другой путь.')
+                    self.path_to_sqllite_edit.setStyleSheet("background-color: #fff;\n"
+                                                            "border-radius: 10px; \n"
+                                                            "padding-left: 5px;\n"
+                                                            "font-size: 15px;\n"
+                                                            "border:1px solid red;\n"
+                                                            "")
+                    self.timer.setSingleShot(True)
+                    self.timer.timeout.connect(self.hide_alert)
+                    self.timer.start(3000)
+
+            else:
+                self.show_alert()
+                self.alert_text.setText(f'Укажите где должны быть расположена бд с названием!')
+                self.path_to_sqllite_edit.setStyleSheet("background-color: #fff;\n"
+                             "border-radius: 10px; \n"
+                             "padding-left: 5px;\n"
+                             "font-size: 15px;\n"
+                             "border:1px solid red;\n"
+                             "")
+                self.timer.setSingleShot(True)
+                self.timer.timeout.connect(self.hide_alert)
+                self.timer.start(3000)
+        else:
+            self.save_safyti()
 
 
     def path_sqllite(self):
@@ -1061,84 +1070,90 @@ class SettingsPage(QWidget, AlertMessage):
             self.path_to_sqllite_edit.setText(file_path)
 
     def create_db(self):
-        if self.name_db_edit.text().strip() and not re.search(r'[^a-zA-Z_]', self.name_db_edit.text().strip()):
-            connect = self.connect_database(True)
-            bool_connect = connect[0][0] if isinstance(connect, list) else connect
-            if bool_connect:
-                name = self.name_db_edit.text().strip()
-                db = connect[1]
-                db.cursor.execute(f"SELECT datname FROM pg_database WHERE datname = '{name}';")
-                database_names = [row[0] for row in db.cursor.fetchall()]
-                if not len(database_names):
-                    db.connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-                    db.cursor.execute(f"CREATE DATABASE {name}")
-                    db.connection.commit()
-                    self.show_alert()
-                    self.alert_text.setText(
-                        f"База данных с именем {name} была создана")
-                    self.timer.setSingleShot(True)
-                    self.timer.timeout.connect(self.hide_alert)
-                    self.timer.start(3000)
+        if self.paswd:
+            if self.name_db_edit.text().strip() and not re.search(r'[^a-zA-Z_]', self.name_db_edit.text().strip()):
+                connect = self.connect_database(True)
+                bool_connect = connect[0][0] if isinstance(connect, list) else connect
+                if bool_connect:
+                    name = self.name_db_edit.text().strip()
+                    db = connect[1]
+                    db.cursor.execute(f"SELECT datname FROM pg_database WHERE datname = '{name}';")
+                    database_names = [row[0] for row in db.cursor.fetchall()]
+                    if not len(database_names):
+                        db.connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+                        db.cursor.execute(f"CREATE DATABASE {name}")
+                        db.connection.commit()
+                        self.show_alert()
+                        self.alert_text.setText(
+                            f"База данных с именем {name} была создана")
+                        self.timer.setSingleShot(True)
+                        self.timer.timeout.connect(self.hide_alert)
+                        self.timer.start(3000)
+                    else:
+                        self.show_alert()
+                        self.alert_text.setText(f'База данных с именем {name} уже существует. Создайте другую!')
+                        self.timer.setSingleShot(True)
+                        self.timer.timeout.connect(self.hide_alert)
+                        self.timer.start(3000)
+                    db.disconnection_database()
                 else:
-                    self.show_alert()
-                    self.alert_text.setText(f'База данных с именем {name} уже существует. Создайте другую!')
-                    self.timer.setSingleShot(True)
-                    self.timer.timeout.connect(self.hide_alert)
-                    self.timer.start(3000)
-                db.disconnection_database()
+                    if isinstance(connect, list):
+                        self.show_alert()
+                        self.alert_text.setText(connect[0][1])
+                        self.timer.setSingleShot(True)
+                        self.timer.timeout.connect(self.hide_alert)
+                        self.timer.start(3000)
             else:
-                if isinstance(connect, list):
-                    self.show_alert()
-                    self.alert_text.setText(connect[0][1])
-                    self.timer.setSingleShot(True)
-                    self.timer.timeout.connect(self.hide_alert)
-                    self.timer.start(3000)
+                self.name_db_edit.setStyleSheet("background-color: #fff;\n"
+                             "border-radius: 10px; \n"
+                             "padding-left: 5px;\n"
+                             "font-size: 15px;\n"
+                             "border:1px solid red;\n"
+                             "")
         else:
-            self.name_db_edit.setStyleSheet("background-color: #fff;\n"
-                         "border-radius: 10px; \n"
-                         "padding-left: 5px;\n"
-                         "font-size: 15px;\n"
-                         "border:1px solid red;\n"
-                         "")
+            self.save_safyti()
 
 
     def create_table(self):
-        if self.name_table_edit.text().strip() and not re.search(r'[^a-zA-Z_]', self.name_table_edit.text().strip()):
-            connect = self.connect_database(False)
-            bool_connect = connect[0][0] if isinstance(connect, list) else connect
-            if bool_connect:
-                name = self.name_table_edit.text().strip()
-                with open(self.get_path(r'sql', "SQL.sql"), 'r', encoding='utf-8') as sql_file:
-                    sql_script = sql_file.read()
-                new_content = sql_script.replace('users', name)
-                db = connect[1]
-                db.cursor.execute(
-                    f"SELECT table_name FROM information_schema.tables  WHERE table_schema = 'public' AND table_name IN ('{name}');")
-                table_names = [row[0] for row in db.cursor.fetchall()]
-                if not len(table_names):
-                    db.cursor.execute(new_content)
-                    db.connection.commit()
-                    self.show_alert()
-                    self.alert_text.setText(
-                        f"Таблица с именем {name} была создана!")
-                    self.timer.setSingleShot(True)
-                    self.timer.timeout.connect(self.hide_alert)
-                    self.timer.start(3000)
-                db.disconnection_database()
+        if self.paswd:
+            if self.name_table_edit.text().strip() and not re.search(r'[^a-zA-Z_]', self.name_table_edit.text().strip()):
+                connect = self.connect_database(False)
+                bool_connect = connect[0][0] if isinstance(connect, list) else connect
+                if bool_connect:
+                    name = self.name_table_edit.text().strip()
+                    with open(self.get_path(r'sql', "SQL.sql"), 'r', encoding='utf-8') as sql_file:
+                        sql_script = sql_file.read()
+                    new_content = sql_script.replace('users', name)
+                    db = connect[1]
+                    db.cursor.execute(
+                        f"SELECT table_name FROM information_schema.tables  WHERE table_schema = 'public' AND table_name IN ('{name}');")
+                    table_names = [row[0] for row in db.cursor.fetchall()]
+                    if not len(table_names):
+                        db.cursor.execute(new_content)
+                        db.connection.commit()
+                        self.show_alert()
+                        self.alert_text.setText(
+                            f"Таблица с именем {name} была создана!")
+                        self.timer.setSingleShot(True)
+                        self.timer.timeout.connect(self.hide_alert)
+                        self.timer.start(3000)
+                    db.disconnection_database()
+                else:
+                    if isinstance(connect, list):
+                        self.show_alert()
+                        self.alert_text.setText(connect[0][1])
+                        self.timer.setSingleShot(True)
+                        self.timer.timeout.connect(self.hide_alert)
+                        self.timer.start(3000)
             else:
-                if isinstance(connect, list):
-                    self.show_alert()
-                    self.alert_text.setText(connect[0][1])
-                    self.timer.setSingleShot(True)
-                    self.timer.timeout.connect(self.hide_alert)
-                    self.timer.start(3000)
+                self.name_table_edit.setStyleSheet("background-color: #fff;\n"
+                                                   "border-radius: 10px; \n"
+                                                   "padding-left: 5px;\n"
+                                                   "font-size: 15px;\n"
+                                                   "border:1px solid red;\n"
+                                                   "")
         else:
-            self.name_table_edit.setStyleSheet("background-color: #fff;\n"
-                                               "border-radius: 10px; \n"
-                                               "padding-left: 5px;\n"
-                                               "font-size: 15px;\n"
-                                               "border:1px solid red;\n"
-                                               "")
+            self.save_safyti()
 
 
 
@@ -1175,49 +1190,52 @@ class SettingsPage(QWidget, AlertMessage):
             self.name_table_edit.setText("")
 
     def save_info_db(self):
-        connect = self.connect_database(False)
-        bool_connect = connect[0][0] if isinstance(connect, list) else connect
-        if bool_connect:
-            db = connect[1]
-            db.cursor.execute(
-                f"SELECT table_name FROM information_schema.tables  WHERE table_schema = 'public' AND table_name IN ('{self.name_table_edit.text().strip()}');")
-            table_names = [row[0] for row in db.cursor.fetchall()]
-            if len(table_names):
-                key = Fernet.generate_key()
-                fernet = Fernet(key)
-                enc_name_user_db = fernet.encrypt(self.name_user_db_edit.text().strip().encode())
-                enc_passwd_db = fernet.encrypt(self.password_db_edit.text().strip().encode())
-                enc_host_db = fernet.encrypt(self.host_db_edit.text().strip().encode())
-                enc_port_db = fernet.encrypt(self.port_db_edit.text().strip().encode())
-                enc_name_db = fernet.encrypt(self.name_db_edit.text().strip().encode())
-                enc_table_db = fernet.encrypt(self.name_table_edit.text().strip().encode())
-                with open(self.get_path(r'config', "db_config.bin"), 'wb') as file:
-                    file.write(key + b'\n')
-                    file.write(enc_name_user_db + b'\n')
-                    file.write(enc_passwd_db + b'\n')
-                    file.write(enc_host_db + b'\n')
-                    file.write(enc_port_db + b'\n')
-                    file.write(enc_name_db + b'\n')
-                    file.write(enc_table_db)
-                os.remove(self.get_path('config', 'path_sqlite.bin')) if os.path.exists(self.get_path('config', 'path_sqlite.bin')) else ...
-                self.main.auth.show()
-                self.main.close()
+        if self.paswd:
+            connect = self.connect_database(False)
+            bool_connect = connect[0][0] if isinstance(connect, list) else connect
+            if bool_connect:
+                db = connect[1]
+                db.cursor.execute(
+                    f"SELECT table_name FROM information_schema.tables  WHERE table_schema = 'public' AND table_name IN ('{self.name_table_edit.text().strip()}');")
+                table_names = [row[0] for row in db.cursor.fetchall()]
+                if len(table_names):
+                    key = Fernet.generate_key()
+                    fernet = Fernet(key)
+                    enc_name_user_db = fernet.encrypt(self.name_user_db_edit.text().strip().encode())
+                    enc_passwd_db = fernet.encrypt(self.password_db_edit.text().strip().encode())
+                    enc_host_db = fernet.encrypt(self.host_db_edit.text().strip().encode())
+                    enc_port_db = fernet.encrypt(self.port_db_edit.text().strip().encode())
+                    enc_name_db = fernet.encrypt(self.name_db_edit.text().strip().encode())
+                    enc_table_db = fernet.encrypt(self.name_table_edit.text().strip().encode())
+                    with open(self.get_path(r'config', "db_config.bin"), 'wb') as file:
+                        file.write(key + b'\n')
+                        file.write(enc_name_user_db + b'\n')
+                        file.write(enc_passwd_db + b'\n')
+                        file.write(enc_host_db + b'\n')
+                        file.write(enc_port_db + b'\n')
+                        file.write(enc_name_db + b'\n')
+                        file.write(enc_table_db)
+                    os.remove(self.get_path('config', 'path_sqlite.bin')) if os.path.exists(
+                        self.get_path('config', 'path_sqlite.bin')) else ...
+                    self.main.auth.show()
+                    self.main.close()
+                else:
+                    self.show_alert()
+                    self.alert_text.setText(
+                        f'Таблица с именем {self.name_table_edit.text().strip()} не существует. Создайте или укажите существующую!')
+                    self.timer.setSingleShot(True)
+                    self.timer.timeout.connect(self.hide_alert)
+                    self.timer.start(3000)
+                db.disconnection_database()
             else:
-                self.show_alert()
-                self.alert_text.setText(
-                    f'Таблица с именем {self.name_table_edit.text().strip()} не существует. Создайте или укажите существующую!')
-                self.timer.setSingleShot(True)
-                self.timer.timeout.connect(self.hide_alert)
-                self.timer.start(3000)
-            db.disconnection_database()
-
+                if isinstance(connect, list):
+                    self.show_alert()
+                    self.alert_text.setText(connect[0][1])
+                    self.timer.setSingleShot(True)
+                    self.timer.timeout.connect(self.hide_alert)
+                    self.timer.start(3000)
         else:
-            if isinstance(connect, list):
-                self.show_alert()
-                self.alert_text.setText(connect[0][1])
-                self.timer.setSingleShot(True)
-                self.timer.timeout.connect(self.hide_alert)
-                self.timer.start(3000)
+            self.save_safyti()
 
     def connect_database(self, create_db):
         if create_db:
@@ -1320,8 +1338,28 @@ class SettingsPage(QWidget, AlertMessage):
         self.save_button_safety.setVisible(bool)
         self.cancel_button_safety.setVisible(bool)
 
-    def save_password(self):
+    def confirm_and_create_safyte(self):
         if os.path.exists(self.get_path(r'config', "auth.bin")):
+            with open(self.get_path(r'config', "auth.bin"), 'rb') as file:
+                key = file.readline().strip()
+                enc_message = file.read()
+                fernet = Fernet(key)
+                dec_message = fernet.decrypt(enc_message).decode()
+                if self.safety_password_edit.text() == dec_message:
+                    self.paswd = True
+                    self.widget_safyte_visible(False)
+        else:
+            key = Fernet.generate_key()
+            fernet = Fernet(key)
+            encMessage = fernet.encrypt(self.safety_password_edit.text().encode())
+            with open(self.get_path(r'config', "auth.bin"), 'wb') as file:
+                file.write(key)
+                file.write(b'\n')
+                file.write(encMessage)
+            self.widget_safyte_visible(False)
+
+    def save_password(self):
+        if os.path.exists(self.get_path(r'config', "auth.bin")) and self.paswd:
             with open(self.get_path(r'config', "auth.bin"), 'rb') as file:
                 key = file.readline().strip()
                 enc_message = file.read()
@@ -1349,16 +1387,10 @@ class SettingsPage(QWidget, AlertMessage):
                                                 "color:black;\n"
                                                 "")
         else:
-            key = Fernet.generate_key()
-            fernet = Fernet(key)
-            encMessage = fernet.encrypt(self.safety_password_edit.text().encode())
-            with open(self.get_path(r'config', "auth.bin"), 'wb') as file:
-                file.write(key)
-                file.write(b'\n')
-                file.write(encMessage)
-            self.widget_safyte_visible(False)
+            self.save_safyti()
 
-    def save_email(self):
+
+    def save_safyti(self):
         if not os.path.exists(self.get_path(r'config', "auth.bin")):
             self.safety_title.setText("Придумайте пароль для безопасности:")
             self.save_button_safety.setText("Сохранить пароль")
@@ -1366,11 +1398,9 @@ class SettingsPage(QWidget, AlertMessage):
             self.widget_safyte_visible(True)
 
         else:
+            self.save_button_safety.setText("Подветрдить")
             if self.show_password.isChecked():
-                self.save_button_safety.setText("Подветрдить")
                 self.show_password.setChecked(False)
-            else:
-                self.save_button_safety.setText("Сохранить данные")
             self.safety_title.setText("Введите пароль безопасности:")
             self.safety_password_edit.clear()
             self.widget_safyte_visible(True)
@@ -1418,22 +1448,25 @@ class SettingsPage(QWidget, AlertMessage):
         else:
             self.path_to_dir_edit.setText('')
     def open_dialog(self):
-        folder_path = QFileDialog.getExistingDirectory(self, "Выбрать папку", self.path_to_dir_edit.text() if self.path_to_dir_edit.text().strip() else "/")
-        print(folder_path)
-        if folder_path:
-            self.path_to_dir_edit.setText(folder_path)
-            docx_count = 0
-            for filename in os.listdir(folder_path):
-                if filename.endswith(".docx"):
-                    docx_count += 1
-            self.count_file.setText(f'{self.count_file.text()} {docx_count}')
-            key = Fernet.generate_key()
-            fernet = Fernet(key)
-            encMessage = fernet.encrypt(folder_path.encode())
-            with open(self.get_path(r'config', "url.bin"), 'wb') as file:
-                file.write(key)
-                file.write(b'\n')
-                file.write(encMessage)
+        if self.paswd:
+            folder_path = QFileDialog.getExistingDirectory(self, "Выбрать папку", self.path_to_dir_edit.text() if self.path_to_dir_edit.text().strip() else "/")
+            print(folder_path)
+            if folder_path:
+                self.path_to_dir_edit.setText(folder_path)
+                docx_count = 0
+                for filename in os.listdir(folder_path):
+                    if filename.endswith(".docx"):
+                        docx_count += 1
+                self.count_file.setText(f'{self.count_file.text()} {docx_count}')
+                key = Fernet.generate_key()
+                fernet = Fernet(key)
+                encMessage = fernet.encrypt(folder_path.encode())
+                with open(self.get_path(r'config', "url.bin"), 'wb') as file:
+                    file.write(key)
+                    file.write(b'\n')
+                    file.write(encMessage)
+        else:
+            self.save_safyti()
 
 
     def open_sidebar(self):
