@@ -352,8 +352,19 @@ class CalculationPage(QWidget, AlertMessage):
         return os.path.join(os.path.dirname(os.path.abspath(__file__)), dir, name)
 
     def perform(self):
-        if self.coef_deform_edit.text():
-            if self.width_edit.text():
+        match all('.' in x for x in [self.coef_deform_edit.text(), self.width_edit.text()]):
+            case True:
+                list_number_coef = self.coef_deform_edit.text().split('.')
+                list_number_width = self.width_edit.text().split('.')
+            case False:
+                list_number_coef = self.coef_deform_edit.text().split(',')
+                list_number_width = self.width_edit.text().split(',')
+                self.coef_deform_edit.setText(self.coef_deform_edit.text().replace(',', '.'))
+                self.width_edit.setText(self.width_edit.text().replace(',', '.'))
+        list_bolean = [x.isdigit() for x in list_number_coef]
+        if self.coef_deform_edit.text() and all(list_bolean):
+            list_bolean = [x.isdigit() for x in list_number_width]
+            if self.width_edit.text() and all(list_bolean):
                 if self.count_spinbox.text():
                     l = [float(self.width_edit.text())]
                     lst = [l.append(l[x] * math.sqrt((float(self.coef_deform_edit.text()) + 100) / 100)) for x, _ in
@@ -378,13 +389,13 @@ class CalculationPage(QWidget, AlertMessage):
                     self.timer.start(5000)
             else:
                 self.show_alert()
-                self.alert_text.setText("Укажите диаметр!")
+                self.alert_text.setText("Укажите диаметр!\nВозможно есть недоступные символы.")
                 self.timer.setSingleShot(True)
                 self.timer.timeout.connect(self.hide_alert)
                 self.timer.start(5000)
         else:
             self.show_alert()
-            self.alert_text.setText("Укажите удлинение проволоки!")
+            self.alert_text.setText("Укажите удлинение проволоки!\nВозможно есть недоступные символы.")
             self.timer.setSingleShot(True)
             self.timer.timeout.connect(self.hide_alert)
             self.timer.start(5000)
