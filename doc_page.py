@@ -1,6 +1,6 @@
 import datetime
 
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, Qt
 from docx.enum.section import WD_SECTION_START
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
@@ -66,7 +66,6 @@ class DocPage(QWidget, AlertMessage):
 
         self.reset_button = QtWidgets.QPushButton(self.doc_page)
         self.reset_button.setGeometry(QtCore.QRect(794, 20, 41, 31))
-
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap(self.get_path(r'images\icon', "reset_in.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.reset_button.setIcon(icon2)
@@ -728,10 +727,22 @@ class DocPage(QWidget, AlertMessage):
         self.open_file.clicked.connect(self.safety if self.main.user.posts != 'Технолог' else self.open_file_docx)
         self.delete_file.clicked.connect(self.safety if self.main.user.posts != 'Технолог' else self.del_file_docx)
         self.reset_button.clicked.connect(self.clear_widget)
+        self.reset_button.mouseDoubleClickEvent = self.onDoubleClick
         self.load_table_item()
 
         self.reset_button.installEventFilter(self)
         self.open_list_table.installEventFilter(self)
+
+    # Функция которая чистит текст во всех виджетах
+    def onDoubleClick(self, event):
+        if event.button() == Qt.LeftButton:
+            self.name_operation_box.setCurrentText(''), self.oborudovanie_edit.clear(), self.diametr_edit.clear()
+            self.diametr_do_edit.clear(), self.diametr_posle_edit.clear(), self.number_marshrut_edit.clear()
+            self.steps_deformac_edit.clear(), self.time_edit.clear()
+            self.heat_treatment_mode_edit.clear(), self.heating_medium_edit.clear(), self.annealing_temperature_edit.clear()
+            self.cooling_conditions_edit.clear(), self.note_edit.clear(), self.lineEdit.clear()
+            self.row = 0
+            self.cursor.setText(f"Курсор установлен на {self.row} строке")
 
     def mousePressEvent(self, event):
         self.open_info_window(False)
@@ -1603,13 +1614,8 @@ class DocPage(QWidget, AlertMessage):
             else:
                 self.heat_treatment_mode_edit.setEnabled(True)
 
-    # Функция которая чистит текст во всех виджетах
+    # Функция которая чистит курсор
     def clear_widget(self):
-        self.name_operation_box.setCurrentText(''), self.oborudovanie_edit.clear(), self.diametr_edit.clear()
-        self.diametr_do_edit.clear(), self.diametr_posle_edit.clear(), self.number_marshrut_edit.clear()
-        self.steps_deformac_edit.clear(), self.time_edit.clear()
-        self.heat_treatment_mode_edit.clear(), self.heating_medium_edit.clear(), self.annealing_temperature_edit.clear()
-        self.cooling_conditions_edit.clear(), self.note_edit.clear(), self.lineEdit.clear()
         self.row = 0
         self.cursor.setText(f"Курсор установлен на {self.row} строке")
 
