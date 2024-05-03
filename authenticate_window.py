@@ -176,7 +176,9 @@ class Authenticate(QWidget):
             name = (self.get_path('', '') + 'config').encode()
             self.hide_folder(name)
 
-        if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db')) and not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin')) and not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin')):
+        if (not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sql', 'example.db'))
+                and not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'path_sqlite.bin'))
+                and not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'db_config.bin'))):
             self.create_table_sqlite()
 
         self.retranslateUi()

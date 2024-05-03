@@ -19,7 +19,7 @@ class CalculationPage(QWidget, AlertMessage):
         super().__init__()
         self.main = main
         self.calculation = self
-        self.lml = []
+        self.stages_info = []
         self.timer = QTimer()
 
         self.setWindowTitle("TechMap")
@@ -324,7 +324,7 @@ class CalculationPage(QWidget, AlertMessage):
                         run = paragraph.runs[0]
                         run.bold = True
                         paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                    for i, row in enumerate(self.lml, start=1):
+                    for i, row in enumerate(self.stages_info, start=1):
                         for j, value in enumerate(row):
                             cell = table.cell(i, j)
                             cell.text = str(value)
@@ -366,21 +366,32 @@ class CalculationPage(QWidget, AlertMessage):
             list_bolean = [x.isdigit() for x in list_number_width]
             if self.width_edit.text() and all(list_bolean):
                 if self.count_spinbox.text():
-                    l = [float(self.width_edit.text())]
-                    lst = [l.append(l[x] * math.sqrt((float(self.coef_deform_edit.text()) + 100) / 100)) for x, _ in
-                           enumerate(range(0, int(self.count_spinbox.text()) - 1))]
-                    lml = [(len(l) - x, round(l[x],3),
-                            "" if x + 2 > len(l) else round(((pow(l[x + 1], 2) - pow(l[x], 2)) / pow(l[x + 1], 2)), 3)) for x, _ in
-                           enumerate(range(0, len(l)))]
-                    self.table_route.setRowCount(len(lml))
-                    for row_index, row_data in enumerate(lml):
+                    # Получаем текущий диаметр проволоки, коэффициент удлинения и количество проходов из интерфейса
+                    current_diameter = float(self.width_edit.text())
+                    elongation_percentage = float(self.coef_deform_edit.text())
+                    num_passes = int(self.count_spinbox.text())
+
+                    # Рассчитываем диаметры и деформации проволоки на каждом этапе волочения
+                    diameters = [current_diameter]
+                    for _ in range(num_passes - 1):
+                        next_diameter = current_diameter * math.sqrt((elongation_percentage + 100) / 100)
+                        diameters.append(next_diameter)
+                        current_diameter = next_diameter
+
+                    # Формируем список кортежей с информацией о каждом этапе волочения
+                    stages_info = [(num_passes - i, round(diameters[i], 3),
+                                    "" if i + 2 > len(diameters) else round(
+                                        ((diameters[i + 1] ** 2 - diameters[i] ** 2) / diameters[i + 1] ** 2), 3))
+                                   for i in range(num_passes)]
+                    self.table_route.setRowCount(len(stages_info))
+                    for row_index, row_data in enumerate(stages_info):
                         for col_index, col_data in enumerate(row_data):
                             item = QtWidgets.QTableWidgetItem(str(col_data))
                             font = QtGui.QFont("Times New Roman", 12)
                             item.setFont(font)
                             item.setTextAlignment(QtCore.Qt.AlignCenter)
                             self.table_route.setItem(row_index, col_index, item)
-                    self.lml = lml
+                    self.stages_info = stages_info
                 else:
                     self.show_alert()
                     self.alert_text.setText("Укажите количество проходов!")
