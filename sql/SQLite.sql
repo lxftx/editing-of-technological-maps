@@ -23,3 +23,17 @@ CREATE TABLE IF NOT EXISTS users (
     code INTEGER,
     FOREIGN KEY (post) REFERENCES posts(id)
 );
+
+-- Создаем таблицу для отслеживания изменений имен, фамилий и отчеств пользователей
+CREATE TABLE IF NOT EXISTS user_changes (
+    change_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    first_name_old TEXT,
+    last_name_old TEXT,
+    patronymic_old TEXT,
+    first_name_new TEXT,
+    last_name_new TEXT,
+    patronymic_new TEXT,
+    change_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);

@@ -256,6 +256,9 @@ class Authenticate(QWidget):
             for command in sql_commands:
                 if command.strip():
                     self.db.cursor.execute(command)
+        sql_file_path = os.path.join(current_dir, 'sql', 'CreateTriggerSQLite.sql')
+        with open(sql_file_path, 'r', encoding='utf-8') as sql_file:
+            self.db.cursor.execute(sql_file.read().strip())
         key = Fernet.generate_key()
         fernet = Fernet(key)
         enc_path_sqlite_db = fernet.encrypt(path.strip().encode())

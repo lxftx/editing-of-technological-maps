@@ -261,11 +261,11 @@ class HomePage(QWidget, AlertMessage):
         self.table_docx.setRowCount(0)
         table_lst = []
         directory = self.dir
-        text = self.search_widget.text().strip().title()
+        text = self.search_widget.text().strip()
         files = os.listdir(directory)
         file_list = [directory + file for file in files if file.endswith('.docx')]
         for i, name in enumerate(file_list):
-            if re.compile(text).search(name):
+            if re.compile(text.upper()).search(name.upper()):
                 # Получаем информацию о файле
                 if not re.search(r"~\$", name):
                     file_name = os.path.basename(name)
@@ -342,8 +342,11 @@ class HomePage(QWidget, AlertMessage):
                         # Выравниваем текст по центру ячеек
                         cell.paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
+                core_props = doc.core_properties
+                # Изменяем информацию о создателе
+                core_props.author = f"{self.main.user.surname} {self.main.user.name}"
+                core_props.last_modified_by = f'{self.main.user.surname} {self.main.user.name}'
                 # Сохраняем документ
-
                 doc.save(self.dir+f"{name}.docx")
                 self.enable_widget(True)
                 file_name = name
