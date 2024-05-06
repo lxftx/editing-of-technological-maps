@@ -935,7 +935,7 @@ class DocPage(QWidget, AlertMessage):
             self.timer.start(3000)
         except Exception as ex:
             self.show_alert()
-            self.alert_text.setText(f"Системная Ошибка! {ex}")
+            self.alert_text.setText(f"Системная Ошибка!\n{ex}")
             self.timer.setSingleShot(True)
             self.timer.timeout.connect(self.hide_alert)
             self.timer.start(5000)
